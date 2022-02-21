@@ -6,7 +6,7 @@ onready var player = $Player
 
 const TILE_SIZE = 24
 
-onready var overworldObjectScene = preload("res://Scenes/OverworldObjects.tscn")
+onready var overworldObjectScene = preload("res://Scenes/Overworld/OverworldObjects.tscn")
 
 var gridMap = []
 var objectPlacement = []
@@ -17,6 +17,7 @@ enum tileTypes {grass,grassCorner,wall} ##Should match up with the tiletypes and
 enum objectTypes {TallGrass,Boulders,Logs}
 enum direction {Up,Right,Down,Left}
 
+signal loot_received
 ## Game world runs in this script, responsible for checking against player location/object location
 
 func _ready():
@@ -105,9 +106,26 @@ func _on_Player_useToolOnBlock(blockToCheck):
 	var block = objectPlacement[blockToCheck.x][blockToCheck.y]
 	if block is Node2D:
 		if block.toolUsed():
+			var objectDestroyed = block.objectSelected
 			block.queue_free()
 			objectPlacement[blockToCheck.x].remove(blockToCheck.y)
 			objectPlacement[blockToCheck.x].insert(blockToCheck.y,null)
+			
+			####################
+#			Insert Function to run a full Loot Table
+			#####################
+			
+			#####################
+#			Remove the below:
+			var listOfPossibleItems = WorldConductor.lootTable[objectDestroyed].keys()
+			
+			var lootType = listOfPossibleItems[0]
+			var quantityOfLoot = SeedGenerator.rng.randi_range(WorldConductor.lootTable[objectDestroyed][lootType]["min"],WorldConductor.lootTable[objectDestroyed][lootType]["max"])
+			#####################
+			
+			emit_signal("loot_received",lootType,quantityOfLoot)
+			
+			
 #			block.clear()
 #			block.append(null)
 #			block.free()

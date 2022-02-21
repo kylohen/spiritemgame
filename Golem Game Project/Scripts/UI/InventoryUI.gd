@@ -1,0 +1,189 @@
+extends Control
+
+
+onready var inventorySlots = $BookMarginContainer/BookBackground/Items
+onready var inventoryPlayerSelection = $BookMarginContainer/BookBackground/PlayerSelectionInventory
+onready var inventoryPageTurning = $BookMarginContainer/BookBackground/InventoryPageTurning
+onready var partyMemberSelection = $BookMarginContainer/BookBackground/PlayerSelectionPartyMenu
+
+var inventoryPage = 0
+var playerCurrentSelection = 0
+var nodeSelected = null
+
+signal sub_menu
+# Called when the node enters the scene tree for the first time.
+func _ready():
+	pass # Replace with function body.
+
+func update_inventory():
+	var startingInventory = inventoryPage * inventorySlots.get_child_count()
+	for i in range (startingInventory,inventorySlots.get_child_count(),1):
+		if GlobalPlayer.itemIndexDict.has(i):
+			var nextItem = GlobalPlayer.itemIndexDict[i]
+			inventorySlots.get_child(i).set_item(nextItem,GlobalPlayer.inventoryListDict[nextItem][i])
+	current_player_selection_highlight (playerCurrentSelection)
+	
+func current_player_selection_highlight (currentSelection):
+	if currentSelection >= 0 and currentSelection <= 15:
+		inventoryPlayerSelection.get_child(currentSelection).modulate.a = 1.0
+		nodeSelected = inventoryPlayerSelection.get_child(currentSelection)
+	elif currentSelection == 16:
+		inventoryPageTurning.get_node("BackButton").modulate =  Color( 0, 0, 0, 1 ) ##BLACK
+		nodeSelected = inventoryPageTurning.get_node("BackButton")
+	elif currentSelection == 17:
+		inventoryPageTurning.get_node("NextButton").modulate =  Color( 0, 0, 0, 1 ) ##BLACK
+		nodeSelected = inventoryPageTurning.get_node("NextButton")
+	elif currentSelection >= 18 and currentSelection <= 23:
+		partyMemberSelection.get_child(currentSelection-18).modulate.a = 1.0
+		nodeSelected = partyMemberSelection.get_child(currentSelection-18)
+	playerCurrentSelection = currentSelection
+
+func remove_previous_selection_highlight (previousSelection):
+	if previousSelection >= 0 and previousSelection <= 15:
+		inventoryPlayerSelection.get_child(previousSelection).modulate.a = 0.0
+	elif previousSelection == 16:
+		inventoryPageTurning.get_node("BackButton").modulate = Color(1,1,1,1)
+	elif previousSelection == 17:
+		inventoryPageTurning.get_node("NextButton").modulate = Color(1,1,1,1)
+	elif previousSelection >= 18 and previousSelection <= 23:
+		partyMemberSelection.get_child(previousSelection-18).modulate.a = 0.0
+	
+
+func reset_all_selections():
+	for i in inventoryPlayerSelection.get_child_count():
+		inventoryPlayerSelection.get_child(i).modulate.a = 0.0
+
+	inventoryPageTurning.get_node("BackButton").modulate = Color(1,1,1,1)
+	inventoryPageTurning.get_node("NextButton").modulate = Color(1,1,1,1)
+	
+	for i in partyMemberSelection.get_child_count():
+		partyMemberSelection.get_child(i).modulate.a = 0.0
+
+# Called every frame. 'delta' is the elapsed time since the previous frame.
+#func _process(delta):
+#	pass
+func move_right():
+	
+	var newNumber
+	if playerCurrentSelection == 3:
+		newNumber = 18
+	elif playerCurrentSelection == 7:
+		newNumber = 19
+	elif playerCurrentSelection == 11:
+		newNumber = 20
+	elif playerCurrentSelection == 15:
+		newNumber = 21
+	elif playerCurrentSelection == 18:
+		newNumber = 0
+	elif playerCurrentSelection == 19:
+		newNumber = 0
+	elif playerCurrentSelection == 20:
+		newNumber = 4
+	elif playerCurrentSelection == 21:
+		newNumber = 8
+	elif playerCurrentSelection == 22:
+		newNumber = 12
+	elif playerCurrentSelection == 23:
+		newNumber = 16
+	elif playerCurrentSelection == 17:
+		newNumber = 23
+	else:newNumber = playerCurrentSelection + 1
+	remove_previous_selection_highlight(playerCurrentSelection)
+	current_player_selection_highlight(newNumber)
+	
+	pass
+func move_left():
+	var newNumber
+	if playerCurrentSelection == 0:
+		newNumber = 18
+	elif playerCurrentSelection == 4:
+		newNumber = 19
+	elif playerCurrentSelection == 8:
+		newNumber = 20
+	elif playerCurrentSelection == 12:
+		newNumber = 21
+	elif playerCurrentSelection == 16:
+		newNumber = 23
+	elif playerCurrentSelection == 18:
+		newNumber = 3
+	elif playerCurrentSelection == 19:
+		newNumber = 3
+	elif playerCurrentSelection == 20:
+		newNumber = 7
+	elif playerCurrentSelection == 21:
+		newNumber = 11
+	elif playerCurrentSelection == 22:
+		newNumber = 15
+	elif playerCurrentSelection == 23:
+		newNumber = 17
+	elif playerCurrentSelection == 16:
+		newNumber = 23
+	else:newNumber = playerCurrentSelection - 1
+	remove_previous_selection_highlight(playerCurrentSelection)
+	current_player_selection_highlight(newNumber)
+	
+	pass
+func move_up():
+	var newNumber
+	if playerCurrentSelection == 0:
+		newNumber = 12
+	elif playerCurrentSelection == 1:
+		newNumber = 16
+	elif playerCurrentSelection == 2:
+		newNumber = 17
+	elif playerCurrentSelection == 3:
+		newNumber = 15
+	elif playerCurrentSelection == 16:
+		newNumber = 13
+	elif playerCurrentSelection == 17:
+		newNumber = 14
+	elif playerCurrentSelection == 18:
+		newNumber = 23
+	elif playerCurrentSelection >= 4 and playerCurrentSelection<=15:
+		newNumber = playerCurrentSelection-4
+	else:newNumber = playerCurrentSelection - 1
+	remove_previous_selection_highlight(playerCurrentSelection)
+	current_player_selection_highlight(newNumber)
+func move_down():
+	var newNumber
+	if playerCurrentSelection == 12:
+		newNumber = 0
+	elif playerCurrentSelection == 13:
+		newNumber = 16
+	elif playerCurrentSelection == 14:
+		newNumber = 17
+	elif playerCurrentSelection == 15:
+		newNumber = 3
+	elif playerCurrentSelection == 16:
+		newNumber = 1
+	elif playerCurrentSelection == 17:
+		newNumber = 2
+	elif playerCurrentSelection == 23:
+		newNumber = 18
+	elif playerCurrentSelection >= 0 and playerCurrentSelection<=11:
+		newNumber = playerCurrentSelection+4
+	
+	else:newNumber = playerCurrentSelection + 1
+	remove_previous_selection_highlight(playerCurrentSelection)
+	current_player_selection_highlight(newNumber)
+
+func selected():
+	if nodeSelected is TextureButton:
+		nodeSelected.pressed()
+	elif playerCurrentSelection >= 0 and playerCurrentSelection<=15:
+		
+		pass
+	pass
+func _on_BackButton_pressed():
+	if inventoryPage > 0:
+		inventoryPage -= 1
+		update_inventory()
+	pass # Replace with function body.
+
+
+func _on_NextButton_pressed():
+	if GlobalPlayer.itemIndexDict.has(inventoryPage*inventorySlots.get_child_count()):
+		inventoryPage += 1
+		update_inventory()
+		
+	pass # Replace with function body.

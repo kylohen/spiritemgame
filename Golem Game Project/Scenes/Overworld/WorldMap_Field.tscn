@@ -2,11 +2,11 @@
 
 [ext_resource path="res://Assets/Tilesets/grass1_tileset.png" type="Texture" id=1]
 [ext_resource path="res://Scenes/Player.tscn" type="PackedScene" id=2]
-[ext_resource path="res://Scripts/Grid.gd" type="Script" id=3]
+[ext_resource path="res://Scripts/Overworld/Grid.gd" type="Script" id=3]
 [ext_resource path="res://Assets/Tilesets/Wall.png" type="Texture" id=4]
 [ext_resource path="res://Scenes/PlayerCamera.tscn" type="PackedScene" id=5]
 [ext_resource path="res://Scripts/PlayerCamera.gd" type="Script" id=6]
-[ext_resource path="res://Scenes/PlayerUI.tscn" type="PackedScene" id=7]
+[ext_resource path="res://Scenes/UI/PlayerUI.tscn" type="PackedScene" id=7]
 
 [sub_resource type="ConvexPolygonShape2D" id=2]
 points = PoolVector2Array( 24, 24, 0, 24, 0, 0, 24, 0 )
@@ -105,5 +105,7 @@ margin_top = -135.0
 margin_right = -240.0
 margin_bottom = -135.0
 
+[connection signal="loot_received" from="." to="Player" method="_on_WorldMap_Field_loot_received"]
+[connection signal="loot_received" from="." to="Camera2D/PlayerUI" method="_on_WorldMap_Field_loot_received"]
 [connection signal="newPosForCamera" from="Player" to="Camera2D" method="_on_Player_newPosForCamera"]
 [connection signal="useToolOnBlock" from="Player" to="." method="_on_Player_useToolOnBlock"]

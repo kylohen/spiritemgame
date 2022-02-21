@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=2]
+[gd_scene load_steps=11 format=2]
 
 [ext_resource path="res://Assets/Tools/Pickaxe_UI.png" type="Texture" id=1]
 [ext_resource path="res://Assets/Tools/Shovel_UI.png" type="Texture" id=2]
@@ -6,9 +6,10 @@
 [ext_resource path="res://Assets/Tools/Scythe_UI.png" type="Texture" id=4]
 [ext_resource path="res://Assets/Tools/ToolBackground_UI.png" type="Texture" id=5]
 [ext_resource path="res://Assets/Tools/SelectedOverlay_UI.png" type="Texture" id=6]
-[ext_resource path="res://Scripts/PlayerUI.gd" type="Script" id=7]
-[ext_resource path="res://Scripts/ToolUI.gd" type="Script" id=8]
+[ext_resource path="res://Scripts/UI/PlayerUI.gd" type="Script" id=7]
+[ext_resource path="res://Scripts/UI/ToolUI.gd" type="Script" id=8]
 [ext_resource path="res://Assets/Tools/Arrow_UI.png" type="Texture" id=9]
+[ext_resource path="res://Scenes/UI/InventoryUI.tscn" type="PackedScene" id=10]
 
 [node name="PlayerUI" type="Control"]
 anchor_right = 1.0
@@ -196,6 +197,30 @@ stretch_mode = 6
 __meta__ = {
 "_edit_use_anchors_": false
 }
+
+[node name="PopUpAlertUI" type="Control" parent="."]
+margin_left = 297.0
+margin_top = 165.0
+margin_right = 480.0
+margin_bottom = 269.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="PopUpContainer" type="VBoxContainer" parent="PopUpAlertUI"]
+anchor_right = 0.85
+anchor_bottom = 0.852
+rect_pivot_offset = Vector2( -221, -80 )
+custom_constants/separation = 6
+alignment = 2
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="InventoryUI" parent="." instance=ExtResource( 10 )]
+visible = false
+grow_horizontal = 0
+grow_vertical = 0
 
 [connection signal="nextTool" from="." to="ToolUI" method="_on_PlayerUI_nextTool"]
 [connection signal="previousTool" from="." to="ToolUI" method="_on_PlayerUI_previousTool"]
