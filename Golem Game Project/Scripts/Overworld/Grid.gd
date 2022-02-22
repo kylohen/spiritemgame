@@ -21,6 +21,11 @@ enum direction {Up,Right,Down,Left}
 signal loot_received
 ## Game world runs in this script, responsible for checking against player location/object location
 
+var golemRecipes= {
+	"StrawBoy" : {
+		"Straw" : 4
+	}
+}
 func _ready():
 	initialize_gridMap()
 	initialize_objectPlacement()
@@ -137,7 +142,9 @@ func _on_Player_useToolOnBlock(blockToCheck):
 #			remove_child(block)
 #			block.queue_free()
 			print(block)
-			
+	elif blockToCheck == Vector2(13,9):
+		print ("Checking Golem")
+		golem_checking ()
 	pass # Replace with function body.
 
 
@@ -150,3 +157,37 @@ func _on_Player_useItemOnBlock(itemID,itemTexture,blockToCheck):
 		interactOverlay.add_child(newLoot)
 		newLoot.set_loot(itemID,itemTexture)
 
+func golem_checking ():
+	var locations = [Vector2(14,7),Vector2(15,8),Vector2(15,10),Vector2(14,11),Vector2(12,11),Vector2(11,10),Vector2(11,8),Vector2(12,7)]
+	var itemsFound = {}
+	for i in locations.size():
+		var object = objectPlacement[locations[i].x][locations[i].y]
+		if object is Node2D:
+			if object.type == "loot":
+				if itemsFound.has(object.itemID):
+					itemsFound[object.itemID] += 1
+				else:itemsFound[object.itemID] = 1
+	var keys = golemRecipes.keys()
+	for i in keys.size():
+		var hasEverything = true
+		var recipeItems = golemRecipes[keys[i]].keys()
+		for j in recipeItems.size():
+			if !itemsFound.has(recipeItems[j]):
+				hasEverything = false
+			elif golemRecipes[keys[i]][recipeItems[j]]>itemsFound[recipeItems[j]]:
+				hasEverything = false
+		if hasEverything:
+			print ("ITS ALIVE! ",keys[i]," IS ALIVE")
+			take_golem_items()
+			$AnimationPlayer.play("GolemSpawning")
+	print (itemsFound)
+	
+func take_golem_items():
+	var locations = [Vector2(14,7),Vector2(15,8),Vector2(15,10),Vector2(14,11),Vector2(12,11),Vector2(11,10),Vector2(11,8),Vector2(12,7)]
+	for i in locations.size():
+		var object = objectPlacement[locations[i].x][locations[i].y]
+		if object is Node2D:
+			object.queue_free()
+			objectPlacement[locations[i].x].remove(locations[i].y)
+			objectPlacement[locations[i].x].insert(locations[i].y,null)
+	pass
