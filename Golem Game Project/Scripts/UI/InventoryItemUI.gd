@@ -20,8 +20,12 @@ func _ready():
 
 func set_item(itemID:String,itemCount:int):
 	if itemID !=null:
-		itemTexture.texture = load(itemSprites[itemID])
-		selectedItemTexture = itemSprites[itemID]
+		if !itemSprites.has(itemID):
+			itemTexture.texture = load("res://Assets/UI/Inventory/ItemUI/sprite_item_unknown.png")
+			selectedItemTexture = "res://Assets/UI/Inventory/ItemUI/sprite_item_unknown.png"
+		else:
+			itemTexture.texture = load(itemSprites[itemID])
+			selectedItemTexture = itemSprites[itemID]
 		type = itemID
 		quantity = itemCount
 		countText.text = str(quantity)

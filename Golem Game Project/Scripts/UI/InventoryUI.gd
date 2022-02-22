@@ -307,3 +307,12 @@ func _on_NextButton_pressed():
 		update_inventory()
 		
 	pass # Replace with function body.
+func not_primary():
+#	if subMenuNode != null:
+#		subMenuNode.queue_free()
+	inventoryPage = 0
+	playerCurrentSelection = 0
+	nodeSelected = null
+	nodeToMove = null
+	indexToMove = null
+	currentState = null

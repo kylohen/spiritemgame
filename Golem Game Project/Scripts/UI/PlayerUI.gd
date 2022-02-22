@@ -3,8 +3,10 @@ extends Control
 var alertScene = preload("res://Scenes/UI/PopUpAlertText.tscn")
 onready var popUpAlertContainer = $PopUpAlertUI/PopUpContainer
 onready var inventoryUI = $InventoryUI
+onready var loreBookUI = $LoreBookUI
+onready var craftingBookUI = $CraftingBookUI
 
-enum {NONE,INVENTORY,INVENTORY_SUBMENU}
+enum {NONE,INVENTORY,INVENTORY_SUBMENU,LORE,CRAFTING}
 # Declare member variables here. Examples:
 # var a = 2
 # var b = "text"
@@ -13,6 +15,36 @@ signal nextTool
 signal previousTool
 signal useItem
 
+var MenuDict = {
+	0:INVENTORY,
+	1:LORE,
+	2:CRAFTING,
+}
+onready var MenuNodeDict = {
+	INVENTORY:inventoryUI,
+	LORE:loreBookUI,
+	CRAFTING:craftingBookUI,
+}
+var menuTracker = 0
+
+func move_menu(value):
+	var oldMenu = MenuDict[menuTracker]
+	menuTracker += value
+	if menuTracker < 0:
+		menuTracker = MenuDict.size()-1
+	elif menuTracker > MenuDict.size()-1:
+		menuTracker = 0
+		
+	MenuNodeDict[oldMenu].hide()
+	MenuNodeDict[oldMenu].not_primary()
+
+	currentMenu = MenuDict[menuTracker]
+	MenuNodeDict[currentMenu].show()
+	if currentMenu == INVENTORY:
+		inventoryUI.update_inventory()
+	
+	
+	pass
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	pass # Replace with function body.
@@ -43,14 +75,17 @@ func process_player_input():
 	if GlobalPlayer.is_PLAYSTATE(GlobalPlayer.PLAYSTATE.PAUSE):
 		
 		if Input.is_action_just_pressed("Next_Page"):
+			move_menu(1)
 			pass
 		elif Input.is_action_just_pressed("Previous_Page"):
+			move_menu(-1)
 			pass
 		if currentMenu == INVENTORY:
 			if Input.is_action_just_released("ui_cancel"):
 				GlobalPlayer.currentPLAYSTATE = GlobalPlayer.PLAYSTATE.GAME
 				inventoryUI.hide()
 				currentMenu = NONE
+				inventoryUI.not_primary()
 			if Input.is_action_just_pressed("ui_right"):
 				inventoryUI.move_right()
 			elif Input.is_action_just_pressed("ui_left"):
@@ -70,6 +105,31 @@ func process_player_input():
 				inventoryUI.sub_select()
 			if Input.is_action_just_pressed("ui_cancel"):
 				inventoryUI.sub_cancel()
+		elif currentMenu == LORE:
+			if Input.is_action_just_released("ui_cancel"):
+				GlobalPlayer.currentPLAYSTATE = GlobalPlayer.PLAYSTATE.GAME
+				loreBookUI.hide()
+				currentMenu = NONE
+				loreBookUI.not_primary()
+			if Input.is_action_just_pressed("ui_right"):
+				loreBookUI.move_right()
+			elif Input.is_action_just_pressed("ui_left"):
+				loreBookUI.move_left()
+			if Input.is_action_just_pressed("ui_accept"):
+				loreBookUI.selected()
+			
+		elif currentMenu == CRAFTING:
+			if Input.is_action_just_released("ui_cancel"):
+				GlobalPlayer.currentPLAYSTATE = GlobalPlayer.PLAYSTATE.GAME
+				craftingBookUI.hide()
+				currentMenu = NONE
+				craftingBookUI.not_primary()
+			if Input.is_action_just_pressed("ui_up"):
+				craftingBookUI.move_up()
+			elif Input.is_action_just_pressed("ui_down"):
+				craftingBookUI.move_down()
+			if Input.is_action_just_pressed("ui_accept"):
+				craftingBookUI.selected()
 			
 	pass
 # Called every frame. 'delta' is the elapsed time since the previous frame.

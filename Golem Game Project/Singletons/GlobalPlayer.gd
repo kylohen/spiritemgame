@@ -126,8 +126,19 @@ func delete_item (itemToDelete,IndexToClear):
 	itemIndexDict.erase(IndexToClear)
 	pass
 
-func use_item(itemToUse,indexToUse):
-	inventoryListDict[itemToUse][indexToUse] -= 1
+func use_item(itemToUse,indexToUse, quantityToUse = 1):
+	inventoryListDict[itemToUse][indexToUse] -= quantityToUse
 	if inventoryListDict[itemToUse][indexToUse]<= 0:
 		delete_item(itemToUse,indexToUse)
-	
+
+func has_item(itemToCheck):
+	return inventoryListDict.has(itemToCheck)
+
+func has_item_and_quantity(itemToCheck, quantity):
+	if inventoryListDict.has(itemToCheck):
+		var keys = inventoryListDict[itemToCheck].keys()
+		for i in keys.size():
+			quantity -= inventoryListDict[itemToCheck][keys[i]]
+			if quantity <=0:
+				return true
+	return false

@@ -1,0 +1,87 @@
+[gd_scene load_steps=5 format=2]
+
+[ext_resource path="res://Assets/UI/Inventory/inventory_back_arrow.png" type="Texture" id=1]
+[ext_resource path="res://Assets/UI/Inventory/inventorygrid_research.png" type="Texture" id=2]
+[ext_resource path="res://Assets/UI/Inventory/inventory_next_arrow.png" type="Texture" id=3]
+[ext_resource path="res://Scripts/UI/LoreBookUI.gd" type="Script" id=4]
+
+[node name="LoreBookUI" type="Control"]
+margin_right = 40.0
+margin_bottom = 40.0
+script = ExtResource( 4 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="BookMarginContainer" type="MarginContainer" parent="."]
+margin_left = 44.0
+margin_top = 28.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="BookBackground" type="TextureRect" parent="BookMarginContainer"]
+margin_right = 384.0
+margin_bottom = 216.0
+texture = ExtResource( 2 )
+stretch_mode = 5
+
+[node name="LorePageTurning" type="HBoxContainer" parent="BookMarginContainer/BookBackground"]
+margin_left = 60.0
+margin_top = 152.0
+margin_right = 324.0
+margin_bottom = 161.0
+custom_constants/separation = 94
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="BackButton" type="TextureButton" parent="BookMarginContainer/BookBackground/LorePageTurning"]
+margin_right = 85.0
+margin_bottom = 9.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+texture_normal = ExtResource( 1 )
+expand = true
+stretch_mode = 5
+flip_h = true
+
+[node name="NextButton" type="TextureButton" parent="BookMarginContainer/BookBackground/LorePageTurning"]
+margin_left = 179.0
+margin_right = 264.0
+margin_bottom = 9.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+texture_normal = ExtResource( 3 )
+expand = true
+stretch_mode = 5
+
+[node name="LeftPage" type="RichTextLabel" parent="."]
+margin_left = 117.0
+margin_top = 65.0
+margin_right = 319.0
+margin_bottom = 289.0
+rect_scale = Vector2( 0.5, 0.5 )
+custom_colors/default_color = Color( 0, 0, 0, 1 )
+tab_size = 2
+text = "Golemancers
+
+A golemancer is one who studies and trains in the art of golemancy, that is, the crafting, design and utilizing of golems. Golemancers achieve this by manifesting spirit through a pure substance, such as a crystal or gem, as well as runic inscription to give it direction and form. It is a study of the coming together of science and the ethereal.
+"
+scroll_active = false
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="RightPage" type="RichTextLabel" parent="."]
+margin_left = 254.0
+margin_top = 65.0
+margin_right = 458.0
+margin_bottom = 287.0
+rect_scale = Vector2( 0.5, 0.5 )
+custom_colors/default_color = Color( 0, 0, 0, 1 )
+text = "To start, all elements and materials must be present and properly aligned. Golems can be made from a variety of suitable materials, ranging from wood or iron or even elemental substances such as molten rock or ice. Although there are several distinctions between runic, mechanical and elemental golems, their basic concept of construction is the same. Importantly, an inscription, traditionally on parchment paper, detailing the commands given to the golem must be placed within the construct. This command scroll is commonly known as a covenant. Once this everything is in place, the core spirit crystal, which must be attuned prior, is then to be activated. A golem only becomes animated once its frame is animated by said spirit. Once active, a golem will function within the limits set by its construct and covenant until its core or covenant is damaged. Golems are linked to their creators in mysterious ways, and this unique bond is still the subject of study for many. Building a golem requires discipline and wisdom and accuracy."
+scroll_active = false
+__meta__ = {
+"_edit_use_anchors_": false
+}

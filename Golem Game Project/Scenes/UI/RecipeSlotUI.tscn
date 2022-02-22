@@ -1,0 +1,48 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://Scripts/UI/RecipeSlotUI.gd" type="Script" id=1]
+[ext_resource path="res://Assets/UI/Inventory/party_background.png" type="Texture" id=2]
+
+[node name="RecipeSlotUI" type="Control"]
+margin_right = 104.0
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+anchor_right = 0.981
+margin_right = -0.0240097
+margin_bottom = 18.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="SlotBackground" type="TextureRect" parent="."]
+margin_right = 102.0
+margin_bottom = 18.0
+texture = ExtResource( 2 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ItemPicture" type="TextureRect" parent="SlotBackground"]
+margin_left = 2.0
+margin_right = 22.0
+margin_bottom = 18.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+expand = true
+stretch_mode = 5
+
+[node name="RecipeDetails" type="RichTextLabel" parent="SlotBackground"]
+margin_left = 26.0
+margin_top = 1.0
+margin_right = 174.0
+margin_bottom = 33.0
+rect_min_size = Vector2( 78, 0 )
+rect_scale = Vector2( 0.5, 0.5 )
+custom_colors/default_color = Color( 0, 0, 0, 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
