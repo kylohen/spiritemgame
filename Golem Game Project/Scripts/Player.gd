@@ -20,6 +20,7 @@ var is_moving = false
 var percent_moved_to_next_tile = 0.0
 
 signal useToolOnBlock
+signal useItemOnBlock
 signal newPosForCamera
 ##Keeping Grid Coords seperate until the nuances of the movement is understood
 onready var gridCoords = initial_position
@@ -45,27 +46,28 @@ func _physics_process(delta):
 		
 
 func process_player_input():
-	if input_direction.y == 0:
-		input_direction.x = int(Input.is_action_pressed("ui_right")) - int(Input.is_action_pressed("ui_left"))
-	if input_direction.x == 0:
-		input_direction.y = int(Input.is_action_pressed("ui_down")) - int(Input.is_action_pressed("ui_up"))
-	###Using tool on block
-	if Input.is_action_just_pressed("ui_select"):
-		emit_signal("useToolOnBlock", gridCoords + facing_direction)
-		need_animation()
-	if input_direction != Vector2.ZERO:
-		anim_tree.set("parameters/Idle/blend_position", input_direction)
-		anim_tree.set("parameters/Walk/blend_position", input_direction)
-		anim_tree.set("parameters/Turn/blend_position", input_direction)
-		
-		if need_to_turn():
-			player_state = PlayerState.TURNING
-			anim_state.travel("Turn")
-		elif grid.is_Open_Tile(gridCoords,input_direction):
-			initial_position = position
-			is_moving = true
-	else:
-		anim_state.travel("Idle")
+	if GlobalPlayer.is_PLAYSTATE(GlobalPlayer.PLAYSTATE.GAME):
+		if input_direction.y == 0:
+			input_direction.x = int(Input.is_action_pressed("ui_right")) - int(Input.is_action_pressed("ui_left"))
+		if input_direction.x == 0:
+			input_direction.y = int(Input.is_action_pressed("ui_down")) - int(Input.is_action_pressed("ui_up"))
+		###Using tool on block
+		if Input.is_action_just_pressed("ui_select"):
+			emit_signal("useToolOnBlock", gridCoords + facing_direction)
+			need_animation()
+		if input_direction != Vector2.ZERO:
+			anim_tree.set("parameters/Idle/blend_position", input_direction)
+			anim_tree.set("parameters/Walk/blend_position", input_direction)
+			anim_tree.set("parameters/Turn/blend_position", input_direction)
+			
+			if need_to_turn():
+				player_state = PlayerState.TURNING
+				anim_state.travel("Turn")
+			elif grid.is_Open_Tile(gridCoords,input_direction):
+				initial_position = position
+				is_moving = true
+		else:
+			anim_state.travel("Idle")
 		
 func need_to_turn():
 	var new_facing_direction
@@ -112,4 +114,16 @@ func need_animation():
 
 func _on_TimerToBeDeleted_timeout():
 	$ToBeDeleted.hide()
+	pass # Replace with function body.
+
+
+func _on_WorldMap_Field_loot_received(lootType,quantityOfLoot):
+	GlobalPlayer.add_loot(lootType,quantityOfLoot)
+	pass # Replace with function body.
+
+
+
+
+func _on_PlayerUI_useItem(itemID,itemTexture):
+	emit_signal("useItemOnBlock",itemID,itemTexture,gridCoords + facing_direction)
 	pass # Replace with function body.
