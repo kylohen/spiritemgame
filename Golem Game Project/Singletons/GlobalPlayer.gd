@@ -12,7 +12,6 @@ var inventoryListDict={}
 var itemIndexDict ={}
 var nextInventoryIndex=0
 
-
 func _ready():
 	currentPLAYSTATE = PLAYSTATE.GAME
 	pass # Replace with function body.
@@ -62,17 +61,73 @@ func add_loot(lootType,quantity):
 				inventoryListDict[lootType][indexItem] += i+99
 				itemIndexDict[indexItem] = lootType
 func new_index():
-	nextInventoryIndex += 1 
-	return nextInventoryIndex - 1
+	var unusedNumber = 0
+	while itemIndexDict.has(unusedNumber):
+		 unusedNumber += 1 
+	nextInventoryIndex = unusedNumber
+	return nextInventoryIndex
 
 func swap_item_locations (itemA,itemAIndex,itemB,itemBIndex):
-	itemIndexDict[itemAIndex] = itemB
-	itemIndexDict[itemBIndex] = itemA
 	
-	var dictA = inventoryListDict[itemA][itemAIndex].duplicate()
-	var dictB = inventoryListDict[itemB][itemBIndex].duplicate()
-	inventoryListDict[itemA].erase(itemAIndex)
-	inventoryListDict[itemB].erase(itemBIndex)
-	inventoryListDict[itemA][itemBIndex] = dictB
-	inventoryListDict[itemB][itemAIndex] = dictA
+	
+	if itemA == itemB and (itemA != null and itemB != null):
+		var quantityA = inventoryListDict[itemA][itemAIndex]
+		var quantityB = inventoryListDict[itemB][itemBIndex]
+		if quantityA + quantityB <=99:
+			inventoryListDict[itemA][itemAIndex] = quantityA + quantityB 
+			delete_item(itemB,itemBIndex)
+		else:
+			inventoryListDict[itemA][itemAIndex] = 99
+			inventoryListDict[itemB][itemBIndex] = 99 - (quantityA + quantityB)
+	else:
+		var dictA 
+		var dictB 
+		if itemA == null:
+			dictA = null
+			itemIndexDict.erase(itemBIndex)
+		else: 
+			dictA = inventoryListDict[itemA][itemAIndex]
+			
+		if itemB == null:
+			dictB = null
+			itemIndexDict.erase(itemAIndex)
+		else:
+			dictB = inventoryListDict[itemB][itemBIndex]
+		if itemA == null and itemB != null:
+			itemIndexDict[itemAIndex] = itemB
+		elif itemA != null and itemB == null:
+			itemIndexDict[itemBIndex] = itemA
+		elif itemA != null and itemB != null:
+			itemIndexDict[itemAIndex] = itemB
+			itemIndexDict[itemBIndex] = itemA
+		## if all is null, no changes needed
+		
+		
+		if inventoryListDict.has(itemA):
+			inventoryListDict[itemA].erase(itemAIndex)
+			
+		if inventoryListDict.has(itemB):
+			inventoryListDict[itemB].erase(itemBIndex)
+		
+		if dictA == null and dictB == null:
+			pass
+		else:
+			if dictA != null:
+				inventoryListDict[itemA][itemBIndex] = dictA
+			else:inventoryListDict[itemB].erase(itemBIndex)
+			if dictB != null:
+				inventoryListDict[itemB][itemAIndex] = dictB 
+			else:inventoryListDict[itemA].erase(itemAIndex)
+			print ("itemIndexDict: ",itemIndexDict)
+			print ("inventoryListDict: ",inventoryListDict)
+	
+func delete_item (itemToDelete,IndexToClear):
+	inventoryListDict[itemToDelete].erase(IndexToClear)
+	itemIndexDict.erase(IndexToClear)
+	pass
+
+func use_item(itemToUse,indexToUse):
+	inventoryListDict[itemToUse][indexToUse] -= 1
+	if inventoryListDict[itemToUse][indexToUse]<= 0:
+		delete_item(itemToUse,indexToUse)
 	

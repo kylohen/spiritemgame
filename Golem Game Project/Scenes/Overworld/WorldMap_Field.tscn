@@ -78,6 +78,34 @@ resource_local_to_scene = true
 "shape_transform": Transform2D( 1, 0, 0, 1, 0, 0 )
 } ]
 2/z_index = 0
+3/name = "grass1_tileset.png 3"
+3/texture = ExtResource( 1 )
+3/tex_offset = Vector2( 0, 0 )
+3/modulate = Color( 1, 1, 1, 1 )
+3/region = Rect2( 21, 23, 23, 24 )
+3/tile_mode = 0
+3/occluder_offset = Vector2( 0, 0 )
+3/navigation_offset = Vector2( 0, 0 )
+3/shape_offset = Vector2( 0, 0 )
+3/shape_transform = Transform2D( 1, 0, 0, 1, 0, 0 )
+3/shape_one_way = false
+3/shape_one_way_margin = 0.0
+3/shapes = [  ]
+3/z_index = 0
+4/name = "Wall.png 4"
+4/texture = ExtResource( 4 )
+4/tex_offset = Vector2( 0, 0 )
+4/modulate = Color( 1, 1, 1, 1 )
+4/region = Rect2( 2, 2, 19, 19 )
+4/tile_mode = 0
+4/occluder_offset = Vector2( 0, 0 )
+4/navigation_offset = Vector2( 0, 0 )
+4/shape_offset = Vector2( 0, 0 )
+4/shape_transform = Transform2D( 1, 0, 0, 1, 0, 0 )
+4/shape_one_way = false
+4/shape_one_way_margin = 0.0
+4/shapes = [  ]
+4/z_index = 0
 
 [node name="WorldMap_Field" type="Node2D"]
 script = ExtResource( 3 )
@@ -95,6 +123,7 @@ tile_set = SubResource( 1 )
 cell_size = Vector2( 24, 24 )
 cell_quadrant_size = 24
 format = 1
+tile_data = PoolIntArray( 458764, 3, 0, 458766, 3, 0, 524299, 3, 0, 524303, 3, 0, 589837, 4, 0, 655371, 3, 0, 655375, 3, 0, 720908, 3, 0, 720910, 3, 0 )
 
 [node name="Camera2D" parent="." instance=ExtResource( 5 )]
 script = ExtResource( 6 )
@@ -108,4 +137,6 @@ margin_bottom = -135.0
 [connection signal="loot_received" from="." to="Player" method="_on_WorldMap_Field_loot_received"]
 [connection signal="loot_received" from="." to="Camera2D/PlayerUI" method="_on_WorldMap_Field_loot_received"]
 [connection signal="newPosForCamera" from="Player" to="Camera2D" method="_on_Player_newPosForCamera"]
+[connection signal="useItemOnBlock" from="Player" to="." method="_on_Player_useItemOnBlock"]
 [connection signal="useToolOnBlock" from="Player" to="." method="_on_Player_useToolOnBlock"]
+[connection signal="useItem" from="Camera2D/PlayerUI" to="Player" method="_on_PlayerUI_useItem"]

@@ -218,9 +218,9 @@ __meta__ = {
 }
 
 [node name="InventoryUI" parent="." instance=ExtResource( 10 )]
-visible = false
 grow_horizontal = 0
 grow_vertical = 0
 
 [connection signal="nextTool" from="." to="ToolUI" method="_on_PlayerUI_nextTool"]
 [connection signal="previousTool" from="." to="ToolUI" method="_on_PlayerUI_previousTool"]
+[connection signal="sub_menu" from="InventoryUI" to="." method="_on_InventoryUI_sub_menu"]

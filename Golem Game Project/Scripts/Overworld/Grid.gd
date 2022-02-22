@@ -7,6 +7,7 @@ onready var player = $Player
 const TILE_SIZE = 24
 
 onready var overworldObjectScene = preload("res://Scenes/Overworld/OverworldObjects.tscn")
+onready var lootItemScene = preload("res://Scenes/Overworld/LootItem.tscn")
 
 var gridMap = []
 var objectPlacement = []
@@ -75,6 +76,11 @@ func is_Open_Tile(currentPosition, directionToGo) -> bool:
 		if !(block is int):##Walls and other impassable and immutable terrain is stored as ints
 			if block.type == "object":
 				return objectPlacement[newPosition.x][newPosition.y].is_passable()
+			if block.type == "loot":
+				emit_signal("loot_received",block.itemID, block.quantity)
+				block.queue_free()
+				objectPlacement[newPosition.x].remove(newPosition.y)
+				objectPlacement[newPosition.x].insert(newPosition.y,null)
 			return true
 		return false
 	return true
@@ -99,7 +105,6 @@ func spawn_object (objectToSpawn, pos):
 	
 	newObject.spawn_object(objectToSpawn)
 	return newObject
-	
 
 
 func _on_Player_useToolOnBlock(blockToCheck):
@@ -134,3 +139,14 @@ func _on_Player_useToolOnBlock(blockToCheck):
 			print(block)
 			
 	pass # Replace with function body.
+
+
+func _on_Player_useItemOnBlock(itemID,itemTexture,blockToCheck):
+	var block = objectPlacement[blockToCheck.x][blockToCheck.y]
+	if !(block is Node2D):
+		var newLoot = lootItemScene.instance()
+		objectPlacement[blockToCheck.x].insert(blockToCheck.y,newLoot)
+		newLoot.position = Vector2(blockToCheck.x,blockToCheck.y)*TILE_SIZE
+		interactOverlay.add_child(newLoot)
+		newLoot.set_loot(itemID,itemTexture)
+

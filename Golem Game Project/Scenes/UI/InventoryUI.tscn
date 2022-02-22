@@ -9,6 +9,7 @@
 [ext_resource path="res://Assets/UI/Inventory/inventory_next_arrow.png" type="Texture" id=7]
 
 [node name="InventoryUI" type="Control"]
+visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
 script = ExtResource( 3 )

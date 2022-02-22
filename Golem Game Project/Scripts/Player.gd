@@ -20,6 +20,7 @@ var is_moving = false
 var percent_moved_to_next_tile = 0.0
 
 signal useToolOnBlock
+signal useItemOnBlock
 signal newPosForCamera
 ##Keeping Grid Coords seperate until the nuances of the movement is understood
 onready var gridCoords = initial_position
@@ -118,4 +119,11 @@ func _on_TimerToBeDeleted_timeout():
 
 func _on_WorldMap_Field_loot_received(lootType,quantityOfLoot):
 	GlobalPlayer.add_loot(lootType,quantityOfLoot)
+	pass # Replace with function body.
+
+
+
+
+func _on_PlayerUI_useItem(itemID,itemTexture):
+	emit_signal("useItemOnBlock",itemID,itemTexture,gridCoords + facing_direction)
 	pass # Replace with function body.
