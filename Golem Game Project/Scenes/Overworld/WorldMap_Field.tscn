@@ -190,6 +190,10 @@ cell_quadrant_size = 24
 format = 1
 tile_data = PoolIntArray( 458764, 3, 0, 458766, 3, 0, 524299, 3, 0, 524303, 3, 0, 589837, 4, 0, 655371, 3, 0, 655375, 3, 0, 720908, 3, 0, 720910, 3, 0 )
 
+[node name="SpawnGolem" type="Sprite" parent="."]
+position = Vector2( 322, 226 )
+texture = ExtResource( 8 )
+
 [node name="Camera2D" parent="." instance=ExtResource( 5 )]
 script = ExtResource( 6 )
 
@@ -202,10 +206,6 @@ margin_bottom = -135.0
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 anims/GolemSpawning = ExtResource( 9 )
 anims/RESET = SubResource( 3 )
-
-[node name="SpawnGolem" type="Sprite" parent="."]
-position = Vector2( 322, 226 )
-texture = ExtResource( 8 )
 
 [connection signal="loot_received" from="." to="Player" method="_on_WorldMap_Field_loot_received"]
 [connection signal="loot_received" from="." to="Camera2D/PlayerUI" method="_on_WorldMap_Field_loot_received"]
