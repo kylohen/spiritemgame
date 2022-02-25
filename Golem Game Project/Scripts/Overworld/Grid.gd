@@ -162,18 +162,18 @@ func is_Open_Tile(currentPosition, directionToGo) -> bool:
 		return false
 	return true
 
-func randomize_Objects():
-	var ratesOfSpawning = [0.02,0.02,0.02]
-	for x in objectPlacement.size():
-		for y in objectPlacement[x].size():
-			if Vector2(x,y) != player.gridCoords and !(objectPlacement[x][y] is int):
-				var rollForItem = SeedGenerator.rng.randf_range(0,1)
-				var currentChance = 0.0
-				for i in ratesOfSpawning.size():
-					if rollForItem <currentChance+ratesOfSpawning[i] and rollForItem > currentChance:
-						objectPlacement[x][y] = spawn_object(i,Vector2(x,y))
-						break
-					currentChance += ratesOfSpawning[i]
+#func randomize_Objects():
+#	var ratesOfSpawning = [0.02,0.02,0.02]
+#	for x in objectPlacement.size():
+#		for y in objectPlacement[x].size():
+#			if Vector2(x,y) != player.gridCoords and !(objectPlacement[x][y] is int):
+#				var rollForItem = SeedGenerator.rng.randf_range(0,1)
+#				var currentChance = 0.0
+#				for i in ratesOfSpawning.size():
+#					if rollForItem <currentChance+ratesOfSpawning[i] and rollForItem > currentChance:
+#						objectPlacement[x][y] = spawn_object(i,Vector2(x,y))
+#						break
+#					currentChance += ratesOfSpawning[i]
 						
 func spawn_object (objectToSpawn, pos):
 	var newObject = overworldObjectScene.instance()
@@ -189,9 +189,8 @@ func _on_Player_useToolOnBlock(blockToCheck):
 	if block is Node2D:
 		if block.toolUsed():
 			var objectDestroyed = block.objectSelected
-			block.queue_free()
-			objectPlacement[blockToCheck.x].remove(blockToCheck.y)
-			objectPlacement[blockToCheck.x].insert(blockToCheck.y,null)
+#			objectPlacement[blockToCheck.x].remove(blockToCheck.y)
+#			objectPlacement[blockToCheck.x].insert(blockToCheck.y,null)
 			
 			####################
 #			Insert Function to run a full Loot Table
