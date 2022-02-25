@@ -11,12 +11,34 @@ onready var lootItemScene = preload("res://Scenes/Overworld/LootItem.tscn")
 
 var gridMap = []
 var objectPlacement = []
-export (int) var gridWidth  = 25
-export (int) var gridHeight = 25
+export (int) var gridWidth  = 100
+export (int) var gridHeight = 100
 
-enum tileTypes {grass,grassCorner,wall} ##Should match up with the tiletypes and will need to be updated on spriteUpdate
-enum objectTypes {TallGrass,Boulders,Logs}
+enum tileTypes {water,sand,clay,grass,trees,rocks,wall} ##Should match up with the tiletypes and will need to be updated on spriteUpdate
+var tileTypeDict = {
+	tileTypes.water : 5,
+	tileTypes.sand :6,
+	tileTypes.clay : 7,
+	tileTypes.grass: 0,
+	tileTypes.trees: 8,
+	tileTypes.rocks: 9,
+	tileTypes.wall:10
+}
+onready var objectTypePerTileTypeDict ={
+	tileTypes.water : [],
+	tileTypes.sand :[],
+	tileTypes.clay : [WorldConductor.objectTypes.Clay],
+	tileTypes.grass: [WorldConductor.objectTypes.TallGrass],
+	tileTypes.trees: [WorldConductor.objectTypes.Logs,WorldConductor.objectTypes.Trees],
+	tileTypes.rocks: [WorldConductor.objectTypes.Boulders],
+	tileTypes.wall:[]
+}
+var noise = OpenSimplexNoise.new()
+
+##Object Types stored in WorldConductor
+#enum objectTypes {TallGrass,Boulders,Trees,Logs,Clay} 
 enum direction {Up,Right,Down,Left}
+
 
 signal loot_received
 ## Game world runs in this script, responsible for checking against player location/object location
@@ -29,9 +51,13 @@ var golemRecipes= {
 func _ready():
 	initialize_gridMap()
 	initialize_objectPlacement()
+	
+	##Random Generator
+	makingNoise ()
+	
 	build_border()
 	build_terrain()
-	randomize_Objects()
+#	randomize_Objects()
 	pass
 	
 ## called on startup to generate an empty array to fill up for gridMap
@@ -59,20 +85,66 @@ func build_border(width = gridWidth,height = gridHeight):
 			if x == 0 or x == width-1:
 				overworld.set_cell(x,y,tileTypes.wall)
 				objectPlacement[x][y] = tileTypes.wall
-				gridMap[x][y] =tileTypes.wall
+				gridMap[x][y] =tileTypeDict[tileTypes.wall]
 			elif y == 0 or y == height-1:
 				overworld.set_cell(x,y,tileTypes.wall)
 				objectPlacement[x][y] = tileTypes.wall
-				gridMap[x][y] =tileTypes.wall
+				gridMap[x][y] =tileTypeDict[tileTypes.wall]
 
 func build_terrain():
 	for x in gridMap.size():
 		for y in gridMap[x].size():
 			if !(gridMap[x][y] is int): 
 				##insert logic for tile filling open space
-				overworld.set_cell(x,y,tileTypes.grass)
-				gridMap[x][y] = tileTypes.grass
-				
+				gridMap[x][y] = spawnTerrainTile(x,y)
+		
+		print(gridMap[x])
+
+func makingNoise ():
+
+# Configure
+	noise.seed = SeedGenerator.rng.randi()
+	noise.octaves = 4
+	noise.period = 20.0
+	noise.persistence = 0.8
+	
+func spawnTerrainTile (x,y):
+	var randomTile = noise.get_noise_2d(x,y)
+	var selectedTile = null
+	if randomTile < -0.45:
+		selectedTile = tileTypes.water
+	elif randomTile < -0.4:
+		selectedTile = tileTypes.sand
+	elif randomTile <-0.37:
+		selectedTile = tileTypes.clay
+	elif randomTile <0.3:
+		selectedTile = tileTypes.grass
+	elif randomTile <0.4:
+		selectedTile = tileTypes.trees
+	elif randomTile <1:
+		selectedTile = tileTypes.rocks
+	else:
+		selectedTile = tileTypes.grass
+	
+	if selectedTile != null:
+		overworld.set_cell(x,y,tileTypeDict[selectedTile])
+		if selectedTile == tileTypes.water:
+			objectPlacement[x][y] = tileTypes.water
+		chanceOfSpawningResource(x,y,selectedTile)
+	
+	return selectedTile
+
+func chanceOfSpawningResource(x,y,selectedTile):
+	var chanceOfSpawn = 0.20 # 20% spawn chance
+	var objectPossibleSpawns = objectTypePerTileTypeDict[selectedTile]
+	if !objectPossibleSpawns.empty():
+		for i in objectPossibleSpawns.size():
+			var rollForItem = SeedGenerator.rng.randf_range(0,1)
+			if rollForItem <chanceOfSpawn:
+				objectPlacement[x][y] = spawn_object(objectPossibleSpawns[i],Vector2(x,y))
+				break
+	
+	
 ## checks to see if there is something in the grid, if there is, return false
 func is_Open_Tile(currentPosition, directionToGo) -> bool:
 	var newPosition = currentPosition + directionToGo
