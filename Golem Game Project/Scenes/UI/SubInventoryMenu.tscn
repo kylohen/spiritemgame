@@ -68,6 +68,24 @@ margin_right = 94.0
 margin_bottom = 23.0
 rect_scale = Vector2( 0.35, 0.35 )
 custom_colors/font_color = Color( 0, 0, 0, 1 )
+text = "Place"
+align = 1
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Option4" type="TextureRect" parent="Options"]
+margin_top = 21.0
+margin_right = 33.0
+margin_bottom = 29.0
+texture = ExtResource( 2 )
+
+[node name="Label" type="Label" parent="Options/Option4"]
+margin_right = 94.0
+margin_bottom = 23.0
+rect_scale = Vector2( 0.35, 0.35 )
+custom_colors/font_color = Color( 0, 0, 0, 1 )
 text = "Discard"
 align = 1
 valign = 1
@@ -103,4 +121,11 @@ modulate = Color( 1, 1, 1, 0 )
 margin_top = 20.0
 margin_right = 38.0
 margin_bottom = 29.0
+texture = ExtResource( 1 )
+
+[node name="Choice4" type="TextureRect" parent="PlayerChoice"]
+modulate = Color( 1, 1, 1, 0 )
+margin_top = 30.0
+margin_right = 38.0
+margin_bottom = 39.0
 texture = ExtResource( 1 )

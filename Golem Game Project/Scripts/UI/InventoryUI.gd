@@ -1,5 +1,5 @@
 extends Control
-enum {MOVE,USE,DISCARD}
+enum {MOVE,USE,PLACE,DISCARD}
 var currentState = null
 
 onready var inventorySlots = $BookMarginContainer/BookBackground/Items
@@ -15,6 +15,7 @@ var playerCurrentSelection = 0
 var nodeSelected = null
 var nodeToMove = null
 var indexToMove = null
+var inventoryHighlightToMove = null
 
 signal sub_menu
 # Called when the node enters the scene tree for the first time.
@@ -48,6 +49,9 @@ func current_player_selection_highlight (currentSelection):
 	playerCurrentSelection = currentSelection
 
 func remove_previous_selection_highlight (previousSelection):
+	if inventoryHighlightToMove != null:
+		if previousSelection == inventoryHighlightToMove:
+			return
 	if previousSelection >= 0 and previousSelection <= 15:
 		inventoryPlayerSelection.get_child(previousSelection).modulate.a = 0.0
 	elif previousSelection == 16:
@@ -56,6 +60,7 @@ func remove_previous_selection_highlight (previousSelection):
 		inventoryPageTurning.get_node("NextButton").modulate = Color(1,1,1,1)
 	elif previousSelection >= 18 and previousSelection <= 23:
 		partyMemberSelection.get_child(previousSelection-18).modulate.a = 0.0
+	
 	
 
 func reset_all_selections():
@@ -242,6 +247,8 @@ func selected():
 		GlobalPlayer.swap_item_locations(nodeToMove.type,indexToMove,nodeSelected.type,playerCurrentSelection + inventoryPage*inventorySlots.get_child_count())
 		subMenuNode.queue_free()
 		currentState = null
+		reset_all_selections()
+		inventoryHighlightToMove = null
 		update_inventory()
 	elif playerCurrentSelection >= 0 and playerCurrentSelection<=15:
 		emit_signal("sub_menu",true)
@@ -252,6 +259,7 @@ func selected():
 		if nodeSelected.type == null:
 			subMenuNode.set_choices(false)
 		else:subMenuNode.set_choices(true)
+		inventoryHighlightToMove = playerCurrentSelection
 		pass
 	pass
 
@@ -270,6 +278,13 @@ func sub_cancel():
 		indexToMove = null
 		emit_signal("sub_menu",true)
 		currentState = null
+		inventoryHighlightToMove = null
+	else:
+		nodeToMove = null
+		indexToMove = null
+		emit_signal("sub_menu",false)
+		currentState = null
+		inventoryHighlightToMove = null
 	
 
 func _on_SubInventoryMenu_selected(selected):
@@ -281,6 +296,14 @@ func _on_SubInventoryMenu_selected(selected):
 		currentState = MOVE
 	elif selected == USE:
 		##########################some use function
+#		GlobalPlayer.use_item(nodeSelected.type,playerCurrentSelection + inventoryPage*inventorySlots.get_child_count())
+#		get_parent()._use_item(nodeSelected.type, nodeSelected.selectedItemTexture)
+#		update_inventory()
+#		emit_signal("sub_menu",false)
+		
+		pass
+	elif selected == PLACE:
+	##########################some use function
 		GlobalPlayer.use_item(nodeSelected.type,playerCurrentSelection + inventoryPage*inventorySlots.get_child_count())
 		get_parent()._use_item(nodeSelected.type, nodeSelected.selectedItemTexture)
 		update_inventory()
@@ -316,3 +339,5 @@ func not_primary():
 	nodeToMove = null
 	indexToMove = null
 	currentState = null
+	inventoryHighlightToMove = null
+	reset_all_selections()
