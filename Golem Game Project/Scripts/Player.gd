@@ -45,48 +45,48 @@ func _physics_process(delta):
 		anim_state.travel("Idle")
 		is_moving = false
 		
-#func changeActiveState (newState = !isActive):
-#	isActive = newState
-#	emit_signal("cameraState",newState)
+func changeActiveState (newState = !isActive):
+	isActive = newState
+	emit_signal("cameraState",newState)
 	
 func process_player_input():
-#	if isActive:
-	if GlobalPlayer.is_PLAYSTATE(GlobalPlayer.PLAYSTATE.GAME):
-		if input_direction.y == 0:
-			input_direction.x = int(Input.is_action_pressed("ui_right")) - int(Input.is_action_pressed("ui_left"))
-		if input_direction.x == 0:
-			input_direction.y = int(Input.is_action_pressed("ui_down")) - int(Input.is_action_pressed("ui_up"))
-		###Using tool on block
-		if Input.is_action_just_pressed("ui_select"):
-			emit_signal("useToolOnBlock", gridCoords + facing_direction)
-			need_animation()
-		if input_direction != Vector2.ZERO:
-			anim_tree.set("parameters/Idle/blend_position", input_direction)
-			anim_tree.set("parameters/Walk/blend_position", input_direction)
-			anim_tree.set("parameters/Turn/blend_position", input_direction)
-			
-			if need_to_turn():
-				player_state = PlayerState.TURNING
-				anim_state.travel("Turn")
-			elif grid.is_Open_Tile(gridCoords,input_direction):
-				initial_position = position
-				is_moving = true
-		else:
-			anim_state.travel("Idle")
+	if isActive:
+		if GlobalPlayer.is_PLAYSTATE(GlobalPlayer.PLAYSTATE.GAME):
+			if input_direction.y == 0:
+				input_direction.x = int(Input.is_action_pressed("ui_right")) - int(Input.is_action_pressed("ui_left"))
+			if input_direction.x == 0:
+				input_direction.y = int(Input.is_action_pressed("ui_down")) - int(Input.is_action_pressed("ui_up"))
+			###Using tool on block
+			if Input.is_action_just_pressed("ui_select"):
+				emit_signal("useToolOnBlock", gridCoords + facing_direction)
+				need_animation()
+			if input_direction != Vector2.ZERO:
+				anim_tree.set("parameters/Idle/blend_position", input_direction)
+				anim_tree.set("parameters/Walk/blend_position", input_direction)
+				anim_tree.set("parameters/Turn/blend_position", input_direction)
+				
+				if need_to_turn():
+					player_state = PlayerState.TURNING
+					anim_state.travel("Turn")
+				elif grid.is_Open_Tile(gridCoords,input_direction):
+					initial_position = position
+					is_moving = true
+			else:
+				anim_state.travel("Idle")
 
-func reset_position():
-	position = STARTPOS
-	update_grid_pos_based_of_pixel_pos (position)
-	
-func update_grid_pos_based_of_pixel_pos (newPos):
-	initial_position = newPos/TILE_SIZE
-	gridCoords = initial_position
-func check_cave_terrain(boolState:bool):
-	if boolState:
-		grid = get_parent().get_node("Cave")
-	else:
-		grid = get_parent()
-		pass
+#func reset_position():
+#	position = STARTPOS
+#	update_grid_pos_based_of_pixel_pos (position)
+#
+#func update_grid_pos_based_of_pixel_pos (newPos):
+#	initial_position = newPos/TILE_SIZE
+#	gridCoords = initial_position
+#func check_cave_terrain(boolState:bool):
+#	if boolState:
+#		grid = get_parent().get_node("Cave")
+#	else:
+#		grid = get_parent()
+#		pass
 		
 func need_to_turn():
 	var new_facing_direction

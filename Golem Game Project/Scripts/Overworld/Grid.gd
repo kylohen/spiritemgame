@@ -160,20 +160,22 @@ func is_Open_Tile(currentPosition, directionToGo) -> bool:
 	var block = objectPlacement[newPosition.x][newPosition.y]
 	if caveLocations.has(newPosition):
 		isActive = false
-#		player.changeActiveState(isActive)
+		player.changeActiveState(isActive)
 		overworld.hide()
 		interactOverlay.hide()
 		spawnGolem.hide()
-		previousPosition = player.position
+		player.hide()
+		camera.hide()
+#		previousPosition = player.position
 		
 		var newCave = caveSystemScene.instance()
 		update_signal_path(newCave)
 
 
-		player.reset_position()
+#		player.reset_position()
 		add_child(newCave)
 		move_child(newCave,0)
-		player.check_cave_terrain(true)
+#		player.check_cave_terrain(true)
 #			get_parent().move_child(newCave,0)
 	elif block != null:
 		if !(block is int):##Walls and other impassable and immutable terrain is stored as ints
@@ -192,37 +194,39 @@ func is_Open_Tile(currentPosition, directionToGo) -> bool:
 
 func _on_leave_cave_CaveSystem():
 	isActive = true
-#	player.changeActiveState(isActive)
+	player.changeActiveState(isActive)
 	overworld.show()
 	interactOverlay.show()
 	spawnGolem.show()
-	player.position = previousPosition
-	get_node("Player").connect("useItemOnBlock",self,"_on_Player_useItemOnBlock")
-	get_node("Player").connect("useToolOnBlock",self,"_on_Player_useToolOnBlock")
-	player.update_grid_pos_based_of_pixel_pos (previousPosition)
-	player.emit_signal("newPosForCamera",player.position)
-	player.check_cave_terrain(false)
+	player.show()
+	camera.show()
+#	player.position = previousPosition
+#	get_node("Player").connect("useItemOnBlock",self,"_on_Player_useItemOnBlock")
+#	get_node("Player").connect("useToolOnBlock",self,"_on_Player_useToolOnBlock")
+#	player.update_grid_pos_based_of_pixel_pos (previousPosition)
+#	player.emit_signal("newPosForCamera",player.position)
+#	player.check_cave_terrain(false)
 	
 func _on_new_level_cave_CaveSystem():
 	var newCave = caveSystemScene.instance()
 	update_signal_path(newCave)
 	
-	player.reset_position()
+#	player.reset_position()
 	add_child(newCave)
 	move_child(newCave,0)
-	player.check_cave_terrain(true)
-	
+#	player.check_cave_terrain(true)
+#
 func update_signal_path(newNode:Node2D):
 	newNode.connect("leave_cave",self,"_on_leave_cave_CaveSystem")
 	newNode.connect("new_level_cave",self,"_on_new_level_cave_CaveSystem")
-	newNode.connect("loot_received",playerUI,"_on_WorldMap_Field_loot_received")
-	newNode.connect("loot_received",player,"_on_WorldMap_Field_loot_received")
-#	newNode.get_node("Player").connect("cameraState",camera,"_on_Player_cameraState")
-	get_node("Player").disconnect("useItemOnBlock",self,"_on_Player_useItemOnBlock")
-	get_node("Player").disconnect("useToolOnBlock",self,"_on_Player_useToolOnBlock")
-	get_node("Player").connect("useItemOnBlock",newNode,"_on_Player_useItemOnBlock")
-	get_node("Player").connect("useToolOnBlock",newNode,"_on_Player_useToolOnBlock")
-	pass
+#	newNode.connect("loot_received",playerUI,"_on_WorldMap_Field_loot_received")
+#	newNode.connect("loot_received",player,"_on_WorldMap_Field_loot_received")
+##	newNode.get_node("Player").connect("cameraState",camera,"_on_Player_cameraState")
+#	get_node("Player").disconnect("useItemOnBlock",self,"_on_Player_useItemOnBlock")
+#	get_node("Player").disconnect("useToolOnBlock",self,"_on_Player_useToolOnBlock")
+#	get_node("Player").connect("useItemOnBlock",newNode,"_on_Player_useItemOnBlock")
+#	get_node("Player").connect("useToolOnBlock",newNode,"_on_Player_useToolOnBlock")
+#	pass
 #func randomize_Objects():
 #	var ratesOfSpawning = [0.02,0.02,0.02]
 #	for x in objectPlacement.size():
