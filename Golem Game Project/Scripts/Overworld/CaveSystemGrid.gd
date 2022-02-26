@@ -3,21 +3,21 @@ extends Node2D
 onready var overworld = $Overworld
 onready var interactOverlay = $InteractOverlay
 onready var player = $Player
-onready var camera = $Camera2D
-onready var playerUI = $Camera2D/PlayerUI
-onready var spawnGolem = $SpawnGolem
 
 const TILE_SIZE = 24
 
 onready var overworldObjectScene = preload("res://Scenes/Overworld/OverworldObjects.tscn")
 onready var lootItemScene = preload("res://Scenes/Overworld/LootItem.tscn")
-onready var caveSystemScene = preload("res://Scenes/Overworld/CaveSystem.tscn")
+
+signal leave_cave
+signal new_level_cave
 var gridMap = []
 var objectPlacement = []
-export (int) var gridWidth  = 100
-export (int) var gridHeight = 100
-var caveLocations = []
-var isActive = true
+export (int) var gridWidth  = 35
+export (int) var gridHeight = 35
+var arrayOfBoulders = []
+var arrayOfStairs = []
+var leaveCave = Vector2(1,0)
 enum tileTypes {water,sand,clay,grass,trees,rocks,wall} ##Should match up with the tiletypes and will need to be updated on spriteUpdate
 var tileTypeDict = {
 	tileTypes.water : 5,
@@ -28,6 +28,7 @@ var tileTypeDict = {
 	tileTypes.rocks: 9,
 	tileTypes.wall:10
 }
+onready var stairsTile = 11
 onready var objectTypePerTileTypeDict ={
 	tileTypes.water : [],
 	tileTypes.sand :[],
@@ -38,7 +39,7 @@ onready var objectTypePerTileTypeDict ={
 	tileTypes.wall:[]
 }
 var noise = OpenSimplexNoise.new()
-var previousPosition =Vector2()
+
 ##Object Types stored in WorldConductor
 #enum objectTypes {TallGrass,Boulders,Trees,Logs,Clay} 
 enum direction {Up,Right,Down,Left}
@@ -55,13 +56,11 @@ var golemRecipes= {
 func _ready():
 	initialize_gridMap()
 	initialize_objectPlacement()
-	
-	##Random Generator
-	makingNoise ()
+	overworld.set_cell(0,1,12)
 	
 	build_border()
 	build_terrain()
-	spawnCave(40)
+	build_stairs()
 #	randomize_Objects()
 	pass
 	
@@ -101,8 +100,11 @@ func build_terrain():
 		for y in gridMap[x].size():
 			if !(gridMap[x][y] is int): 
 				##insert logic for tile filling open space
-				gridMap[x][y] = spawnTerrainTile(x,y)
-		
+#				gridMap[x][y] = spawnTerrainTile(x,y)
+				var selectedTile = tileTypes.rocks
+				gridMap[x][y] = selectedTile
+				
+				chanceOfSpawningResource(x,y,selectedTile)
 		print(gridMap[x])
 
 func makingNoise ():
@@ -148,33 +150,21 @@ func chanceOfSpawningResource(x,y,selectedTile):
 			if rollForItem <chanceOfSpawn:
 				objectPlacement[x][y] = spawn_object(objectPossibleSpawns[i],Vector2(x,y))
 				break
-func spawnCave(numberOfCaves = 5):
-	for i in numberOfCaves:
-		var randomLocation = Vector2(SeedGenerator.rng.randi_range(0,gridWidth),SeedGenerator.rng.randi_range(0,gridHeight))
-		overworld.set_cell(randomLocation.x,randomLocation.y,11)
-		caveLocations.append(randomLocation)
-	
+
 ## checks to see if there is something in the grid, if there is, return false
 func is_Open_Tile(currentPosition, directionToGo) -> bool:
 	var newPosition = currentPosition + directionToGo
 	var block = objectPlacement[newPosition.x][newPosition.y]
-	if caveLocations.has(newPosition):
-		isActive = false
-#		player.changeActiveState(isActive)
-		overworld.hide()
-		interactOverlay.hide()
-		spawnGolem.hide()
-		previousPosition = player.position
-		
-		var newCave = caveSystemScene.instance()
-		update_signal_path(newCave)
-
-
-		player.reset_position()
-		add_child(newCave)
-		move_child(newCave,0)
-		player.check_cave_terrain(true)
-#			get_parent().move_child(newCave,0)
+	if newPosition == leaveCave:
+		emit_signal("leave_cave")
+		queue_free()
+	elif arrayOfStairs.has(newPosition):
+#		var newLevel = self.duplicate()
+#		get_parent().add_child(newLevel)
+#		get_tree().reload_current_scene()
+		emit_signal("new_level_cave")
+		GlobalPlayer.Go_Down_A_Level()
+		queue_free()
 	elif block != null:
 		if !(block is int):##Walls and other impassable and immutable terrain is stored as ints
 			
@@ -185,44 +175,18 @@ func is_Open_Tile(currentPosition, directionToGo) -> bool:
 				block.queue_free()
 				objectPlacement[newPosition.x].remove(newPosition.y)
 				objectPlacement[newPosition.x].insert(newPosition.y,null)
+			
+				
 			return true
 		return false
 	return true
 
-
-func _on_leave_cave_CaveSystem():
-	isActive = true
-#	player.changeActiveState(isActive)
-	overworld.show()
-	interactOverlay.show()
-	spawnGolem.show()
-	player.position = previousPosition
-	get_node("Player").connect("useItemOnBlock",self,"_on_Player_useItemOnBlock")
-	get_node("Player").connect("useToolOnBlock",self,"_on_Player_useToolOnBlock")
-	player.update_grid_pos_based_of_pixel_pos (previousPosition)
-	player.emit_signal("newPosForCamera",player.position)
-	player.check_cave_terrain(false)
-	
-func _on_new_level_cave_CaveSystem():
-	var newCave = caveSystemScene.instance()
-	update_signal_path(newCave)
-	
-	player.reset_position()
-	add_child(newCave)
-	move_child(newCave,0)
-	player.check_cave_terrain(true)
-	
-func update_signal_path(newNode:Node2D):
-	newNode.connect("leave_cave",self,"_on_leave_cave_CaveSystem")
-	newNode.connect("new_level_cave",self,"_on_new_level_cave_CaveSystem")
-	newNode.connect("loot_received",playerUI,"_on_WorldMap_Field_loot_received")
-	newNode.connect("loot_received",player,"_on_WorldMap_Field_loot_received")
-#	newNode.get_node("Player").connect("cameraState",camera,"_on_Player_cameraState")
-	get_node("Player").disconnect("useItemOnBlock",self,"_on_Player_useItemOnBlock")
-	get_node("Player").disconnect("useToolOnBlock",self,"_on_Player_useToolOnBlock")
-	get_node("Player").connect("useItemOnBlock",newNode,"_on_Player_useItemOnBlock")
-	get_node("Player").connect("useToolOnBlock",newNode,"_on_Player_useToolOnBlock")
-	pass
+func build_stairs(stairCount = 2):
+	for i in stairCount:
+		var randomChoice = SeedGenerator.rng.randi_range(0,arrayOfBoulders.size())
+		var selectedPos = arrayOfBoulders[randomChoice]
+		overworld.set_cell(selectedPos.x,selectedPos.y,stairsTile)
+		arrayOfStairs.append(selectedPos)
 #func randomize_Objects():
 #	var ratesOfSpawning = [0.02,0.02,0.02]
 #	for x in objectPlacement.size():
@@ -242,6 +206,7 @@ func spawn_object (objectToSpawn, pos):
 	interactOverlay.add_child(newObject)
 	
 	newObject.spawn_object(objectToSpawn)
+	arrayOfBoulders.append(pos)
 	return newObject
 
 

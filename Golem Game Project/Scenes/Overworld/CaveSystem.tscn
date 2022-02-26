@@ -1,16 +1,10 @@
-[gd_scene load_steps=16 format=2]
+[gd_scene load_steps=9 format=2]
 
 [ext_resource path="res://Assets/Tilesets/grass1_tileset.png" type="Texture" id=1]
-[ext_resource path="res://Scenes/Player.tscn" type="PackedScene" id=2]
-[ext_resource path="res://Scripts/Overworld/Grid.gd" type="Script" id=3]
+[ext_resource path="res://Assets/Tilesets/sprite_overworld_stairs.png" type="Texture" id=2]
+[ext_resource path="res://Scripts/Overworld/CaveSystemGrid.gd" type="Script" id=3]
 [ext_resource path="res://Assets/Tilesets/Wall.png" type="Texture" id=4]
-[ext_resource path="res://Scenes/PlayerCamera.tscn" type="PackedScene" id=5]
-[ext_resource path="res://Scripts/PlayerCamera.gd" type="Script" id=6]
-[ext_resource path="res://Scenes/UI/PlayerUI.tscn" type="PackedScene" id=7]
-[ext_resource path="res://Assets/UI/Inventory/ItemUI/sprite_item_unknown.png" type="Texture" id=8]
-[ext_resource path="res://Animations/GolemSpawning.tres" type="Animation" id=9]
 [ext_resource path="res://Assets/Tilesets/Terrain-Tileset.png" type="Texture" id=10]
-[ext_resource path="res://Assets/OverworldObjects/sprite_overworld_cave_entrance.png" type="Texture" id=11]
 
 [sub_resource type="ConvexPolygonShape2D" id=5]
 points = PoolVector2Array( 0, 2.00049, 24, 2.00049, 24, 24, 0, 23.4898 )
@@ -152,8 +146,8 @@ points = PoolVector2Array( 32, 32, 0, 32, 0, 0, 32, 0 )
 "shape_transform": Transform2D( 1, 0, 0, 1, 0, 0 )
 } ]
 10/z_index = 0
-11/name = "sprite_overworld_cave_entrance.png 11"
-11/texture = ExtResource( 11 )
+11/name = "sprite_overworld_stairs.png 11"
+11/texture = ExtResource( 2 )
 11/tex_offset = Vector2( 0, 0 )
 11/modulate = Color( 1, 1, 1, 1 )
 11/region = Rect2( 0, 0, 32, 32 )
@@ -167,70 +161,7 @@ points = PoolVector2Array( 32, 32, 0, 32, 0, 0, 32, 0 )
 11/shapes = [  ]
 11/z_index = 0
 
-[sub_resource type="Animation" id=3]
-length = 0.001
-tracks/0/type = "bezier"
-tracks/0/path = NodePath("Camera2D:zoom:x")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/keys = {
-"points": PoolRealArray( 1, -0.25, 0, 0.25, 0 ),
-"times": PoolRealArray( 0 )
-}
-tracks/1/type = "bezier"
-tracks/1/path = NodePath("Camera2D:zoom:y")
-tracks/1/interp = 1
-tracks/1/loop_wrap = true
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/keys = {
-"points": PoolRealArray( 1, -0.25, 0, 0.25, 0 ),
-"times": PoolRealArray( 0 )
-}
-tracks/2/type = "bezier"
-tracks/2/path = NodePath("SpawnGolem:modulate:r")
-tracks/2/interp = 1
-tracks/2/loop_wrap = true
-tracks/2/imported = false
-tracks/2/enabled = true
-tracks/2/keys = {
-"points": PoolRealArray( 1, -0.25, 0, 0.25, 0 ),
-"times": PoolRealArray( 0 )
-}
-tracks/3/type = "bezier"
-tracks/3/path = NodePath("SpawnGolem:modulate:g")
-tracks/3/interp = 1
-tracks/3/loop_wrap = true
-tracks/3/imported = false
-tracks/3/enabled = true
-tracks/3/keys = {
-"points": PoolRealArray( 1, -0.25, 0, 0.25, 0 ),
-"times": PoolRealArray( 0 )
-}
-tracks/4/type = "bezier"
-tracks/4/path = NodePath("SpawnGolem:modulate:b")
-tracks/4/interp = 1
-tracks/4/loop_wrap = true
-tracks/4/imported = false
-tracks/4/enabled = true
-tracks/4/keys = {
-"points": PoolRealArray( 1, -0.25, 0, 0.25, 0 ),
-"times": PoolRealArray( 0 )
-}
-tracks/5/type = "bezier"
-tracks/5/path = NodePath("SpawnGolem:modulate:a")
-tracks/5/interp = 1
-tracks/5/loop_wrap = true
-tracks/5/imported = false
-tracks/5/enabled = true
-tracks/5/keys = {
-"points": PoolRealArray( 1, -0.25, 0, 0.25, 0 ),
-"times": PoolRealArray( 0 )
-}
-
-[node name="WorldMap_Field" type="Node2D"]
+[node name="Cave" type="Node2D"]
 script = ExtResource( 3 )
 
 [node name="Overworld" type="TileMap" parent="."]
@@ -244,31 +175,4 @@ tile_set = SubResource( 1 )
 cell_size = Vector2( 24, 24 )
 cell_quadrant_size = 24
 format = 1
-tile_data = PoolIntArray( 458764, 3, 0, 458766, 3, 0, 524299, 3, 0, 524303, 3, 0, 589837, 4, 0, 655371, 3, 0, 655375, 3, 0, 720908, 3, 0, 720910, 3, 0 )
-
-[node name="Player" parent="." instance=ExtResource( 2 )]
-
-[node name="SpawnGolem" type="Sprite" parent="."]
-position = Vector2( 322, 226 )
-texture = ExtResource( 8 )
-
-[node name="Camera2D" parent="." instance=ExtResource( 5 )]
-script = ExtResource( 6 )
-
-[node name="PlayerUI" parent="Camera2D" instance=ExtResource( 7 )]
-margin_left = -240.0
-margin_top = -135.0
-margin_right = -240.0
-margin_bottom = -135.0
-
-[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
-anims/GolemSpawning = ExtResource( 9 )
-anims/RESET = SubResource( 3 )
-
-[connection signal="loot_received" from="." to="Player" method="_on_WorldMap_Field_loot_received"]
-[connection signal="loot_received" from="." to="Camera2D/PlayerUI" method="_on_WorldMap_Field_loot_received"]
-[connection signal="cameraState" from="Player" to="Camera2D" method="_on_Player_cameraState"]
-[connection signal="newPosForCamera" from="Player" to="Camera2D" method="_on_Player_newPosForCamera"]
-[connection signal="useItemOnBlock" from="Player" to="." method="_on_Player_useItemOnBlock"]
-[connection signal="useToolOnBlock" from="Player" to="." method="_on_Player_useToolOnBlock"]
-[connection signal="useItem" from="Camera2D/PlayerUI" to="Player" method="_on_PlayerUI_useItem"]
+tile_data = PoolIntArray( 589837, 4, 0 )

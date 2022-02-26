@@ -12,6 +12,8 @@ var inventoryListDict={}
 var itemIndexDict ={}
 var nextInventoryIndex=0
 
+var levelOfCave = 0
+var deepestLevelOfCave = 0
 func _ready():
 	currentPLAYSTATE = PLAYSTATE.GAME
 	pass # Replace with function body.
@@ -142,3 +144,9 @@ func has_item_and_quantity(itemToCheck, quantity):
 			if quantity <=0:
 				return true
 	return false
+
+func Go_Down_A_Level(downAmount = 1):
+	levelOfCave += downAmount
+	if deepestLevelOfCave < levelOfCave:
+		deepestLevelOfCave = levelOfCave
+	

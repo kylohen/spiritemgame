@@ -19,3 +19,8 @@ func _ready():
 func _on_Player_newPosForCamera(newPos):
 	self.position = newPos
 	pass # Replace with function body.
+
+
+func _on_Player_cameraState(newState):
+	self.current = newState
+	pass # Replace with function body.

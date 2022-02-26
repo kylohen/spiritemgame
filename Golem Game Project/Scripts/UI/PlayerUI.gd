@@ -161,3 +161,18 @@ func item_use():
 	GlobalPlayer.currentPLAYSTATE = GlobalPlayer.PLAYSTATE.GAME
 	inventoryUI.hide()
 	currentMenu = NONE
+
+
+
+func _on_Cave_loot_received(lootType,quantityOfLoot):
+	var newAlert = alertScene.instance()
+	var childCount = popUpAlertContainer.get_child_count() 
+	if childCount >= 3:
+		popUpAlertContainer.get_child(0).queue_free()
+		childCount -= 1
+	
+	popUpAlertContainer.add_child(newAlert)
+#	move_child(newAlert,0)
+	newAlert.set_text("Picked Up: "+lootType+" x"+str(quantityOfLoot))
+	
+	pass # Replace with function body.

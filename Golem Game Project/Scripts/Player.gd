@@ -13,19 +13,20 @@ enum FacingDirection {LEFT, RIGHT, UP, DOWN}
 
 var player_state = PlayerState.IDLE
 var facing_direction = Vector2.DOWN
-
 var initial_position = Vector2(1, 1)
 var input_direction = Vector2(0, 0)
 var is_moving = false
 var percent_moved_to_next_tile = 0.0
+
+onready var STARTPOS = initial_position*TILE_SIZE 
 
 signal useToolOnBlock
 signal useItemOnBlock
 signal newPosForCamera
 ##Keeping Grid Coords seperate until the nuances of the movement is understood
 onready var gridCoords = initial_position
-
-
+signal cameraState
+var isActive = true 
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	anim_tree.active = true
@@ -44,8 +45,12 @@ func _physics_process(delta):
 		anim_state.travel("Idle")
 		is_moving = false
 		
-
+#func changeActiveState (newState = !isActive):
+#	isActive = newState
+#	emit_signal("cameraState",newState)
+	
 func process_player_input():
+#	if isActive:
 	if GlobalPlayer.is_PLAYSTATE(GlobalPlayer.PLAYSTATE.GAME):
 		if input_direction.y == 0:
 			input_direction.x = int(Input.is_action_pressed("ui_right")) - int(Input.is_action_pressed("ui_left"))
@@ -68,6 +73,20 @@ func process_player_input():
 				is_moving = true
 		else:
 			anim_state.travel("Idle")
+
+func reset_position():
+	position = STARTPOS
+	update_grid_pos_based_of_pixel_pos (position)
+	
+func update_grid_pos_based_of_pixel_pos (newPos):
+	initial_position = newPos/TILE_SIZE
+	gridCoords = initial_position
+func check_cave_terrain(boolState:bool):
+	if boolState:
+		grid = get_parent().get_node("Cave")
+	else:
+		grid = get_parent()
+		pass
 		
 func need_to_turn():
 	var new_facing_direction
@@ -126,4 +145,9 @@ func _on_WorldMap_Field_loot_received(lootType,quantityOfLoot):
 
 func _on_PlayerUI_useItem(itemID,itemTexture):
 	emit_signal("useItemOnBlock",itemID,itemTexture,gridCoords + facing_direction)
+	pass # Replace with function body.
+
+
+func _on_Cave_loot_received(lootType,quantityOfLoot):
+	GlobalPlayer.add_loot(lootType,quantityOfLoot)
 	pass # Replace with function body.
