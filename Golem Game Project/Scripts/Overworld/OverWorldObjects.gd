@@ -6,7 +6,7 @@ var objectSelected
 onready var respawnTimer = $RespawnTimer
 
 var isPassable
-
+var active = true
 
 func _ready():
 	pass
@@ -21,11 +21,12 @@ func is_passable():
 		return isPassable
 		
 func toolUsed():
-	if GlobalPlayer.toolSelected == WorldConductor.overworldObject[objectSelected]["toolUse"]:
+	if GlobalPlayer.toolSelected == WorldConductor.overworldObject[objectSelected]["toolUse"] and active:
 		##Insert logic to include giving items/loot table
 		self.modulate.a = 0.0
 		isPassable = true
 		respawnTimer.start()
+		active = false
 		return true
 	return false
 
@@ -34,4 +35,5 @@ func toolUsed():
 func _on_RespawnTimer_timeout():
 	self.modulate.a = 1.0
 	isPassable = WorldConductor.overworldObject[objectSelected]["passable"]
+	active = true
 	pass # Replace with function body.
