@@ -1,7 +1,6 @@
 extends KinematicBody2D
 
 export var walk_speed = 4.0
-const TILE_SIZE = 24
 
 ##Player must always be a child of the grid world
 onready var grid = get_parent()
@@ -17,12 +16,12 @@ var initial_position = Vector2(1, 1)
 var input_direction = Vector2(0, 0)
 var is_moving = false
 var percent_moved_to_next_tile = 0.0
-
-onready var STARTPOS = initial_position*TILE_SIZE 
+onready var STARTPOS = initial_position*WorldConductor.TILE_SIZE 
 
 signal useToolOnBlock
 signal useItemOnBlock
 signal newPosForCamera
+signal player_action_occured
 ##Keeping Grid Coords seperate until the nuances of the movement is understood
 onready var gridCoords = initial_position
 signal cameraState
@@ -30,7 +29,7 @@ var isActive = true
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	anim_tree.active = true
-	position = initial_position*TILE_SIZE 
+	position = initial_position*WorldConductor.TILE_SIZE 
 	emit_signal("newPosForCamera",self.position)
 	
 func _physics_process(delta):
@@ -59,6 +58,7 @@ func process_player_input():
 			###Using tool on block
 			if Input.is_action_just_pressed("ui_select"):
 				emit_signal("useToolOnBlock", gridCoords + facing_direction)
+				emit_signal("player_action_occured",initial_position/WorldConductor.TILE_SIZE )
 				need_animation()
 			if input_direction != Vector2.ZERO:
 				anim_tree.set("parameters/Idle/blend_position", input_direction)
@@ -71,8 +71,11 @@ func process_player_input():
 				elif grid.is_Open_Tile(gridCoords,input_direction):
 					initial_position = position
 					is_moving = true
+					emit_signal("player_action_occured",initial_position/WorldConductor.TILE_SIZE )
 			else:
 				anim_state.travel("Idle")
+		else:
+			anim_state.travel("Idle")
 
 #func reset_position():
 #	position = STARTPOS
@@ -111,13 +114,13 @@ func finished_turning():
 func move(delta):
 	percent_moved_to_next_tile += walk_speed * delta
 	if percent_moved_to_next_tile >= 1.0:
-		position = initial_position + (TILE_SIZE * input_direction)
+		position = initial_position + (WorldConductor.TILE_SIZE * input_direction)
 		emit_signal("newPosForCamera",self.position)
 		percent_moved_to_next_tile = 0.0
 		is_moving = false
 		gridCoords += input_direction
 	else:
-		position = initial_position + (TILE_SIZE * input_direction * percent_moved_to_next_tile)
+		position = initial_position + (WorldConductor.TILE_SIZE * input_direction * percent_moved_to_next_tile)
 		emit_signal("newPosForCamera",self.position)
 
 

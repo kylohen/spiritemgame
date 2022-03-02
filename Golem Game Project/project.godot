@@ -8,6 +8,16 @@
 
 config_version=4
 
+_global_script_classes=[ {
+"base": "KinematicBody2D",
+"class": "AStar_Path",
+"language": "GDScript",
+"path": "res://Classes/AStar_Path.gd"
+} ]
+_global_script_class_icons={
+"AStar_Path": ""
+}
+
 [application]
 
 config/name="GolemGame"
@@ -19,6 +29,7 @@ config/icon="res://icon.png"
 SeedGenerator="*res://Singletons/SeedGenerator.gd"
 GlobalPlayer="*res://Singletons/GlobalPlayer.gd"
 WorldConductor="*res://Singletons/WorldConductor.gd"
+StatBlocks="*res://Singletons/StatBlocks.gd"
 
 [display]
 

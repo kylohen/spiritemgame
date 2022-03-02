@@ -1,0 +1,550 @@
+[gd_scene load_steps=12 format=2]
+
+[ext_resource path="res://Assets/UI/alert_background.png" type="Texture" id=1]
+[ext_resource path="res://Scripts/Battle/BattleScreen.gd" type="Script" id=2]
+[ext_resource path="res://Assets/UI/Inventory/inventory_selectcursor1.png" type="Texture" id=3]
+[ext_resource path="res://Scenes/Battle/SkillChoice.tscn" type="PackedScene" id=4]
+[ext_resource path="res://Assets/sprites/BattleSprites/VoidSprites/Sprite-0008.png" type="Texture" id=5]
+[ext_resource path="res://Assets/sprites/BattleSprites/GolemSprites/Sprite-0005.png" type="Texture" id=6]
+[ext_resource path="res://Assets/sprites/BattleSprites/GolemSprites/Sprite-0009.png" type="Texture" id=7]
+[ext_resource path="res://Assets/sprites/BattleSprites/VoidSprites/Sprite-0011.png" type="Texture" id=8]
+[ext_resource path="res://Animations/Battle/1v1SceneSetup.tres" type="Animation" id=9]
+[ext_resource path="res://Animations/Battle/1v1Elite.tres" type="Animation" id=10]
+
+[sub_resource type="Animation" id=1]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/path = NodePath("EnemyBackingBack:visible")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ true ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("EnemySpriteBack:visible")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ true ]
+}
+tracks/2/type = "value"
+tracks/2/path = NodePath("../PlayerGraphics/PlayerBackingBack:visible")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ true ]
+}
+tracks/3/type = "value"
+tracks/3/path = NodePath("../PlayerGraphics/PlayerSpriteBack:visible")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ true ]
+}
+tracks/4/type = "value"
+tracks/4/path = NodePath("../PlayerGraphics/PlayerSpriteFront:rect_position")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ Vector2( -197, 37 ) ]
+}
+tracks/5/type = "value"
+tracks/5/path = NodePath("EnemySpriteFront:rect_position")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ Vector2( 335, 47 ) ]
+}
+
+[node name="BattleScreen" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource( 2 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="EnemyGraphics" type="Control" parent="."]
+margin_right = 40.0
+margin_bottom = 40.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="EnemySpriteBack" type="TextureRect" parent="EnemyGraphics"]
+margin_left = 246.0
+margin_top = 14.0
+margin_right = 366.0
+margin_bottom = 134.0
+texture = ExtResource( 8 )
+expand = true
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="PlayerSelection" type="TextureRect" parent="EnemyGraphics/EnemySpriteBack"]
+modulate = Color( 1, 1, 1, 0 )
+margin_left = 69.0
+margin_top = 36.0
+margin_right = 89.0
+margin_bottom = 55.947
+grow_horizontal = 2
+rect_rotation = 90.0
+texture = ExtResource( 3 )
+stretch_mode = 4
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="EnemySpriteFront" type="TextureRect" parent="EnemyGraphics"]
+margin_left = 335.0
+margin_top = 47.0
+margin_right = 455.0
+margin_bottom = 167.0
+texture = ExtResource( 5 )
+expand = true
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="PlayerSelection" type="TextureRect" parent="EnemyGraphics/EnemySpriteFront"]
+modulate = Color( 1, 1, 1, 0 )
+margin_left = 69.0
+margin_top = 34.0
+margin_right = 89.0
+margin_bottom = 53.947
+grow_horizontal = 2
+rect_rotation = 90.0
+texture = ExtResource( 3 )
+stretch_mode = 4
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="EnemyBackingFront" type="TextureRect" parent="EnemyGraphics"]
+margin_left = 330.0
+margin_top = 26.0
+margin_right = 497.0
+margin_bottom = 53.0
+rect_pivot_offset = Vector2( -533, 8 )
+texture = ExtResource( 1 )
+expand = true
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="EnemyName" type="Label" parent="EnemyGraphics/EnemyBackingFront"]
+margin_right = 207.0
+margin_bottom = 34.0
+rect_scale = Vector2( 0.8, 0.8 )
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+text = "VOID_GOLEM_NAME"
+align = 1
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="PlayerSelection" type="TextureRect" parent="EnemyGraphics/EnemyBackingFront"]
+modulate = Color( 1, 1, 1, 0 )
+margin_left = 165.0
+margin_top = 1.0
+margin_right = 173.0
+margin_bottom = 166.0
+rect_rotation = 90.0
+texture = ExtResource( 3 )
+stretch_mode = 4
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="EnemyBackingBack" type="TextureRect" parent="EnemyGraphics"]
+margin_left = 314.0
+margin_top = -1.0
+margin_right = 481.0
+margin_bottom = 26.0
+texture = ExtResource( 1 )
+expand = true
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="EnemyName" type="Label" parent="EnemyGraphics/EnemyBackingBack"]
+margin_right = 207.0
+margin_bottom = 34.0
+rect_scale = Vector2( 0.8, 0.8 )
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+text = "VOID_GOLEM_NAME"
+align = 1
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="PlayerSelection" type="TextureRect" parent="EnemyGraphics/EnemyBackingBack"]
+modulate = Color( 1, 1, 1, 0 )
+margin_left = 166.0
+margin_top = 1.0
+margin_right = 174.0
+margin_bottom = 166.0
+rect_rotation = 90.0
+texture = ExtResource( 3 )
+stretch_mode = 4
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="PlayerGraphics" type="Control" parent="."]
+margin_left = 330.0
+margin_top = 26.0
+margin_right = 370.0
+margin_bottom = 66.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="PlayerSpriteBack" type="TextureRect" parent="PlayerGraphics"]
+margin_left = -305.0
+margin_top = -11.0
+margin_right = -161.0
+margin_bottom = 157.0
+texture = ExtResource( 7 )
+expand = true
+__meta__ = {
+"_edit_group_": true,
+"_edit_use_anchors_": false
+}
+
+[node name="PlayerSelection" type="TextureRect" parent="PlayerGraphics/PlayerSpriteBack"]
+modulate = Color( 1, 1, 1, 0 )
+margin_left = 79.0
+margin_top = 49.0
+margin_right = 99.0
+margin_bottom = 68.947
+grow_horizontal = 2
+rect_rotation = 90.0
+texture = ExtResource( 3 )
+stretch_mode = 4
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="PlayerSpriteFront" type="TextureRect" parent="PlayerGraphics"]
+margin_left = -197.0
+margin_top = 37.0
+margin_right = -53.0
+margin_bottom = 205.0
+texture = ExtResource( 6 )
+expand = true
+__meta__ = {
+"_edit_group_": true,
+"_edit_use_anchors_": false
+}
+
+[node name="PlayerSelection" type="TextureRect" parent="PlayerGraphics/PlayerSpriteFront"]
+modulate = Color( 1, 1, 1, 0 )
+margin_left = 82.0
+margin_top = 54.0
+margin_right = 102.0
+margin_bottom = 73.947
+grow_horizontal = 2
+rect_rotation = 90.0
+texture = ExtResource( 3 )
+stretch_mode = 4
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="PlayerBackingBack" type="TextureRect" parent="PlayerGraphics"]
+margin_left = -335.0
+margin_top = 112.0
+margin_right = -191.0
+margin_bottom = 167.0
+texture = ExtResource( 1 )
+expand = true
+__meta__ = {
+"_edit_group_": true,
+"_edit_use_anchors_": false
+}
+
+[node name="PlayerName" type="Label" parent="PlayerGraphics/PlayerBackingBack"]
+margin_left = 5.0
+margin_right = 179.0
+margin_bottom = 70.0
+rect_scale = Vector2( 0.8, 0.8 )
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+text = "PLAYER_GOLEM_NAME"
+align = 1
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="PlayerSelection" type="TextureRect" parent="PlayerGraphics/PlayerBackingBack"]
+modulate = Color( 1, 1, 1, 0 )
+margin_left = 142.0
+margin_top = 10.0
+margin_right = 150.0
+margin_bottom = 152.0
+rect_rotation = 90.0
+texture = ExtResource( 3 )
+stretch_mode = 4
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="PlayerBackingFront" type="TextureRect" parent="PlayerGraphics"]
+margin_left = -334.0
+margin_top = 163.0
+margin_right = -151.0
+margin_bottom = 233.0
+texture = ExtResource( 1 )
+expand = true
+__meta__ = {
+"_edit_lock_": true,
+"_edit_use_anchors_": false
+}
+
+[node name="PlayerName" type="Label" parent="PlayerGraphics/PlayerBackingFront"]
+margin_right = 229.0
+margin_bottom = 87.0
+rect_scale = Vector2( 0.8, 0.8 )
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+text = "PLAYER_GOLEM_NAME"
+align = 1
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="PlayerSelection" type="TextureRect" parent="PlayerGraphics/PlayerBackingFront"]
+modulate = Color( 1, 1, 1, 0 )
+margin_left = 180.0
+margin_top = 17.0
+margin_right = 188.0
+margin_bottom = 198.0
+rect_rotation = 90.0
+texture = ExtResource( 3 )
+stretch_mode = 4
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="UI" type="Control" parent="."]
+margin_right = 40.0
+margin_bottom = 40.0
+__meta__ = {
+"_edit_group_": true,
+"_edit_lock_": true,
+"_edit_use_anchors_": false
+}
+
+[node name="PlayerSkills" type="HBoxContainer" parent="UI"]
+margin_left = 352.0
+margin_top = 151.0
+margin_right = 454.0
+margin_bottom = 175.0
+grow_horizontal = 0
+grow_vertical = 0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+alignment = 2
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="PlayerBacking" type="TextureRect" parent="UI/PlayerSkills"]
+margin_left = 50.0
+margin_right = 74.0
+margin_bottom = 24.0
+texture = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="PlayerName" type="Label" parent="UI/PlayerSkills/PlayerBacking"]
+margin_right = 24.0
+margin_bottom = 23.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+text = "A1"
+align = 1
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="PlayerBacking2" type="TextureRect" parent="UI/PlayerSkills"]
+margin_left = 78.0
+margin_right = 102.0
+margin_bottom = 24.0
+texture = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="PlayerName" type="Label" parent="UI/PlayerSkills/PlayerBacking2"]
+margin_right = 24.0
+margin_bottom = 24.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+text = "A2"
+align = 1
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UI"]
+margin_left = 352.0
+margin_top = 140.0
+margin_right = 454.0
+margin_bottom = 241.0
+custom_constants/separation = 21
+alignment = 2
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="SkillChoice1" parent="UI/VBoxContainer" instance=ExtResource( 4 )]
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_top = 38.0
+margin_right = 102.0
+margin_bottom = 38.0
+grow_horizontal = 0
+grow_vertical = 0
+
+[node name="SkillChoice2" parent="UI/VBoxContainer" instance=ExtResource( 4 )]
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_top = 59.0
+margin_right = 102.0
+margin_bottom = 59.0
+
+[node name="SkillChoice3" parent="UI/VBoxContainer" instance=ExtResource( 4 )]
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_top = 80.0
+margin_right = 102.0
+margin_bottom = 80.0
+
+[node name="SkillChoice4" parent="UI/VBoxContainer" instance=ExtResource( 4 )]
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_top = 101.0
+margin_right = 102.0
+margin_bottom = 101.0
+
+[node name="UIChoices" type="Control" parent="."]
+margin_right = 480.0
+margin_bottom = 268.0
+__meta__ = {
+"_edit_group_": true,
+"_edit_lock_": true,
+"_edit_use_anchors_": false
+}
+
+[node name="PlayerSkills" type="HBoxContainer" parent="UIChoices"]
+margin_left = 393.0
+margin_top = 151.0
+margin_right = 438.0
+margin_bottom = 175.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+custom_constants/separation = 21
+alignment = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="PlayerChoice1" type="TextureRect" parent="UIChoices/PlayerSkills"]
+modulate = Color( 1, 1, 1, 0 )
+margin_left = 5.0
+margin_right = 12.0
+margin_bottom = 24.0
+texture = ExtResource( 3 )
+stretch_mode = 6
+
+[node name="PlayerChoice2" type="TextureRect" parent="UIChoices/PlayerSkills"]
+modulate = Color( 1, 1, 1, 0 )
+margin_left = 33.0
+margin_right = 40.0
+margin_bottom = 24.0
+texture = ExtResource( 3 )
+stretch_mode = 6
+
+[node name="Options" type="VBoxContainer" parent="UIChoices"]
+margin_left = 350.0
+margin_top = 183.0
+margin_right = 452.0
+margin_bottom = 284.0
+custom_constants/separation = 12
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="PlayerChoice3" type="TextureRect" parent="UIChoices/Options"]
+margin_right = 102.0
+margin_bottom = 9.0
+texture = ExtResource( 3 )
+
+[node name="PlayerChoice4" type="TextureRect" parent="UIChoices/Options"]
+modulate = Color( 1, 1, 1, 0 )
+margin_top = 21.0
+margin_right = 102.0
+margin_bottom = 30.0
+texture = ExtResource( 3 )
+
+[node name="PlayerChoice5" type="TextureRect" parent="UIChoices/Options"]
+modulate = Color( 1, 1, 1, 0 )
+margin_top = 42.0
+margin_right = 102.0
+margin_bottom = 51.0
+texture = ExtResource( 3 )
+
+[node name="PlayerChoice6" type="TextureRect" parent="UIChoices/Options"]
+modulate = Color( 1, 1, 1, 0 )
+margin_top = 63.0
+margin_right = 102.0
+margin_bottom = 72.0
+texture = ExtResource( 3 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="SceneSetup" type="AnimationPlayer" parent="."]
+root_node = NodePath("../EnemyGraphics")
+anims/1v1 = ExtResource( 9 )
+"anims/1v1 Elite" = ExtResource( 10 )
+anims/RESET = SubResource( 1 )

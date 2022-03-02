@@ -5,6 +5,8 @@ onready var popUpAlertContainer = $PopUpAlertUI/PopUpContainer
 onready var inventoryUI = $InventoryUI
 onready var loreBookUI = $LoreBookUI
 onready var craftingBookUI = $CraftingBookUI
+onready var animationPlayer = $AnimationPlayer
+onready var battleScreen = $BattleScreen
 
 enum {NONE,INVENTORY,INVENTORY_SUBMENU,LORE,CRAFTING}
 # Declare member variables here. Examples:
@@ -72,7 +74,7 @@ func process_player_input():
 			currentMenu = INVENTORY
 			inventoryUI.update_inventory()
 			inventoryUI.show()
-	if GlobalPlayer.is_PLAYSTATE(GlobalPlayer.PLAYSTATE.PAUSE):
+	elif GlobalPlayer.is_PLAYSTATE(GlobalPlayer.PLAYSTATE.PAUSE):
 		
 		if Input.is_action_just_pressed("Next_Page"):
 			move_menu(1)
@@ -130,7 +132,19 @@ func process_player_input():
 				craftingBookUI.move_down()
 			if Input.is_action_just_pressed("ui_accept"):
 				craftingBookUI.selected()
-			
+	elif GlobalPlayer.is_PLAYSTATE(GlobalPlayer.PLAYSTATE.BATTLE):
+		if Input.is_action_just_released("ui_cancel"):
+			battleScreen.ui_cancel()
+		if Input.is_action_just_pressed("ui_right"):
+			battleScreen.move_right()
+		elif Input.is_action_just_pressed("ui_left"):
+			battleScreen.move_left()
+		elif Input.is_action_just_pressed("ui_up"):
+			battleScreen.move_up()
+		elif Input.is_action_just_pressed("ui_down"):
+			battleScreen.move_down()
+		if Input.is_action_just_pressed("ui_accept"):
+			battleScreen.selected()
 	pass
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 #func _process(delta):
@@ -176,3 +190,8 @@ func _on_Cave_loot_received(lootType,quantityOfLoot):
 	newAlert.set_text("Picked Up: "+lootType+" x"+str(quantityOfLoot))
 	
 	pass # Replace with function body.
+
+
+func _enemy_battle_start(enemyNode):
+	battleScreen.start_encounter(enemyNode)
+	animationPlayer.play("OverworldBattleIn")

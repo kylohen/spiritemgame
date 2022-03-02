@@ -1,5 +1,8 @@
 extends Node
 ## Conductor helps advise the other nodes of the objects in the world
+
+const TILE_SIZE = 24
+
 enum objectTypes {TallGrass,Boulders,Trees,Logs,Clay}
 var objectTextures = {
 	objectTypes.TallGrass : "res://Assets/OverworldObjects/sprite_overworld_grass_stage2.png",

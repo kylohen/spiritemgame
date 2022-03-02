@@ -2,7 +2,7 @@ extends Node
 
 ##Play state helps define what's going on in the game, 
 ##allowing for scenes to overlap eachother if needed
-enum PLAYSTATE {GAME,MENU,PAUSE}
+enum PLAYSTATE {GAME,MENU,PAUSE,BATTLE}
 
 enum TOOLS {PICKAXE,AXE,SHOVEL,SCYTHE}
 var toolSelected
@@ -14,6 +14,8 @@ var nextInventoryIndex=0
 
 var levelOfCave = 0
 var deepestLevelOfCave = 0
+
+var partyGolems = []
 func _ready():
 	currentPLAYSTATE = PLAYSTATE.GAME
 	pass # Replace with function body.
@@ -150,3 +152,10 @@ func Go_Down_A_Level(downAmount = 1):
 	if deepestLevelOfCave < levelOfCave:
 		deepestLevelOfCave = levelOfCave
 	
+func add_golem(golemID):
+	if partyGolems.size >= 7:
+		return false
+	else:
+		var newGolemInput = StatBlocks.playerGolemBaseStatBlocks[golemID]
+		partyGolems.append(newGolemInput)
+

@@ -6,6 +6,8 @@ onready var player = $Player
 onready var camera = $Camera2D
 onready var playerUI = $Camera2D/PlayerUI
 onready var spawnGolem = $SpawnGolem
+onready var enemyManager = $EnemyManager
+onready var animationPlayer = $AnimationPlayer
 
 const TILE_SIZE = 24
 
@@ -62,6 +64,7 @@ func _ready():
 	build_border()
 	build_terrain()
 	spawnCave(40)
+	enemyManager.spawn_enemy()
 #	randomize_Objects()
 	pass
 	
@@ -327,3 +330,12 @@ func take_golem_items():
 			objectPlacement[locations[i].x].remove(locations[i].y)
 			objectPlacement[locations[i].x].insert(locations[i].y,null)
 	pass
+
+
+
+func _on_EnemyManager_enemy_contact(enemyNode):
+	GlobalPlayer.currentPLAYSTATE = GlobalPlayer.PLAYSTATE.BATTLE
+	playerUI._enemy_battle_start(enemyNode)
+	enemyNode.queue_free()
+	pass # Replace with function body.
+
