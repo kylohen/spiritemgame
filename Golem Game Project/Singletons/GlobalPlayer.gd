@@ -14,8 +14,20 @@ var nextInventoryIndex=0
 
 var levelOfCave = 0
 var deepestLevelOfCave = 0
-
+var playerName = "Player"
 var partyGolems = []
+var PLAYERSTATS = {
+	"ATTACK":1,
+	"HP":20,
+	"FLEE STAT":1,
+	"SPEED":4,
+	"SKILLS":{
+		"SKILL1":0,
+		"SKILL2":1,
+		"SKILL3":1,
+		"SKILL4":1,
+	}
+}
 func _ready():
 	currentPLAYSTATE = PLAYSTATE.GAME
 	pass # Replace with function body.
@@ -153,9 +165,12 @@ func Go_Down_A_Level(downAmount = 1):
 		deepestLevelOfCave = levelOfCave
 	
 func add_golem(golemID):
-	if partyGolems.size >= 7:
+	if partyGolems.size() >= 7:
 		return false
 	else:
-		var newGolemInput = StatBlocks.playerGolemBaseStatBlocks[golemID]
+		var newGolemInput = StatBlocks.playerGolemBaseStatBlocks[golemID].duplicate()
+		newGolemInput["CURRENT ACTION"] = newGolemInput["ACTION METER"]
+		newGolemInput["CURRENT MAGIC"] = newGolemInput["MAGIC ACTION METER"]
+		newGolemInput["CURRENT HP"] = newGolemInput["HP"]
 		partyGolems.append(newGolemInput)
 

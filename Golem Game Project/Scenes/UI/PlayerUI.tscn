@@ -27,7 +27,7 @@ tracks/0/keys = {
 "times": PoolRealArray( 0 ),
 "transitions": PoolRealArray( 1 ),
 "update": 0,
-"values": [ Vector2( 509, 0 ) ]
+"values": [ Vector2( 600, 0 ) ]
 }
 
 [node name="PlayerUI" type="Control"]
@@ -247,9 +247,9 @@ visible = false
 visible = false
 
 [node name="BattleScreen" parent="." instance=ExtResource( 13 )]
-margin_left = 509.0
-margin_right = 1949.0
-margin_bottom = 810.0
+margin_left = 600.0
+margin_right = 5400.0
+margin_bottom = 2700.0
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 anims/OverworldBattleIn = ExtResource( 14 )

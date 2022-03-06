@@ -1,0 +1,90 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://Assets/UI/Bars/Sprite-0008.png" type="Texture" id=1]
+[ext_resource path="res://Scripts/Battle/UI_Bars.gd" type="Script" id=2]
+
+[node name="UI_Bars" type="Control"]
+anchor_right = 0.346
+anchor_bottom = 0.163
+margin_left = -84.0
+margin_top = -22.0
+margin_right = -82.08
+margin_bottom = -22.01
+rect_pivot_offset = Vector2( 84, 22 )
+script = ExtResource( 2 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+margin_right = 166.0
+margin_bottom = 43.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="HealthBarContainer" type="HBoxContainer" parent="VBoxContainer"]
+margin_right = 166.0
+margin_bottom = 24.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Type" type="TextureRect" parent="VBoxContainer/HealthBarContainer"]
+margin_right = 24.0
+margin_bottom = 24.0
+texture = ExtResource( 1 )
+stretch_mode = 5
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="HealthBar" type="ProgressBar" parent="VBoxContainer/HealthBarContainer"]
+margin_left = 28.0
+margin_right = 166.0
+margin_bottom = 24.0
+size_flags_horizontal = 3
+size_flags_vertical = 1
+max_value = 200.0
+step = 1.0
+value = 10.0
+allow_greater = true
+allow_lesser = true
+percent_visible = false
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="MeterContainer" type="HBoxContainer" parent="VBoxContainer"]
+margin_top = 28.0
+margin_right = 166.0
+margin_bottom = 43.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="ActionMeter" type="ProgressBar" parent="VBoxContainer/MeterContainer"]
+margin_right = 81.0
+margin_bottom = 15.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+step = 1.0
+value = 50.0
+allow_greater = true
+allow_lesser = true
+percent_visible = false
+
+[node name="MagicMeter" type="ProgressBar" parent="VBoxContainer/MeterContainer"]
+margin_left = 85.0
+margin_right = 166.0
+margin_bottom = 15.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+step = 1.0
+value = 50.0
+allow_greater = true
+allow_lesser = true
+percent_visible = false

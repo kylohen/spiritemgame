@@ -23,8 +23,11 @@ func spawn_enemy():
 	add_child(newEnemy)
 	newEnemy.connect("touch_player",self,"_on_EnemyVoid_touchPlayer")
 	newEnemy.set_grid(get_parent().gridMap,get_parent().objectPlacement,get_parent().gridWidth,get_parent().gridHeight)
-	newEnemy.spawn_enemy(0,1)
+	newEnemy.spawn_enemy(choose_enemy(),choose_enemy())
 	pass
+
+func choose_enemy():
+	return SeedGenerator.rng.randi_range(0, StatBlocks.enemyStatBlocks.size()-1)
 
 func _on_Player_player_action_occured(playerPositionInGrid):
 	currentCount +=1

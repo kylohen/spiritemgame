@@ -49,11 +49,6 @@ enum direction {Up,Right,Down,Left}
 signal loot_received
 ## Game world runs in this script, responsible for checking against player location/object location
 
-var golemRecipes= {
-	"StrawBoy" : {
-		"Straw" : 4
-	}
-}
 func _ready():
 	initialize_gridMap()
 	initialize_objectPlacement()
@@ -65,6 +60,10 @@ func _ready():
 	build_terrain()
 	spawnCave(40)
 	enemyManager.spawn_enemy()
+	
+	##Debug##
+	GlobalPlayer.add_golem(SeedGenerator.rng.randi_range(0,StatBlocks.playerGolemBaseStatBlocks.keys().size()-1))
+	GlobalPlayer.add_golem(SeedGenerator.rng.randi_range(0,StatBlocks.playerGolemBaseStatBlocks.keys().size()-1))
 #	randomize_Objects()
 	pass
 	
@@ -306,14 +305,14 @@ func golem_checking ():
 				if itemsFound.has(object.itemID):
 					itemsFound[object.itemID] += 1
 				else:itemsFound[object.itemID] = 1
-	var keys = golemRecipes.keys()
+	var keys = Recipes.golemRecipes.keys()
 	for i in keys.size():
 		var hasEverything = true
-		var recipeItems = golemRecipes[keys[i]].keys()
+		var recipeItems =Recipes.golemRecipes[keys[i]].keys()
 		for j in recipeItems.size():
 			if !itemsFound.has(recipeItems[j]):
 				hasEverything = false
-			elif golemRecipes[keys[i]][recipeItems[j]]>itemsFound[recipeItems[j]]:
+			elif Recipes.golemRecipes[keys[i]][recipeItems[j]]>itemsFound[recipeItems[j]]:
 				hasEverything = false
 		if hasEverything:
 			print ("ITS ALIVE! ",keys[i]," IS ALIVE")

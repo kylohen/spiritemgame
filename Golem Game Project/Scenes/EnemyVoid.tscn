@@ -13,6 +13,7 @@
 [ext_resource path="res://Assets/sprites/VoidSprites/Sprite-0006.png" type="Texture" id=11]
 [ext_resource path="res://Assets/sprites/BattleSprites/GolemSprites/Sprite-0009.png" type="Texture" id=12]
 
+
 [sub_resource type="SpriteFrames" id=2]
 animations = [ {
 "frames": [ ExtResource( 10 ), ExtResource( 11 ), ExtResource( 6 ), ExtResource( 9 ), ExtResource( 12 ), ExtResource( 7 ), ExtResource( 8 ) ],

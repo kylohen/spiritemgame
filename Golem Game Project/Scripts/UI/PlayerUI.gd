@@ -144,7 +144,7 @@ func process_player_input():
 		elif Input.is_action_just_pressed("ui_down"):
 			battleScreen.move_down()
 		if Input.is_action_just_pressed("ui_accept"):
-			battleScreen.selected()
+			battleScreen.ui_accept()
 	pass
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 #func _process(delta):
