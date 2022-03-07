@@ -248,8 +248,8 @@ visible = false
 
 [node name="BattleScreen" parent="." instance=ExtResource( 13 )]
 margin_left = 600.0
-margin_right = 5400.0
-margin_bottom = 2700.0
+margin_right = 12600.0
+margin_bottom = 6750.0
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 anims/OverworldBattleIn = ExtResource( 14 )

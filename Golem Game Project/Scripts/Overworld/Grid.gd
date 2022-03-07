@@ -13,7 +13,7 @@ const TILE_SIZE = 24
 
 onready var overworldObjectScene = preload("res://Scenes/Overworld/OverworldObjects.tscn")
 onready var lootItemScene = preload("res://Scenes/Overworld/LootItem.tscn")
-onready var caveSystemScene = preload("res://Scenes/Overworld/CaveSystem.tscn")
+onready var caveSystemScene = "res://Scenes/Overworld/CaveSystem.tscn"
 var gridMap = []
 var objectPlacement = []
 export (int) var gridWidth  = 100
@@ -170,7 +170,7 @@ func is_Open_Tile(currentPosition, directionToGo) -> bool:
 		camera.hide()
 #		previousPosition = player.position
 		
-		var newCave = caveSystemScene.instance()
+		var newCave = load(caveSystemScene).instance()
 		update_signal_path(newCave)
 
 
@@ -210,7 +210,7 @@ func _on_leave_cave_CaveSystem():
 #	player.check_cave_terrain(false)
 	
 func _on_new_level_cave_CaveSystem():
-	var newCave = caveSystemScene.instance()
+	var newCave = load(caveSystemScene).instance()
 	update_signal_path(newCave)
 	
 #	player.reset_position()

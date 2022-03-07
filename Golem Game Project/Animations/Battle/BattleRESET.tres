@@ -37,7 +37,7 @@ tracks/2/keys = {
 "times": PoolRealArray( 0 ),
 "transitions": PoolRealArray( 1 ),
 "update": 0,
-"values": [ Vector2( 335, 47 ) ]
+"values": [ Vector2( 340, 50 ) ]
 }
 tracks/3/type = "value"
 tracks/3/path = NodePath("EnemySpriteFront:visible")
@@ -85,7 +85,7 @@ tracks/6/keys = {
 "times": PoolRealArray( 0 ),
 "transitions": PoolRealArray( 1 ),
 "update": 0,
-"values": [ Vector2( -230, 54 ) ]
+"values": [ Vector2( -240, 20 ) ]
 }
 tracks/7/type = "value"
 tracks/7/path = NodePath("EnemySpriteBack:visible")
@@ -109,7 +109,7 @@ tracks/8/keys = {
 "times": PoolRealArray( 0 ),
 "transitions": PoolRealArray( 1 ),
 "update": 0,
-"values": [ Vector2( 246, 8 ) ]
+"values": [ Vector2( 185, -60 ) ]
 }
 tracks/9/type = "value"
 tracks/9/path = NodePath("../PlayerGraphics/PlayerSpriteBack:rect_position")
@@ -121,10 +121,10 @@ tracks/9/keys = {
 "times": PoolRealArray( 0 ),
 "transitions": PoolRealArray( 1 ),
 "update": 0,
-"values": [ Vector2( -307, -21 ) ]
+"values": [ Vector2( -370, -50 ) ]
 }
 tracks/10/type = "value"
-tracks/10/path = NodePath("../PlayerGraphics/PlayerSpriteBack:rect_size")
+tracks/10/path = NodePath("EnemySpriteFront:rect_scale")
 tracks/10/interp = 1
 tracks/10/loop_wrap = true
 tracks/10/imported = false
@@ -133,5 +133,5 @@ tracks/10/keys = {
 "times": PoolRealArray( 0 ),
 "transitions": PoolRealArray( 1 ),
 "update": 0,
-"values": [ Vector2( 144, 168 ) ]
+"values": [ Vector2( 0.5, 0.5 ) ]
 }

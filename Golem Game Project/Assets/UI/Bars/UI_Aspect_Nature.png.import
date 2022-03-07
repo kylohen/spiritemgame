@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/Sprite-0008.png-a9b5a7e792fbaa487963d14fd9401049.stex"
+path="res://.import/UI_Aspect_Nature.png-636264815acf971120bff21a52815bae.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/UI/Bars/Sprite-0008.png"
-dest_files=[ "res://.import/Sprite-0008.png-a9b5a7e792fbaa487963d14fd9401049.stex" ]
+source_file="res://Assets/UI/Bars/UI_Aspect_Nature.png"
+dest_files=[ "res://.import/UI_Aspect_Nature.png-636264815acf971120bff21a52815bae.stex" ]
 
 [params]
 

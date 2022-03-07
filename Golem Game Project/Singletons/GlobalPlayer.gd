@@ -169,8 +169,10 @@ func add_golem(golemID):
 		return false
 	else:
 		var newGolemInput = StatBlocks.playerGolemBaseStatBlocks[golemID].duplicate()
-		newGolemInput["CURRENT ACTION"] = newGolemInput["ACTION METER"]
-		newGolemInput["CURRENT MAGIC"] = newGolemInput["MAGIC ACTION METER"]
-		newGolemInput["CURRENT HP"] = newGolemInput["HP"]
+		var golemName = newGolemInput.keys()[0]
+#		print(newGolemInput[golemName]["ACTION METER"])
+		newGolemInput[golemName]["CURRENT ACTION"] = newGolemInput[golemName]["ACTION METER"]
+		newGolemInput[golemName]["CURRENT MAGIC"] = newGolemInput[golemName]["MAGIC METER"]
+		newGolemInput[golemName]["CURRENT HP"] = newGolemInput[golemName]["HP"]
 		partyGolems.append(newGolemInput)
 

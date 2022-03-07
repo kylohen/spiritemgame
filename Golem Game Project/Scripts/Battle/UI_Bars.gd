@@ -3,7 +3,7 @@ extends Control
 onready var healthBar = $VBoxContainer/HealthBarContainer/HealthBar
 onready var actionMeter=$VBoxContainer/MeterContainer/ActionMeter
 onready var magicMeter = $VBoxContainer/MeterContainer/MagicMeter
-onready var affinityType = $VBoxContainer/HealthBarContainer/Type
+onready var aspectType = $VBoxContainer/HealthBarContainer/Type
 
 var currentHealth
 var maxHealth
@@ -12,15 +12,22 @@ var maxAction
 var currentMagic
 var maxMagic
 
-
+export var isPlayer = false
 
 
 func _ready():
+	if isPlayer:
+		pass
+	else:
+		actionMeter.modulate.a = 0
+		magicMeter.modulate.a = 0
 	pass # Replace with function body.
 
-func update_affinity(pathToSpriteNode:String):
-	affinityType.texture = load(pathToSpriteNode)
-
+func update_aspect(newAspect):
+	aspectType.show()
+	if StatBlocks.aspectSprite.has(newAspect):
+		aspectType.texture = load(StatBlocks.aspectSprite[newAspect])
+	else: aspectType.hide()
 func initialize(health,healthMax,action,actionMax,magic,magicMax):
 	update_health(health,healthMax)
 	update_action(action,actionMax)

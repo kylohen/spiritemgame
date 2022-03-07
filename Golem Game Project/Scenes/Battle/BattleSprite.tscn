@@ -5,27 +5,13 @@
 [ext_resource path="res://Animations/Battle/Sprites/ATTACK.tres" type="Animation" id=3]
 [ext_resource path="res://Animations/Battle/Sprites/HIT.tres" type="Animation" id=4]
 [ext_resource path="res://Scripts/Battle/BattleSprite.gd" type="Script" id=5]
-
-[sub_resource type="Animation" id=1]
-length = 0.001
-tracks/0/type = "value"
-tracks/0/path = NodePath(".:rect_position")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/keys = {
-"times": PoolRealArray( 0 ),
-"transitions": PoolRealArray( 1 ),
-"update": 0,
-"values": [ Vector2( 0, 0 ) ]
-}
+[ext_resource path="res://Animations/Battle/Sprites/RESET.tres" type="Animation" id=6]
 
 [node name="BattleSprite" type="Control"]
-margin_right = 240.0
-margin_bottom = 240.0
-grow_horizontal = 2
-grow_vertical = 2
+margin_left = -120.0
+margin_top = -120.0
+margin_right = 120.0
+margin_bottom = 120.0
 rect_pivot_offset = Vector2( 120, 120 )
 size_flags_horizontal = 7
 size_flags_vertical = 7
@@ -37,8 +23,6 @@ __meta__ = {
 [node name="Sprite" type="TextureRect" parent="."]
 anchor_right = 1.0
 anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
 rect_pivot_offset = Vector2( 120, 120 )
 texture = ExtResource( 1 )
 expand = true
@@ -48,13 +32,14 @@ __meta__ = {
 
 [node name="PlayerSelection" type="TextureRect" parent="Sprite"]
 modulate = Color( 1, 1, 1, 0 )
-margin_left = 69.0
-margin_top = 34.0
-margin_right = 89.0
-margin_bottom = 53.947
-grow_horizontal = 2
+margin_left = 100.0
+margin_top = 80.0
+margin_right = 140.0
+margin_bottom = 120.0
 rect_rotation = 90.0
+rect_pivot_offset = Vector2( 20, 20 )
 texture = ExtResource( 2 )
+expand = true
 stretch_mode = 4
 __meta__ = {
 "_edit_use_anchors_": false
@@ -63,4 +48,4 @@ __meta__ = {
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 anims/ATTACK = ExtResource( 3 )
 anims/HIT = ExtResource( 4 )
-anims/RESET = SubResource( 1 )
+anims/RESET = ExtResource( 6 )

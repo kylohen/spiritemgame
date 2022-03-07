@@ -4,6 +4,17 @@ enum ELEMENT{Nature, Lightning, Water, Fire, Ice, Wind, Void, Divine, Mundane, N
 #enum STATE
 enum TARGET{SELF,ENEMY,ALLY,AOE}
 
+var aspectSprite = {
+	ELEMENT.Nature : "res://Assets/UI/Bars/UI_Aspect_Nature.png",
+	ELEMENT.Lightning : "res://Assets/UI/Bars/UI_Aspect_Lightning.png",
+	ELEMENT.Water : "res://Assets/UI/Bars/UI_Aspect_Water.png",
+	ELEMENT.Fire : "res://Assets/UI/Bars/UI_Aspect_Fire.png",
+	ELEMENT.Ice : "res://Assets/UI/Bars/UI_Aspect_Ice.png",
+	ELEMENT.Wind : "res://Assets/UI/Bars/UI_Aspect_Wind.png",
+	ELEMENT.Void : "res://Assets/UI/Bars/UI_Aspect_Void.png",
+	ELEMENT.Divine : "res://Assets/UI/Bars/UI_Aspect_Divine.png",
+	ELEMENT.Mundane : "res://Assets/UI/Bars/UI_Aspect_Mundane.png",
+}
 var enemyStatBlocks = {
 	0:{
 		"Void StrawMan Argument":{
@@ -19,7 +30,19 @@ var enemyStatBlocks = {
 			"ASPECT":ELEMENT.Nature,
 			"LEVEL":1,
 			"LOOT DROP":null,
-			"SKILLS":{
+			"ATTACK SKILLS":{
+				"SKILL1":0,
+				"SKILL2":1,
+				"SKILL3":3,
+				"SKILL4":4,
+				},
+			"SUPPORT SKILLS":{
+				"SKILL1":0,
+				"SKILL2":1,
+				"SKILL3":3,
+				"SKILL4":4,
+				},
+			"DEFEND SKILLS":{
 				"SKILL1":0,
 				"SKILL2":1,
 				"SKILL3":3,
@@ -41,7 +64,19 @@ var enemyStatBlocks = {
 			"ASPECT":ELEMENT.Ice,
 			"LEVEL":1,
 			"LOOT DROP":null,
-			"SKILLS":{
+			"ATTACK SKILLS":{
+				"SKILL1":2,
+				"SKILL2":1,
+				"SKILL3":5,
+				"SKILL4":3,
+				},
+			"SUPPORT SKILLS":{
+				"SKILL1":2,
+				"SKILL2":1,
+				"SKILL3":5,
+				"SKILL4":3,
+				},
+			"DEFEND SKILLS":{
 				"SKILL1":2,
 				"SKILL2":1,
 				"SKILL3":5,
@@ -63,7 +98,19 @@ var enemyStatBlocks = {
 			"ASPECT":ELEMENT.Fire,
 			"LEVEL":1,
 			"LOOT DROP":null,
-			"SKILLS":{
+			"ATTACK SKILLS":{
+				"SKILL1":0,
+				"SKILL2":1,
+				"SKILL3":2,
+				"SKILL4":5,
+				},
+			"SUPPORT SKILLS":{
+				"SKILL1":0,
+				"SKILL2":1,
+				"SKILL3":2,
+				"SKILL4":5,
+				},
+			"DEFEND SKILLS":{
 				"SKILL1":0,
 				"SKILL2":1,
 				"SKILL3":2,
@@ -88,11 +135,23 @@ var playerGolemBaseStatBlocks = {
 			"ASPECT":ELEMENT.Lightning,
 			"LEVEL":1,
 			"ACTION METER":1,
-			"MAGIC ACTION METER":1,
+			"MAGIC METER":1,
 			"PLAYER AFFINITY":1,
-			"SKILLS":{
+			"ATTACK SKILLS":{
 				"SKILL1":0,
 				"SKILL2":1,
+				"SKILL3":4,
+				"SKILL4":5,
+				},
+			"SUPPORT SKILLS":{
+				"SKILL1":0,
+				"SKILL2":2,
+				"SKILL3":3,
+				"SKILL4":4,
+				},
+			"DEFEND SKILLS":{
+				"SKILL1":3,
+				"SKILL2":0,
 				"SKILL3":4,
 				"SKILL4":5,
 				},
@@ -112,13 +171,25 @@ var playerGolemBaseStatBlocks = {
 			"ASPECT":ELEMENT.Fire,
 			"LEVEL":1,
 			"ACTION METER":1,
-			"MAGIC ACTION METER":1,
+			"MAGIC METER":1,
 			"PLAYER AFFINITY":1,
-			"SKILLS":{
+			"ATTACK SKILLS":{
 				"SKILL1":0,
 				"SKILL2":2,
 				"SKILL3":3,
 				"SKILL4":4,
+				},
+			"SUPPORT SKILLS":{
+				"SKILL1":3,
+				"SKILL2":0,
+				"SKILL3":4,
+				"SKILL4":5,
+				},
+			"DEFEND SKILLS":{
+				"SKILL1":0,
+				"SKILL2":1,
+				"SKILL3":4,
+				"SKILL4":5,
 				},
 			}
 		},
@@ -136,13 +207,25 @@ var playerGolemBaseStatBlocks = {
 			"ASPECT":ELEMENT.Fire,
 			"LEVEL":1,
 			"ACTION METER":1,
-			"MAGIC ACTION METER":1,
+			"MAGIC METER":1,
 			"PLAYER AFFINITY":1,
-			"SKILLS":{
+			"ATTACK SKILLS":{
+				"SKILL1":0,
+				"SKILL2":1,
+				"SKILL3":4,
+				"SKILL4":5,
+				},
+			"SUPPORT SKILLS":{
 				"SKILL1":3,
 				"SKILL2":0,
 				"SKILL3":4,
 				"SKILL4":5,
+				},
+			"DEFEND SKILLS":{
+				"SKILL1":0,
+				"SKILL2":2,
+				"SKILL3":3,
+				"SKILL4":4,
 				},
 			}
 		},
@@ -164,7 +247,7 @@ var skillList = {
 		},
 	1:{
 		"Flee":{
-			"DAMAGE":1,
+			"DAMAGE":0,
 			"ASPECT": ELEMENT.Mundane,
 			"IMPACT TYPE": "PHYSICAL",
 			"LOOTING MODIFIER":0,

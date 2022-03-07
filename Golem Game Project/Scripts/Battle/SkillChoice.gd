@@ -18,7 +18,12 @@ func set_skill(newSkillNumber):
 	skillName = skillDetails.keys()[0]
 	skillNameNode.text = skillName
 	skillDetails = skillDetails[skillName]
-	
+
+func main_menu(newText):
+	skillName = null
+	skillDetails = null
+	skillNumber = null
+	skillNameNode.text = newText
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 #func _process(delta):
