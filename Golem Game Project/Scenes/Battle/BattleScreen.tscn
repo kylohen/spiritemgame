@@ -15,6 +15,8 @@
 [node name="BattleScreen" type="Control"]
 anchor_right = 1.0
 anchor_bottom = 1.0
+margin_left = -0.144
+margin_right = -0.144012
 script = ExtResource( 2 )
 __meta__ = {
 "_edit_use_anchors_": false
@@ -28,6 +30,7 @@ __meta__ = {
 }
 
 [node name="EnemySpriteBack" parent="EnemyGraphics" instance=ExtResource( 5 )]
+visible = false
 rect_scale = Vector2( 0.5, 0.5 )
 
 [node name="EnemySpriteFront" parent="EnemyGraphics" instance=ExtResource( 5 )]
@@ -35,6 +38,7 @@ rect_scale = Vector2( 0.5, 0.5 )
 rect_pivot_offset = Vector2( 0, 0 )
 
 [node name="EnemyBackingBack" type="TextureRect" parent="EnemyGraphics"]
+visible = false
 margin_left = 314.0
 margin_top = -1.0
 margin_right = 481.0
@@ -135,10 +139,12 @@ rect_scale = Vector2( 0.6, 0.6 )
 isPlayerSprite = true
 
 [node name="PlayerSpriteBack" parent="PlayerGraphics" instance=ExtResource( 5 )]
+visible = false
 rect_scale = Vector2( 0.6, 0.6 )
 isPlayerSprite = true
 
 [node name="PlayerBackingBack" type="TextureRect" parent="PlayerGraphics"]
+visible = false
 margin_left = -335.0
 margin_top = 112.0
 margin_right = -191.0

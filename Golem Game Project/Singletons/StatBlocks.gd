@@ -21,13 +21,15 @@ var enemyStatBlocks = {
 			"Type1": ELEMENT.Void,
 			"Type2": ELEMENT.Nature,
 			"frontSprite":"res://Assets/sprites/VoidSprites/Sprite-0003.png",
+			"NAME":"Void StrawMan Argument",
 			"HP":1,
 			"ATTACK":1,
 			"DEFENSE":1,
 			"MAGIC ATTACK":1,
 			"MAGIC DEFENSE":1,
-			"SPEED":1,
+			"SPEED":20,
 			"ASPECT":ELEMENT.Nature,
+			"MODIFIERS":{},
 			"LEVEL":1,
 			"LOOT DROP":null,
 			"ATTACK SKILLS":{
@@ -55,6 +57,7 @@ var enemyStatBlocks = {
 			"Type1": ELEMENT.Void,
 			"Type2": ELEMENT.Ice,
 			"frontSprite":"res://Assets/sprites/VoidSprites/Sprite-0001.png",
+			"NAME":"Void Slippery Slope",
 			"HP":1,
 			"ATTACK":1,
 			"DEFENSE":1,
@@ -62,6 +65,7 @@ var enemyStatBlocks = {
 			"MAGIC DEFENSE":1,
 			"SPEED":1,
 			"ASPECT":ELEMENT.Ice,
+			"MODIFIERS":{},
 			"LEVEL":1,
 			"LOOT DROP":null,
 			"ATTACK SKILLS":{
@@ -89,6 +93,7 @@ var enemyStatBlocks = {
 			"Type1": ELEMENT.Void,
 			"Type2": ELEMENT.Fire,
 			"frontSprite":"res://Assets/sprites/VoidSprites/Sprite-0004.png",
+			"NAME":"Void Gambler's Fallacy",
 			"HP":1,
 			"ATTACK":1,
 			"DEFENSE":1,
@@ -96,6 +101,7 @@ var enemyStatBlocks = {
 			"MAGIC DEFENSE":1,
 			"SPEED":1,
 			"ASPECT":ELEMENT.Fire,
+			"MODIFIERS":{},
 			"LEVEL":1,
 			"LOOT DROP":null,
 			"ATTACK SKILLS":{
@@ -126,6 +132,7 @@ var playerGolemBaseStatBlocks = {
 			"Type1": ELEMENT.Void,
 			"Type2": ELEMENT.Fire,
 			"backSprite":"res://Assets/sprites/VoidSprites/Sprite-0010.png",
+			"NAME":"StrawBoy",
 			"HP":1,
 			"ATTACK":1,
 			"DEFENSE":1,
@@ -133,6 +140,7 @@ var playerGolemBaseStatBlocks = {
 			"MAGIC DEFENSE":1,
 			"SPEED":1,
 			"ASPECT":ELEMENT.Lightning,
+			"MODIFIERS":{},
 			"LEVEL":1,
 			"ACTION METER":1,
 			"MAGIC METER":1,
@@ -162,6 +170,7 @@ var playerGolemBaseStatBlocks = {
 			"Type1": ELEMENT.Void,
 			"Type2": ELEMENT.Fire,
 			"backSprite":"res://Assets/sprites/VoidSprites/Sprite-0006.png",
+			"NAME":"Lead Zepplin",
 			"HP":1,
 			"ATTACK":1,
 			"DEFENSE":1,
@@ -169,6 +178,7 @@ var playerGolemBaseStatBlocks = {
 			"MAGIC DEFENSE":1,
 			"SPEED":1,
 			"ASPECT":ELEMENT.Fire,
+			"MODIFIERS":{},
 			"LEVEL":1,
 			"ACTION METER":1,
 			"MAGIC METER":1,
@@ -198,6 +208,7 @@ var playerGolemBaseStatBlocks = {
 			"Type1": ELEMENT.Void,
 			"Type2": ELEMENT.Fire,
 			"backSprite":"res://Assets/sprites/VoidSprites/Sprite-0008.png",
+			"NAME":"Twisted Whisker",
 			"HP":1,
 			"ATTACK":1,
 			"DEFENSE":1,
@@ -205,6 +216,7 @@ var playerGolemBaseStatBlocks = {
 			"MAGIC DEFENSE":1,
 			"SPEED":1,
 			"ASPECT":ELEMENT.Fire,
+			"MODIFIERS":{},
 			"LEVEL":1,
 			"ACTION METER":1,
 			"MAGIC METER":1,
@@ -236,6 +248,10 @@ var skillList = {
 		"Struggle":{
 			"DAMAGE":1,
 			"ASPECT": ELEMENT.Mundane,
+			"TYPE":"ATTACK",
+			
+			"MIN BONUS":.9,
+			"MAX BONUS": 1.2,
 			"IMPACT TYPE": "PHYSICAL",
 			"LOOTING MODIFIER":0,
 			"CRIT PROBABILITY":1.2,
@@ -264,6 +280,10 @@ var skillList = {
 			"DAMAGE":1,
 			"ASPECT": ELEMENT.Mundane,
 			"IMPACT TYPE": "PHYSICAL",
+			
+			"MIN BONUS":.9,
+			"MAX BONUS": 1.2,
+			"TYPE":"ATTACK",
 			"LOOTING MODIFIER":0,
 			"CRIT PROBABILITY":1.2,
 			"ACTION METER COST":1,
@@ -273,24 +293,31 @@ var skillList = {
 			},
 		},
 	3:{
-		"Flame Breath":{
-			"DAMAGE":1,
-			"ASPECT": ELEMENT.Mundane,
-			"IMPACT TYPE": "PHYSICAL",
-			"LOOTING MODIFIER":0,
-			"CRIT PROBABILITY":1.2,
-			"ACTION METER COST":0,
-			"MAGIC METER COST":1,
-			"PLAYER AFFINITY":0,
-			"TARGET":TARGET.ENEMY,
-			}
-			
+		"NAME":"Flame Breath",
+		"DAMAGE":1,
+		"ASPECT": ELEMENT.Mundane,
+		"IMPACT TYPE": "MAGICAL",
+		"TYPE":"ATTACK",
+		
+		"MIN BONUS":.9,
+		"MAX BONUS": 1.2,
+		"LOOTING MODIFIER":0,
+		"CRIT PROBABILITY":1.2,
+		"ACTION METER COST":0,
+		"MAGIC METER COST":1,
+		"PLAYER AFFINITY":0,
+		"TARGET":TARGET.ENEMY,
 		},
+			
 	4:{
 		"Iron Shell":{
 			"DAMAGE":1,
 			"ASPECT": ELEMENT.Mundane,
 			"IMPACT TYPE": "PHYSICAL",
+			"TYPE":"SUPPORT",
+			
+			"MIN BONUS":.9,
+			"MAX BONUS": 1.2,
 			"LOOTING MODIFIER":0,
 			"CRIT PROBABILITY":1.2,
 			"ACTION METER COST":1,
@@ -304,13 +331,30 @@ var skillList = {
 			"DAMAGE":1,
 			"ASPECT": ELEMENT.Mundane,
 			"IMPACT TYPE": "PHYSICAL",
+			"TYPE":"ATTACK",
+			
 			"LOOTING MODIFIER":0,
 			"CRIT PROBABILITY":1.2,
 			"ACTION METER COST":0,
 			"MAGIC METER COST":1,
 			"PLAYER AFFINITY":0,
-			"TARGET":TARGET.ENEMY,
-			}
-			
+			"TARGET":TARGET.ALLY,
+			}		
 		},
+	6:{
+		"RAH RAH":{
+			"DAMAGE":1,
+			"ASPECT": ELEMENT.Mundane,
+			"IMPACT TYPE": "PHYSICAL",
+			"TYPE":"SUPPORT",
+			"STAT": "ATTACK",
+			"STAT MOD": 1.5,
+			"LOOTING MODIFIER":0,
+			"CRIT PROBABILITY":1.2,
+			"ACTION METER COST":0,
+			"MAGIC METER COST":1,
+			"PLAYER AFFINITY":0,
+			"TARGET":TARGET.ALLY,
+			}
 	}
+}
