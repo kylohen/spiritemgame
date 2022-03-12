@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=2]
+[gd_scene load_steps=13 format=2]
 
 [ext_resource path="res://Assets/Tools/Pickaxe_UI.png" type="Texture" id=1]
 [ext_resource path="res://Assets/Tools/Shovel_UI.png" type="Texture" id=2]
@@ -12,23 +12,6 @@
 [ext_resource path="res://Scenes/UI/InventoryUI.tscn" type="PackedScene" id=10]
 [ext_resource path="res://Scenes/UI/LoreBookUI.tscn" type="PackedScene" id=11]
 [ext_resource path="res://Scenes/UI/CraftingBookUI.tscn" type="PackedScene" id=12]
-[ext_resource path="res://Scenes/Battle/BattleScreen.tscn" type="PackedScene" id=13]
-[ext_resource path="res://Animations/OverworldBattleIn.tres" type="Animation" id=14]
-
-[sub_resource type="Animation" id=1]
-length = 0.001
-tracks/0/type = "value"
-tracks/0/path = NodePath("BattleScreen:rect_position")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/keys = {
-"times": PoolRealArray( 0 ),
-"transitions": PoolRealArray( 1 ),
-"update": 0,
-"values": [ Vector2( 600, 0 ) ]
-}
 
 [node name="PlayerUI" type="Control"]
 anchor_right = 1.0
@@ -245,15 +228,6 @@ visible = false
 
 [node name="CraftingBookUI" parent="." instance=ExtResource( 12 )]
 visible = false
-
-[node name="BattleScreen" parent="." instance=ExtResource( 13 )]
-margin_left = 600.0
-margin_right = 14040.0
-margin_bottom = 7560.0
-
-[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
-anims/OverworldBattleIn = ExtResource( 14 )
-anims/RESET = SubResource( 1 )
 
 [connection signal="nextTool" from="." to="ToolUI" method="_on_PlayerUI_nextTool"]
 [connection signal="previousTool" from="." to="ToolUI" method="_on_PlayerUI_previousTool"]

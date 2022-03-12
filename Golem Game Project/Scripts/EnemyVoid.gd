@@ -18,15 +18,13 @@ func _ready():
 
 func spawn_enemy(newEnemyID, newEnemyIDBack = -1):
 	statBlock = StatBlocks.enemyStatBlocks[newEnemyID]
-	enemyName = statBlock.keys()[0]
-	statBlock = statBlock[enemyName]
+	enemyName = statBlock["NAME"]
 #	statBlock["CURRENT ACTION"] = statBlock["ACTION METER"]
 #	statBlock["CURRENT MAGIC"] = statBlock["MAGIC METER"]
 	statBlock["CURRENT HP"] = statBlock["HP"]
 	if newEnemyIDBack != -1:
 		statBlockBack = StatBlocks.enemyStatBlocks[newEnemyIDBack]
-		enemyBackName = statBlockBack.keys()[0]
-		statBlockBack = statBlockBack[enemyBackName]
+		enemyBackName = statBlock["NAME"]
 		statBlockBack["CURRENT HP"] = statBlock["HP"]
 	pass
 	

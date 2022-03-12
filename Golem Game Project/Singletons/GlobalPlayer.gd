@@ -28,6 +28,7 @@ var PLAYERSTATS = {
 		"SKILL4":1,
 	}
 }
+var isInAnimation = false
 func _ready():
 	currentPLAYSTATE = PLAYSTATE.GAME
 	pass # Replace with function body.
@@ -169,10 +170,9 @@ func add_golem(golemID):
 		return false
 	else:
 		var newGolemInput = StatBlocks.playerGolemBaseStatBlocks[golemID].duplicate()
-		var golemName = newGolemInput.keys()[0]
 #		print(newGolemInput[golemName]["ACTION METER"])
-		newGolemInput[golemName]["CURRENT ACTION"] = newGolemInput[golemName]["ACTION METER"]
-		newGolemInput[golemName]["CURRENT MAGIC"] = newGolemInput[golemName]["MAGIC METER"]
-		newGolemInput[golemName]["CURRENT HP"] = newGolemInput[golemName]["HP"]
+		newGolemInput["CURRENT ACTION"] = newGolemInput["ACTION METER"]
+		newGolemInput["CURRENT MAGIC"] = newGolemInput["MAGIC METER"]
+		newGolemInput["CURRENT HP"] = newGolemInput["HP"]
 		partyGolems.append(newGolemInput)
 

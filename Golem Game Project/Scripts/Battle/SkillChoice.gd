@@ -15,9 +15,8 @@ func _ready():
 func set_skill(newSkillNumber):
 	skillNumber = newSkillNumber
 	skillDetails = StatBlocks.skillList[skillNumber]
-	skillName = skillDetails.keys()[0]
+	skillName = skillDetails["NAME"]
 	skillNameNode.text = skillName
-	skillDetails = skillDetails[skillName]
 
 func main_menu(newText):
 	skillName = null

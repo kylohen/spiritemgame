@@ -6,8 +6,8 @@ onready var inventoryUI = $InventoryUI
 onready var loreBookUI = $LoreBookUI
 onready var craftingBookUI = $CraftingBookUI
 onready var animationPlayer = $AnimationPlayer
-onready var battleScreen = $BattleScreen
-
+onready var battleScreenScene = preload("res://Scenes/Battle/BattleScreen.tscn")
+var battleScreen
 enum {NONE,INVENTORY,INVENTORY_SUBMENU,LORE,CRAFTING}
 # Declare member variables here. Examples:
 # var a = 2
@@ -132,7 +132,7 @@ func process_player_input():
 				craftingBookUI.move_down()
 			if Input.is_action_just_pressed("ui_accept"):
 				craftingBookUI.selected()
-	elif GlobalPlayer.is_PLAYSTATE(GlobalPlayer.PLAYSTATE.BATTLE):
+	elif GlobalPlayer.is_PLAYSTATE(GlobalPlayer.PLAYSTATE.BATTLE) and !GlobalPlayer.isInAnimation:
 		if Input.is_action_just_released("ui_cancel"):
 			battleScreen.ui_cancel()
 		if Input.is_action_just_pressed("ui_right"):
@@ -193,5 +193,15 @@ func _on_Cave_loot_received(lootType,quantityOfLoot):
 
 
 func _enemy_battle_start(enemyNode):
+	battleScreen = battleScreenScene.instance()
+	
+	add_child(battleScreen)
 	battleScreen.start_encounter(enemyNode)
-	animationPlayer.play("OverworldBattleIn")
+	battleScreen.load_in()
+func _enemy_battle_end():
+	battleScreen.load_out()
+
+		
+	
+	
+	pass # Replace with function body.

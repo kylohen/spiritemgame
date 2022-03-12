@@ -85,3 +85,5 @@ value = 50.0
 allow_greater = true
 allow_lesser = true
 percent_visible = false
+
+[node name="BarTween" type="Tween" parent="."]
