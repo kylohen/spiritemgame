@@ -5,7 +5,7 @@ onready var popUpAlertContainer = $PopUpAlertUI/PopUpContainer
 onready var inventoryUI = $InventoryUI
 onready var loreBookUI = $LoreBookUI
 onready var craftingBookUI = $CraftingBookUI
-onready var animationPlayer = $AnimationPlayer
+#onready var animationPlayer = $AnimationPlayer
 onready var battleScreenScene = preload("res://Scenes/Battle/BattleScreen.tscn")
 var battleScreen
 enum {NONE,INVENTORY,INVENTORY_SUBMENU,LORE,CRAFTING}
@@ -74,6 +74,7 @@ func process_player_input():
 			currentMenu = INVENTORY
 			inventoryUI.update_inventory()
 			inventoryUI.show()
+			inventoryUI.load_golems()
 	elif GlobalPlayer.is_PLAYSTATE(GlobalPlayer.PLAYSTATE.PAUSE):
 		
 		if Input.is_action_just_pressed("Next_Page"):
@@ -200,6 +201,7 @@ func _enemy_battle_start(enemyNode):
 	battleScreen.load_in()
 func _enemy_battle_end():
 	battleScreen.load_out()
+	GlobalPlayer.currentPLAYSTATE = GlobalPlayer.PLAYSTATE.GAME
 
 		
 	

@@ -335,25 +335,44 @@ __meta__ = {
 }
 
 [node name="PartySlotUI1" parent="BookMarginContainer/BookBackground/PartyMenu" instance=ExtResource( 4 )]
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_right = 104.0
+margin_bottom = 0.0
 
 [node name="PartySlotUI2" parent="BookMarginContainer/BookBackground/PartyMenu" instance=ExtResource( 4 )]
+anchor_right = 0.0
+anchor_bottom = 0.0
 margin_top = 20.0
+margin_right = 104.0
 margin_bottom = 20.0
 
 [node name="PartySlotUI3" parent="BookMarginContainer/BookBackground/PartyMenu" instance=ExtResource( 4 )]
+anchor_right = 0.0
+anchor_bottom = 0.0
 margin_top = 40.0
+margin_right = 104.0
 margin_bottom = 40.0
 
 [node name="PartySlotUI4" parent="BookMarginContainer/BookBackground/PartyMenu" instance=ExtResource( 4 )]
+anchor_right = 0.0
+anchor_bottom = 0.0
 margin_top = 60.0
+margin_right = 104.0
 margin_bottom = 60.0
 
 [node name="PartySlotUI5" parent="BookMarginContainer/BookBackground/PartyMenu" instance=ExtResource( 4 )]
+anchor_right = 0.0
+anchor_bottom = 0.0
 margin_top = 80.0
+margin_right = 104.0
 margin_bottom = 80.0
 
 [node name="PartySlotUI6" parent="BookMarginContainer/BookBackground/PartyMenu" instance=ExtResource( 4 )]
+anchor_right = 0.0
+anchor_bottom = 0.0
 margin_top = 100.0
+margin_right = 104.0
 margin_bottom = 100.0
 
 [node name="PlayerSelectionPartyMenu" type="VBoxContainer" parent="BookMarginContainer/BookBackground"]

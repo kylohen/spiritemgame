@@ -21,10 +21,10 @@ var RecipeDict = {
 		},
 	}
 
-onready var recipesRow1 = $BookBackground/Recipes/Row1
-onready var recipesRow2 = $BookBackground/Recipes/Row2
-onready var playerRow1 = $BookBackground/PlayerSelection/Row1
-onready var playerRow2 = $BookBackground/PlayerSelection/Row2
+onready var recipesRow1 = $MarginContainer/BookBackground/Recipes/Row1
+onready var recipesRow2 = $MarginContainer/BookBackground/Recipes/Row2
+onready var playerRow1 = $MarginContainer/BookBackground/PlayerSelection/Row1
+onready var playerRow2 = $MarginContainer/BookBackground/PlayerSelection/Row2
 
 var playerSelection = 0
 

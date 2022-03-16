@@ -15,7 +15,7 @@ onready var battleWinScreen = $PopUpWindows/BattleWin
 onready var sceneLoadInAndOut = $SceneLoadInAndOut
 
 enum MENU{ATTACK,SUPPORT,DEFEND,FLEE, NONE, WIN}
-enum {REST,ATTACK,HIT,SUPPORT,DEFEND,FLEE}
+enum {REST,ATTACK,HIT,SUPPORT,DEFEND,FLEE,DEATH}
 var currentMenu = MENU.NONE
 var playerSelection  = 3
 var previousPlayerSelection = null
@@ -53,7 +53,8 @@ var waitingForPlayerInput = false
 enum SELECTIONSTATE{SKILLS,ENEMY,ALLY}
 onready var currentSelectionState=SELECTIONSTATE.SKILLS
 
-var lootToWin = {}
+var lootToWin = []
+var battleWon = false
 ###################### BUILDING ENCOUNTER ############################################
 func _ready():
 	sceneSetup.play("RESET")
@@ -86,19 +87,21 @@ func load_player_golems(enemiesInBattle = 1):
 			AllyGolems.append(playerFront)
 			AllyGolemsSkillUsed.append(false)
 		elif i == 0 and i <= GlobalPlayer.partyGolems.size()-1:
-			playerFrontName =GlobalPlayer.partyGolems[i]["NAME"]
-			playerFront = GlobalPlayer.partyGolems[i].duplicate()
-			
-			playerGraphics.get_node("PlayerBackingFront/PlayerName").text = playerFrontName
-			playerGraphics.get_node("PlayerSpriteFront").load_sprite(playerFront["backSprite"])
+#			playerFrontName =GlobalPlayer.partyGolems[i]["NAME"]
+#			playerFront = GlobalPlayer.partyGolems[i].duplicate()
+#
+#			playerGraphics.get_node("PlayerBackingFront/PlayerName").text = playerFrontName
+#			playerGraphics.get_node("PlayerSpriteFront").load_sprite(playerFront["backSprite"])
 
-			playerCount += 1
 			
-			initialize_ui_bars(playerFront,playerFrontUIBar)
-			playerFront["NODE"] = playerGraphics.get_node("PlayerSpriteFront")
-			playerFront["UI NODE"] = playerFrontUIBar
+#			initialize_ui_bars(playerFront,playerFrontUIBar)
+#			playerFront["NODE"] = playerGraphics.get_node("PlayerSpriteFront")
+#			playerFront["UI NODE"] = playerFrontUIBar
+			load_front_player(GlobalPlayer.partyGolems[i].duplicate())
 			AllyGolems.append(playerFront)
 			AllyGolemsSkillUsed.append(false)
+			playerCount += 1
+			
 		elif i == 1 and i <= GlobalPlayer.partyGolems.size()-1:
 			playerBackName =GlobalPlayer.partyGolems[i]["NAME"]
 			playerBack = GlobalPlayer.partyGolems[i].duplicate()
@@ -116,18 +119,21 @@ func load_player_golems(enemiesInBattle = 1):
 			lose_1_player()
 		selectedGolem = AllyGolems[0]
 func load_enemy_golems(enemyNode):
-	enemyGraphics.get_node("EnemyBackingFront/EnemyName").text = enemyNode.enemyName
-	enemyFront = enemyNode.statBlock.duplicate()
-	enemyGraphics.get_node("EnemySpriteFront").load_sprite((enemyFront["frontSprite"]))
-	enemyCount =1
-	enemyFrontName = enemyNode.enemyName
-#	update_health_bars(enemyFront,enemyFrontUIBar)
-#	update_ui_aspect(enemyFront,enemyFrontUIBar)
-
-	initialize_ui_bars(enemyFront,enemyFrontUIBar)
-	enemyFront["NODE"] = enemyGraphics.get_node("EnemySpriteFront")
-	enemyFront["UI NODE"] = enemyFrontUIBar
+	
+	load_front_enemy(enemyNode.statBlock.duplicate())
+#	enemyGraphics.get_node("EnemyBackingFront/EnemyName").text = enemyNode.enemyName
+#	enemyFront = enemyNode.statBlock.duplicate()
+#	enemyGraphics.get_node("EnemySpriteFront").load_sprite((enemyFront["frontSprite"]))
+#	enemyCount =1
+#	enemyFrontName = enemyNode.enemyName
+##	update_health_bars(enemyFront,enemyFrontUIBar)
+##	update_ui_aspect(enemyFront,enemyFrontUIBar)
+#
+#	initialize_ui_bars(enemyFront,enemyFrontUIBar)
+#	enemyFront["NODE"] = enemyGraphics.get_node("EnemySpriteFront")
+#	enemyFront["UI NODE"] = enemyFrontUIBar
 	EnemyGolems.append(enemyFront)
+	enemyCount =1
 	if enemyNode.enemyName == "":
 		if enemyNode.isElite == true:
 			sceneSetup.play("1v1 Elite")
@@ -146,7 +152,25 @@ func load_enemy_golems(enemyNode):
 		enemyBack["UI NODE"] = enemyBackUIBar
 		EnemyGolems.append(enemyBack)
 		pass
+func load_front_enemy(enemyDict):
+	enemyGraphics.get_node("EnemyBackingFront/EnemyName").text = enemyDict["NAME"]
+	enemyFront = enemyDict
+	enemyGraphics.get_node("EnemySpriteFront").load_sprite((enemyFront["frontSprite"]))
 	
+	enemyFrontName = enemyDict["NAME"]
+	initialize_ui_bars(enemyFront,enemyFrontUIBar)
+	enemyFront["NODE"] = enemyGraphics.get_node("EnemySpriteFront")
+	enemyFront["UI NODE"] = enemyFrontUIBar
+func load_front_player(playerDict):
+	
+	playerFrontName = playerDict["NAME"]
+	playerFront = playerDict
+	playerGraphics.get_node("PlayerBackingFront/PlayerName").text = playerFrontName
+	playerGraphics.get_node("PlayerSpriteFront").load_sprite(playerFront["backSprite"])
+	
+	initialize_ui_bars(playerFront,playerFrontUIBar)
+	playerFront["NODE"] = playerGraphics.get_node("PlayerSpriteFront")
+	playerFront["UI NODE"] = playerFrontUIBar
 func initialize_ui_bars(stats,locationOfUI):
 #	initialize(health,healthMax,action,actionMax,magic,magicMax)
 	locationOfUI.initialize(stats["CURRENT HP"],stats["HP"], stats["CURRENT ACTION"], stats["ACTION METER"], stats["CURRENT MAGIC"], stats["MAGIC METER"])
@@ -204,7 +228,7 @@ func find_turn_order():
 #			turnOrder.append([enemyBackName,enemyBack])
 #		elif enemyCount < playerCount:
 #			turnOrder.append([enemyFrontName,enemyFront])
-	print(currentBattleState)
+#	print(currentBattleState)
 
 
 ############################### BATTLE MECHANICS ##########################################
@@ -221,11 +245,11 @@ func put_player_in_battle():
 	pass
 func player_turn():
 	var textNode = prompt.get_node("PromptText") 
-	textNode.rect_scale = Vector2(1,1)
+	textNode.rect_scale = Vector2(.5,.5)
 	textNode.text = ""
 	textNode.text = "What will you do?"
 	var tween = prompt.get_node("PromptTween")
-	tween.interpolate_property(textNode,"percent_visibe",0.0,1.0,5,Tween.TRANS_LINEAR)
+	tween.interpolate_property(textNode,"percent_visible",0.0,1.0,2,Tween.TRANS_LINEAR)
 	tween.start()
 	selectedGolem = AllyGolems[0]
 	waitingForPlayerInput = true
@@ -247,12 +271,12 @@ func enemy_turn():
 		textNode.text += str(EnemyGolems[1]["NAME"]) + "is about to use " + str(find_golems_attack_and_target(EnemyGolems[1])) +"\n"
 	textNode.text += "What will you do?"
 	var tween = prompt.get_node("PromptTween")
-	tween.interpolate_property(textNode,"percent_visibe",0.0,1.0,15,Tween.TRANS_LINEAR)
+	tween.interpolate_property(textNode,"percent_visible",0.0,1.0,2,Tween.TRANS_LINEAR)
 	tween.start()
 	selectedGolem = AllyGolems[0]
 	waitingForPlayerInput = true
 func decide_enemy_move():
-	var GolemToAttack = SeedGenerator.rng.randi_range(1,EnemyGolems.size())
+	var GolemToAttack = SeedGenerator.rng.randi_range(0,EnemyGolems.size()-1)
 	for i in EnemyGolems.size():
 		var skillUsed
 		if GolemToAttack == i:
@@ -357,29 +381,93 @@ func update_ui_action_bars(nodeToUpdate,skillUsedForCost):
 	pass
 func update_ui_health_bar(nodeToUpdate,newHP):
 	nodeToUpdate.update_ui_health_bar(newHP)
+
+func debug_pendingSkills():
+	var string = ""
+	for i in pendingSkills.size():
+		for j in 3:
+			string += pendingSkills[i][j]["NAME"] + ",  "
+			if j == 2:
+				string += " Type: "+ pendingSkills[i][j]["TYPE"]+"\n"
+				
+	return string
+func check_if_golem_dead(golemInQuestion):
+	if AllyGolems.has(golemInQuestion) or EnemyGolems.has(golemInQuestion):
+		return false
+	return true
+
+	
+
+func sort_by_speed(a, b):
+	if typeof(a) == typeof(b):
+		var speedModifierA = 1
+		var speedModifierB = 1
+		if a[0]["MODIFIERS"].has("SPEED"):
+			speedModifierA =  a[0]["MODIFIERS"]["SPEED"]
+		if b[0]["MODIFIERS"].has("SPEED"):
+			speedModifierB =  b[0]["MODIFIERS"]["SPEED"]
+		return (a[0]["SPEED"]*speedModifierA)>(b[0]["SPEED"]*speedModifierB)
+	else:
+		return a > b
+func update_combat_text(actionSet):
+	prompt.get_node("PromptText").text = actionSet[0]["NAME"]+" uses "+actionSet[2]["NAME"]+" on "+actionSet[1]["NAME"]
+	prompt.get_node("PromptTween").interpolate_property(prompt.get_node("PromptText"),"percent_visible",0.0,1.0,1)
+	prompt.get_node("PromptTween").start()
 func resolve_turn():
+	GlobalPlayer.isInAnimation = true
 	while !pendingSkills.empty():
+		print (debug_pendingSkills())
+		pendingSkills.sort_custom(self,"sort_by_speed")
 		for i in range (pendingSkills.size(),0,-1):
+			print (debug_pendingSkills(), "\n Loop ",i)
 			if pendingSkills[i-1][2]["TYPE"] == "SUPPORT":
 				pendingSkills[i-1][1]["MODIFIERS"] = {[pendingSkills[i-1][2]["STAT"]]: pendingSkills[i-1][2]["STAT MOD"]}
+				update_combat_text(pendingSkills[i-1])
 				animate_sprite(pendingSkills[i-1][0]["NODE"],SUPPORT)
 				yield(pendingSkills[i-1][0]["NODE"],"sprite_animation_done")
 				update_ui_action_bars(pendingSkills[i-1][0]["UI NODE"],pendingSkills[i-1][2])
+				
 				pendingSkills.erase(pendingSkills[i-1])
+				
+				print (debug_pendingSkills(), "\n Loop ",i)
+		pendingSkills.sort_custom(self,"sort_by_speed")
 		for i in range (pendingSkills.size(),0,-1):
+			print (debug_pendingSkills(), "\n Loop ",i)
 			if pendingSkills[i-1][2]["TYPE"] == "DEFEND":
 				pendingSkills[i-1][1]["MODIFIERS"] = {[pendingSkills[i-1][2]["STAT"]]:pendingSkills[i-1][2]["STAT MOD"]}
+				update_combat_text(pendingSkills[i-1])
 				animate_sprite(pendingSkills[i-1][0]["NODE"],DEFEND)
 				yield(pendingSkills[i-1][0]["NODE"],"sprite_animation_done")
 				update_ui_action_bars(pendingSkills[i-1][0]["UI NODE"],pendingSkills[i-1][2])
 				pendingSkills.erase(pendingSkills[i-1])
-		
-		
+				
+				print (debug_pendingSkills(), "\n Loop ",i)
+		pendingSkills.sort_custom(self,"sort_by_speed")
 		for i in range (pendingSkills.size(),0,-1):
+			print (debug_pendingSkills(), "\n Loop ",i)
 			if pendingSkills[i-1][2]["TYPE"] == "ATTACK":
 				var damage 
 				var attackWithMod
 				var targetDefenseWithMod
+				if check_if_golem_dead(pendingSkills[i-1][0]): ## Golem is dead and can no longer attack
+					pendingSkills.erase(pendingSkills[i-1])
+					continue
+				elif check_if_golem_dead(pendingSkills[i-1][1]): ## Target Golem is dead, check to see if another is present
+					if pendingSkills[i-1][2]["TARGET"] == StatBlocks.TARGET.ALLY: ##Select self instead
+						pendingSkills[i-1][1] = pendingSkills[i-1][0]
+						
+					elif AllyGolems.has(pendingSkills[i-1][0]): ##AllyGolem attacks other enemy instead
+						if pendingSkills[i-1][2]["TARGET"] == StatBlocks.TARGET.ENEMY:
+							pendingSkills[i-1][1] = EnemyGolems[0]
+					elif EnemyGolems.has(pendingSkills[i-1][0]): ##EnermyGolem attacks other playerGolem instead
+						if pendingSkills[i-1][2]["TARGET"] == StatBlocks.TARGET.ENEMY:
+							pendingSkills[i-1][1] = AllyGolems[0]
+					else: #All targetable attack targets dead
+						pendingSkills.erase(pendingSkills[i-1])
+						continue
+						
+#				check_if_golem_dead(pendingSkills[i-1][1])
+#				check_if_golem_dead_and_redirect(pendingSkills[i-1][1])
 				if pendingSkills[i-1][2]["IMPACT TYPE"] == "PHYSICAL":
 					attackWithMod =  pendingSkills[i-1][0]["ATTACK"] #Base Attack
 					targetDefenseWithMod = pendingSkills[i-1][0]["DEFENSE"]
@@ -402,17 +490,20 @@ func resolve_turn():
 							targetDefenseWithMod *= pendingSkills[i-1][1]["MODIFIERS"]["MAGIC DEFENSE"]
 				var skillRand = SeedGenerator.rng.randf_range(pendingSkills[i-1][2]["MIN BONUS"],pendingSkills[i-1][2]["MAX BONUS"]) 
 				damage = attackWithMod/targetDefenseWithMod*pendingSkills[i-1][2]["BASE DAMAGE"] * (pendingSkills[i-1][0]["LEVEL"]*0.2)*pendingSkills[i-1][0]["AFFINITY"] * skillRand# * CoreMultiplier * CompostionMultiplier * EnvironmentalMultiplier #
+				##DEBUG rounding damage:
+				damage = ceil(damage)
+				pendingSkills[i-1][1]["HP"] -= damage
+				prompt.get_node("PromptText").text= pendingSkills[i-1][0]["NAME"]+ " is attacking " + pendingSkills[i-1][1]["NAME"]+ " and is doing " + str(damage) + " damage" +"\n"
+				prompt.get_node("PromptText").text+= pendingSkills[i-1][1]["NAME"]+ " is at "+ str(pendingSkills[i-1][1]["HP"])+ " HP"
 				animate_sprite(pendingSkills[i-1][0]["NODE"],ATTACK)
 				yield(pendingSkills[i-1][0]["NODE"],"sprite_animation_done")
+				animate_sprite(pendingSkills[i-1][1]["NODE"],HIT)
+				yield(pendingSkills[i-1][1]["NODE"],"sprite_animation_done")
 				update_ui_action_bars(pendingSkills[i-1][0]["UI NODE"],pendingSkills[i-1][2])
-				pendingSkills[i-1][1]["HP"] -= damage
-				
 				update_ui_health_bar(pendingSkills[i-1][1]["UI NODE"],pendingSkills[i-1][1]["HP"])
 				
 				
-				animate_sprite(pendingSkills[i-1][0]["NODE"],HIT)
-				yield(pendingSkills[i-1][0]["NODE"],"sprite_animation_done")
-				if pendingSkills[i-1][1]["HP"]  <= 0:
+				if pendingSkills[i-1][1]["HP"]  <=  0:
 					pendingSkills[i-1][1]["HP"] = 0
 					if EnemyGolems.has(pendingSkills[i-1][1]):
 						enemy_death(pendingSkills[i-1][1])
@@ -422,6 +513,7 @@ func resolve_turn():
 						else:player_golem_death(pendingSkills[i-1][1])
 				
 				pendingSkills.erase(pendingSkills[i-1])
+	GlobalPlayer.isInAnimation = false
 	end_turn()
 func next_turn():
 	if currentBattleState == BATTLESTATE.PLAYERTURN:
@@ -466,10 +558,10 @@ func use_skill(target):
 	update_cursor_location_on_current_SELECTIONSTATE()
 	
 	if check_end_turn():
-		if currentTurn == BATTLESTATE.PLAYERTURN:
+		if currentBattleState == BATTLESTATE.PLAYERTURN:
+			decide_enemy_move()
 			resolve_turn()
 		else:
-			decide_enemy_move()
 			resolve_turn()
 	else:
 		change_selected_golem()
@@ -492,32 +584,69 @@ func clear_golem_modifers():
 			EnemyGolems[i]["MODIFIERS"] = {}
 func end_turn():
 #	select_player_choice(playerSelection)
-	reset_selection()
-	clear_golem_modifers()
-	next_turn()
-	
-	
-func enemy_death(golemToDie):
-	
-	
 	if EnemyGolems.empty():
 		win_battle()
+	else:
+		reset_selection()
+		clear_golem_modifers()
+		next_turn()
+	
+func void_loot(golemToDie):
+	var lootTable = golemToDie["LOOT DROP"]
+	var itemName = lootTable.keys()
+	for i in itemName.size():
+		lootToWin.append([itemName[i],lootTable[itemName[i]]])
+func enemy_death(golemToDie):
+	void_loot(golemToDie)
+	if EnemyGolems.size() > 1:
+		lose_1_enemy()
+		if enemyFront == golemToDie:
+			animate_sprite(EnemyGolems[0]["NODE"],DEATH)
+#			yield(EnemyGolems[0]["NODE"],"sprite_animation_done")
+			EnemyGolems.remove(0)
+			load_front_enemy(EnemyGolems[0])
+		elif enemyBack == golemToDie:
+			animate_sprite(EnemyGolems[1]["NODE"],DEATH)
+#			yield(EnemyGolems[1]["NODE"],"sprite_animation_done")
+			EnemyGolems.remove(1)
+	else:
+		EnemyGolems.remove(0)
+		sceneSetup.play("WIN")
+	pass
+
+func player_golem_death(golemToDie):
+	if AllyGolems.size() > 1:
+		lose_1_player()
+		if playerFront == AllyGolems[0]:
+			animate_sprite(AllyGolems[0]["NODE"],DEATH)
+#			yield(AllyGolems[0]["NODE"],"sprite_animation_done")
+			AllyGolems.remove(0)
+			load_front_player(AllyGolems[0])
+		elif enemyBack == AllyGolems[1]:
+			animate_sprite(AllyGolems[1]["NODE"],DEATH)
+#			yield(AllyGolems[1]["NODE"],"sprite_animation_done")
+			AllyGolems.remove(1)
+	elif !playerInBattle:
+		playerInBattle = true
+		AllyGolems.remove(0)
+		load_front_player(GlobalPlayer.PLAYERSTATS)
+		AllyGolems.append(GlobalPlayer.PLAYERSTATS)
 	pass
 func player_death():
 	get_tree().reload_current_scene()
 	pass
-func player_golem_death(golemToDie):
-	pass
-
 func win_battle():
 	battleWinScreen.show()
+	currentMenu = MENU.WIN
+	battleWon = true
 	var lootLabel = battleWinScreen.get_node("Label")
-	var itemNames = lootToWin.keys()
-	for i in itemNames.size():
-		var qty = lootToWin[itemNames[i]]
-		GlobalPlayer.add_loot(itemNames[i],qty)
-		lootLabel += itemNames[i] + " x"+ str(qty) +"\n"
-	lootToWin
+#	var itemNames = lootToWin.keys()
+	for i in lootToWin.size():
+		var itemName = lootToWin[i][0]
+		var qty = lootToWin[i][1]
+		GlobalPlayer.add_loot(itemName,qty)
+		lootLabel.text += itemName + " x"+ str(qty) +"\n"
+
 ################################ UI NAVIGATION ##############################################
 
 ## Skills and menu coices are 1-6

@@ -1,7 +1,8 @@
-[gd_scene load_steps=3 format=2]
+[gd_scene load_steps=4 format=2]
 
 [ext_resource path="res://Assets/UI/Inventory/ItemUI/sprite_item_backdrop.png" type="Texture" id=1]
 [ext_resource path="res://Scripts/UI/InventoryItemUI.gd" type="Script" id=2]
+[ext_resource path="res://Assets/Font/GOLEMNOMICON_UI/Default_UI.tres" type="DynamicFont" id=3]
 
 [node name="InventorySlotUI" type="Control"]
 anchor_right = 0.05
@@ -35,12 +36,7 @@ margin_right = 31.0
 margin_bottom = 27.0
 rect_min_size = Vector2( 16, 14 )
 rect_scale = Vector2( 0.5, 0.5 )
-custom_colors/font_outline_modulate = Color( 0, 0, 0, 1 )
-custom_colors/font_color_shadow = Color( 0, 0, 0, 1 )
-custom_constants/shadow_offset_x = 2
-custom_constants/line_spacing = 2
-custom_constants/shadow_offset_y = 0
-custom_constants/shadow_as_outline = 1
+custom_fonts/font = ExtResource( 3 )
 align = 2
 __meta__ = {
 "_edit_use_anchors_": false

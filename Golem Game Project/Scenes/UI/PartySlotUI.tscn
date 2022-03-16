@@ -1,22 +1,20 @@
-[gd_scene load_steps=2 format=2]
+[gd_scene load_steps=4 format=2]
 
+[ext_resource path="res://Assets/Font/GOLEMNOMICON_UI/Default_UI.tres" type="DynamicFont" id=1]
 [ext_resource path="res://Assets/UI/Inventory/party_background.png" type="Texture" id=2]
+[ext_resource path="res://Scripts/UI/PartySlotUI.gd" type="Script" id=3]
 
 [node name="PartySlotUI" type="Control"]
-margin_right = 104.0
+anchor_right = 0.212
+anchor_bottom = 0.068
+margin_right = 0.23999
+margin_bottom = -0.360001
+script = ExtResource( 3 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="MarginContainer" type="MarginContainer" parent="."]
-anchor_right = 0.981
-margin_right = -0.0240097
-margin_bottom = 18.0
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="SlotBackground" type="TextureRect" parent="MarginContainer"]
+[node name="SlotBackground" type="TextureRect" parent="."]
 margin_right = 102.0
 margin_bottom = 18.0
 texture = ExtResource( 2 )
@@ -24,24 +22,114 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer"]
-margin_right = 102.0
-margin_bottom = 18.0
-alignment = 2
-
-[node name="Golem" type="TextureRect" parent="MarginContainer/HBoxContainer"]
+[node name="Golem" type="TextureRect" parent="SlotBackground"]
 margin_right = 20.0
 margin_bottom = 18.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 expand = true
 stretch_mode = 5
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
-[node name="PartyDetails" type="RichTextLabel" parent="MarginContainer/HBoxContainer"]
+[node name="Name" type="Label" parent="SlotBackground"]
 margin_left = 24.0
-margin_right = 102.0
-margin_bottom = 18.0
+margin_right = 136.0
+margin_bottom = 15.0
 rect_min_size = Vector2( 78, 0 )
+rect_scale = Vector2( 0.5, 0.5 )
+custom_fonts/font = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="LevelStatic" type="Label" parent="SlotBackground"]
+margin_left = 81.0
+margin_right = 103.0
+margin_bottom = 15.0
+rect_scale = Vector2( 0.5, 0.5 )
+custom_fonts/font = ExtResource( 1 )
+text = "Lvl"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Level" type="Label" parent="SlotBackground"]
+margin_left = 94.0
+margin_right = 107.0
+margin_bottom = 15.0
+rect_scale = Vector2( 0.5, 0.5 )
+custom_fonts/font = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="HPStatic" type="Label" parent="SlotBackground"]
+margin_left = 25.0
+margin_top = 13.0
+margin_right = 48.0
+margin_bottom = 28.0
+rect_scale = Vector2( 0.25, 0.25 )
+custom_fonts/font = ExtResource( 1 )
+text = "HP:"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="HP" type="Label" parent="SlotBackground"]
+margin_left = 32.0
+margin_top = 13.0
+margin_right = 76.0
+margin_bottom = 28.0
+rect_scale = Vector2( 0.25, 0.25 )
+custom_fonts/font = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ActionStatic" type="Label" parent="SlotBackground"]
+margin_left = 57.0
+margin_top = 13.0
+margin_right = 70.0
+margin_bottom = 28.0
+rect_scale = Vector2( 0.25, 0.25 )
+custom_fonts/font = ExtResource( 1 )
+text = "A:"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Action" type="Label" parent="SlotBackground"]
+margin_left = 87.0
+margin_top = 13.0
+margin_right = 125.0
+margin_bottom = 28.0
+rect_scale = Vector2( 0.25, 0.25 )
+custom_fonts/font = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="MagicStatic" type="Label" parent="SlotBackground"]
+margin_left = 82.0
+margin_top = 13.0
+margin_right = 99.0
+margin_bottom = 28.0
+rect_scale = Vector2( 0.25, 0.25 )
+custom_fonts/font = ExtResource( 1 )
+text = "M:"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Magic" type="Label" parent="SlotBackground"]
+margin_left = 61.0
+margin_top = 13.0
+margin_right = 99.0
+margin_bottom = 28.0
+rect_scale = Vector2( 0.25, 0.25 )
+custom_fonts/font = ExtResource( 1 )
 __meta__ = {
 "_edit_use_anchors_": false
 }

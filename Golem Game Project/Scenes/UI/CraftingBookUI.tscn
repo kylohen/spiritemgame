@@ -15,7 +15,16 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="BookBackground" type="TextureRect" parent="."]
+[node name="MarginContainer" type="MarginContainer" parent="."]
+margin_left = 44.0
+margin_top = 28.0
+margin_right = 428.0
+margin_bottom = 244.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="BookBackground" type="TextureRect" parent="MarginContainer"]
 margin_right = 384.0
 margin_bottom = 216.0
 texture = ExtResource( 2 )
@@ -24,7 +33,7 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="LorePageTurning" type="HBoxContainer" parent="BookBackground"]
+[node name="LorePageTurning" type="HBoxContainer" parent="MarginContainer/BookBackground"]
 margin_left = 60.0
 margin_top = 152.0
 margin_right = 324.0
@@ -34,7 +43,7 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="BackButton" type="TextureButton" parent="BookBackground/LorePageTurning"]
+[node name="BackButton" type="TextureButton" parent="MarginContainer/BookBackground/LorePageTurning"]
 modulate = Color( 0, 0, 0, 1 )
 margin_right = 85.0
 margin_bottom = 9.0
@@ -45,7 +54,7 @@ expand = true
 stretch_mode = 5
 flip_h = true
 
-[node name="NextButton" type="TextureButton" parent="BookBackground/LorePageTurning"]
+[node name="NextButton" type="TextureButton" parent="MarginContainer/BookBackground/LorePageTurning"]
 modulate = Color( 0, 0, 0, 1 )
 margin_left = 179.0
 margin_right = 264.0
@@ -56,7 +65,7 @@ texture_normal = ExtResource( 3 )
 expand = true
 stretch_mode = 5
 
-[node name="Recipes" type="HBoxContainer" parent="BookBackground"]
+[node name="Recipes" type="HBoxContainer" parent="MarginContainer/BookBackground"]
 margin_left = 72.0
 margin_top = 36.0
 margin_right = 312.0
@@ -68,75 +77,75 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Row1" type="VBoxContainer" parent="BookBackground/Recipes"]
+[node name="Row1" type="VBoxContainer" parent="MarginContainer/BookBackground/Recipes"]
 margin_bottom = 113.0
 rect_pivot_offset = Vector2( -188, 63 )
 custom_constants/separation = 19
 
-[node name="RecipeSlotUI1" parent="BookBackground/Recipes/Row1" instance=ExtResource( 4 )]
+[node name="RecipeSlotUI1" parent="MarginContainer/BookBackground/Recipes/Row1" instance=ExtResource( 4 )]
 margin_right = 0.0
 
-[node name="RecipeSlotUI2" parent="BookBackground/Recipes/Row1" instance=ExtResource( 4 )]
+[node name="RecipeSlotUI2" parent="MarginContainer/BookBackground/Recipes/Row1" instance=ExtResource( 4 )]
 margin_top = 19.0
 margin_right = 0.0
 margin_bottom = 19.0
 
-[node name="RecipeSlotUI3" parent="BookBackground/Recipes/Row1" instance=ExtResource( 4 )]
+[node name="RecipeSlotUI3" parent="MarginContainer/BookBackground/Recipes/Row1" instance=ExtResource( 4 )]
 margin_top = 38.0
 margin_right = 0.0
 margin_bottom = 38.0
 
-[node name="RecipeSlotUI4" parent="BookBackground/Recipes/Row1" instance=ExtResource( 4 )]
+[node name="RecipeSlotUI4" parent="MarginContainer/BookBackground/Recipes/Row1" instance=ExtResource( 4 )]
 margin_top = 57.0
 margin_right = 0.0
 margin_bottom = 57.0
 
-[node name="RecipeSlotUI5" parent="BookBackground/Recipes/Row1" instance=ExtResource( 4 )]
+[node name="RecipeSlotUI5" parent="MarginContainer/BookBackground/Recipes/Row1" instance=ExtResource( 4 )]
 margin_top = 76.0
 margin_right = 0.0
 margin_bottom = 76.0
 
-[node name="RecipeSlotUI6" parent="BookBackground/Recipes/Row1" instance=ExtResource( 4 )]
+[node name="RecipeSlotUI6" parent="MarginContainer/BookBackground/Recipes/Row1" instance=ExtResource( 4 )]
 margin_top = 95.0
 margin_right = 0.0
 margin_bottom = 95.0
 
-[node name="Row2" type="VBoxContainer" parent="BookBackground/Recipes"]
+[node name="Row2" type="VBoxContainer" parent="MarginContainer/BookBackground/Recipes"]
 margin_left = 138.0
 margin_right = 138.0
 margin_bottom = 113.0
 rect_pivot_offset = Vector2( -188, 63 )
 custom_constants/separation = 19
 
-[node name="RecipeSlotUI7" parent="BookBackground/Recipes/Row2" instance=ExtResource( 4 )]
+[node name="RecipeSlotUI7" parent="MarginContainer/BookBackground/Recipes/Row2" instance=ExtResource( 4 )]
 margin_right = 0.0
 
-[node name="RecipeSlotUI8" parent="BookBackground/Recipes/Row2" instance=ExtResource( 4 )]
+[node name="RecipeSlotUI8" parent="MarginContainer/BookBackground/Recipes/Row2" instance=ExtResource( 4 )]
 margin_top = 19.0
 margin_right = 0.0
 margin_bottom = 19.0
 
-[node name="RecipeSlotUI9" parent="BookBackground/Recipes/Row2" instance=ExtResource( 4 )]
+[node name="RecipeSlotUI9" parent="MarginContainer/BookBackground/Recipes/Row2" instance=ExtResource( 4 )]
 margin_top = 38.0
 margin_right = 0.0
 margin_bottom = 38.0
 
-[node name="RecipeSlotUI10" parent="BookBackground/Recipes/Row2" instance=ExtResource( 4 )]
+[node name="RecipeSlotUI10" parent="MarginContainer/BookBackground/Recipes/Row2" instance=ExtResource( 4 )]
 margin_top = 57.0
 margin_right = 0.0
 margin_bottom = 57.0
 
-[node name="RecipeSlotUI11" parent="BookBackground/Recipes/Row2" instance=ExtResource( 4 )]
+[node name="RecipeSlotUI11" parent="MarginContainer/BookBackground/Recipes/Row2" instance=ExtResource( 4 )]
 margin_top = 76.0
 margin_right = 0.0
 margin_bottom = 76.0
 
-[node name="RecipeSlotUI12" parent="BookBackground/Recipes/Row2" instance=ExtResource( 4 )]
+[node name="RecipeSlotUI12" parent="MarginContainer/BookBackground/Recipes/Row2" instance=ExtResource( 4 )]
 margin_top = 95.0
 margin_right = 0.0
 margin_bottom = 95.0
 
-[node name="PlayerSelection" type="HBoxContainer" parent="BookBackground"]
+[node name="PlayerSelection" type="HBoxContainer" parent="MarginContainer/BookBackground"]
 margin_left = 69.0
 margin_top = 40.0
 margin_right = 309.0
@@ -148,95 +157,95 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Row1" type="VBoxContainer" parent="BookBackground/PlayerSelection"]
+[node name="Row1" type="VBoxContainer" parent="MarginContainer/BookBackground/PlayerSelection"]
 margin_right = 7.0
 margin_bottom = 113.0
 rect_pivot_offset = Vector2( -188, 63 )
 custom_constants/separation = 10
 
-[node name="PlayerSelection1" type="TextureRect" parent="BookBackground/PlayerSelection/Row1"]
+[node name="PlayerSelection1" type="TextureRect" parent="MarginContainer/BookBackground/PlayerSelection/Row1"]
 modulate = Color( 1, 1, 1, 0 )
 margin_right = 7.0
 margin_bottom = 9.0
 texture = ExtResource( 6 )
 
-[node name="PlayerSelection2" type="TextureRect" parent="BookBackground/PlayerSelection/Row1"]
+[node name="PlayerSelection2" type="TextureRect" parent="MarginContainer/BookBackground/PlayerSelection/Row1"]
 modulate = Color( 1, 1, 1, 0 )
 margin_top = 19.0
 margin_right = 7.0
 margin_bottom = 28.0
 texture = ExtResource( 6 )
 
-[node name="PlayerSelection3" type="TextureRect" parent="BookBackground/PlayerSelection/Row1"]
+[node name="PlayerSelection3" type="TextureRect" parent="MarginContainer/BookBackground/PlayerSelection/Row1"]
 modulate = Color( 1, 1, 1, 0 )
 margin_top = 38.0
 margin_right = 7.0
 margin_bottom = 47.0
 texture = ExtResource( 6 )
 
-[node name="PlayerSelection4" type="TextureRect" parent="BookBackground/PlayerSelection/Row1"]
+[node name="PlayerSelection4" type="TextureRect" parent="MarginContainer/BookBackground/PlayerSelection/Row1"]
 modulate = Color( 1, 1, 1, 0 )
 margin_top = 57.0
 margin_right = 7.0
 margin_bottom = 66.0
 texture = ExtResource( 6 )
 
-[node name="PlayerSelection5" type="TextureRect" parent="BookBackground/PlayerSelection/Row1"]
+[node name="PlayerSelection5" type="TextureRect" parent="MarginContainer/BookBackground/PlayerSelection/Row1"]
 modulate = Color( 1, 1, 1, 0 )
 margin_top = 76.0
 margin_right = 7.0
 margin_bottom = 85.0
 texture = ExtResource( 6 )
 
-[node name="PlayerSelection6" type="TextureRect" parent="BookBackground/PlayerSelection/Row1"]
+[node name="PlayerSelection6" type="TextureRect" parent="MarginContainer/BookBackground/PlayerSelection/Row1"]
 modulate = Color( 1, 1, 1, 0 )
 margin_top = 95.0
 margin_right = 7.0
 margin_bottom = 104.0
 texture = ExtResource( 6 )
 
-[node name="Row2" type="VBoxContainer" parent="BookBackground/PlayerSelection"]
+[node name="Row2" type="VBoxContainer" parent="MarginContainer/BookBackground/PlayerSelection"]
 margin_left = 138.0
 margin_right = 145.0
 margin_bottom = 113.0
 rect_pivot_offset = Vector2( -188, 63 )
 custom_constants/separation = 10
 
-[node name="PlayerSelection7" type="TextureRect" parent="BookBackground/PlayerSelection/Row2"]
+[node name="PlayerSelection7" type="TextureRect" parent="MarginContainer/BookBackground/PlayerSelection/Row2"]
 modulate = Color( 1, 1, 1, 0 )
 margin_right = 7.0
 margin_bottom = 9.0
 texture = ExtResource( 6 )
 
-[node name="PlayerSelection8" type="TextureRect" parent="BookBackground/PlayerSelection/Row2"]
+[node name="PlayerSelection8" type="TextureRect" parent="MarginContainer/BookBackground/PlayerSelection/Row2"]
 modulate = Color( 1, 1, 1, 0 )
 margin_top = 19.0
 margin_right = 7.0
 margin_bottom = 28.0
 texture = ExtResource( 6 )
 
-[node name="PlayerSelection9" type="TextureRect" parent="BookBackground/PlayerSelection/Row2"]
+[node name="PlayerSelection9" type="TextureRect" parent="MarginContainer/BookBackground/PlayerSelection/Row2"]
 modulate = Color( 1, 1, 1, 0 )
 margin_top = 38.0
 margin_right = 7.0
 margin_bottom = 47.0
 texture = ExtResource( 6 )
 
-[node name="PlayerSelection10" type="TextureRect" parent="BookBackground/PlayerSelection/Row2"]
+[node name="PlayerSelection10" type="TextureRect" parent="MarginContainer/BookBackground/PlayerSelection/Row2"]
 modulate = Color( 1, 1, 1, 0 )
 margin_top = 57.0
 margin_right = 7.0
 margin_bottom = 66.0
 texture = ExtResource( 6 )
 
-[node name="PlayerSelection11" type="TextureRect" parent="BookBackground/PlayerSelection/Row2"]
+[node name="PlayerSelection11" type="TextureRect" parent="MarginContainer/BookBackground/PlayerSelection/Row2"]
 modulate = Color( 1, 1, 1, 0 )
 margin_top = 76.0
 margin_right = 7.0
 margin_bottom = 85.0
 texture = ExtResource( 6 )
 
-[node name="PlayerSelection12" type="TextureRect" parent="BookBackground/PlayerSelection/Row2"]
+[node name="PlayerSelection12" type="TextureRect" parent="MarginContainer/BookBackground/PlayerSelection/Row2"]
 modulate = Color( 1, 1, 1, 0 )
 margin_top = 95.0
 margin_right = 7.0

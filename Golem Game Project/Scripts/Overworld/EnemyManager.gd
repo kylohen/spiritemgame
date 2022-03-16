@@ -11,7 +11,10 @@ signal enemy_contact
 func _ready():
 	pass # Replace with function body.
 
-
+func disable_enemies():
+	pass
+func enable_enemies():
+	pass
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 #func _process(delta):
 #	pass

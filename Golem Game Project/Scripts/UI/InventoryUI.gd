@@ -6,6 +6,7 @@ onready var inventorySlots = $BookMarginContainer/BookBackground/Items
 onready var inventoryPlayerSelection = $BookMarginContainer/BookBackground/PlayerSelectionInventory
 onready var inventoryPageTurning = $BookMarginContainer/BookBackground/InventoryPageTurning
 onready var partyMemberSelection = $BookMarginContainer/BookBackground/PlayerSelectionPartyMenu
+onready var partySlots = $BookMarginContainer/BookBackground/PartyMenu
 
 var subMenuInventoryScene = load("res://Scenes/UI/SubInventoryMenu.tscn")
 var subMenuNode
@@ -20,6 +21,7 @@ var inventoryHighlightToMove = null
 signal sub_menu
 # Called when the node enters the scene tree for the first time.
 func _ready():
+	load_golems()
 	pass # Replace with function body.
 
 func update_inventory():
@@ -62,7 +64,12 @@ func remove_previous_selection_highlight (previousSelection):
 		partyMemberSelection.get_child(previousSelection-18).modulate.a = 0.0
 	
 	
-
+func load_golems():
+	var golemList = GlobalPlayer.partyGolems
+	for i in golemList.size():
+		
+		partySlots.get_child(i).load_golem(golemList[i])
+	pass
 func reset_all_selections():
 	for i in inventoryPlayerSelection.get_child_count():
 		inventoryPlayerSelection.get_child(i).modulate.a = 0.0
