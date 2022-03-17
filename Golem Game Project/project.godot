@@ -24,6 +24,10 @@ config/name="GolemGame"
 run/main_scene="res://Scenes/Overworld/WorldMap_Field.tscn"
 config/icon="res://icon.png"
 
+[audio]
+
+default_bus_layout=""
+
 [autoload]
 
 SeedGenerator="*res://Singletons/SeedGenerator.gd"
@@ -31,6 +35,7 @@ GlobalPlayer="*res://Singletons/GlobalPlayer.gd"
 WorldConductor="*res://Singletons/WorldConductor.gd"
 StatBlocks="*res://Singletons/StatBlocks.gd"
 Recipes="*res://Singletons/Recipes.gd"
+Settings="*res://Singletons/Settings.gd"
 
 [display]
 

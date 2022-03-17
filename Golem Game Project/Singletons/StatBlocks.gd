@@ -29,14 +29,17 @@ var enemyStatBlocks = {
 		"SPEED":20,
 		"ASPECT":ELEMENT.Nature,
 		"MODIFIERS":{},
+		"DAMAGE OVER TIME":{},
 		"ACTION METER":1000,
 		"MAGIC METER":1000,
 		"CURRENT ACTION":1000,
 		"CURRENT MAGIC":1000,
 		"AFFINITY":1,
 		"LEVEL":1,
-		"LOOT DROP":{
+		"NORMAL LOOT DROP":{
 			"Dust":3,
+		},
+		"RARE LOOT DROP":{
 			"Command Seal":1,
 		},
 		"ATTACK SKILLS":{
@@ -71,16 +74,19 @@ var enemyStatBlocks = {
 		"SPEED":1,
 		"ASPECT":ELEMENT.Ice,
 		"MODIFIERS":{},
+		"DAMAGE OVER TIME":{},
 		"ACTION METER":1000,
 		"MAGIC METER":1000,
 		"CURRENT ACTION":1000,
 		"CURRENT MAGIC":1000,
 		"AFFINITY":1,
 		"LEVEL":1,
-		"LOOT DROP":{
+		"NORMAL LOOT DROP":{
 			"Dust":3,
+		},
+		"RARE LOOT DROP":{
 			"Command Seal":1,
-			},
+		},
 		"ATTACK SKILLS":{
 			"SKILL1":2,
 			"SKILL2":1,
@@ -113,12 +119,15 @@ var enemyStatBlocks = {
 		"SPEED":1,
 		"ASPECT":ELEMENT.Fire,
 		"MODIFIERS":{},
+		"DAMAGE OVER TIME":{},
 		"AFFINITY":1,
 		"LEVEL":1,
-		"LOOT DROP":{
+		"NORMAL LOOT DROP":{
 			"Dust":3,
+		},
+		"RARE LOOT DROP":{
 			"Command Seal":1,
-			},
+		},
 		"ACTION METER":1000,
 		"MAGIC METER":1000,
 		"CURRENT ACTION":1000,
@@ -159,6 +168,7 @@ var playerGolemBaseStatBlocks = {
 		"SPEED":1,
 		"ASPECT":ELEMENT.Lightning,
 		"MODIFIERS":{},
+		"DAMAGE OVER TIME":{},
 		"LEVEL":1,
 		"ACTION METER":1,
 		"MAGIC METER":1,
@@ -196,6 +206,7 @@ var playerGolemBaseStatBlocks = {
 		"SPEED":1,
 		"ASPECT":ELEMENT.Fire,
 		"MODIFIERS":{},
+		"DAMAGE OVER TIME":{},
 		"LEVEL":1,
 		"ACTION METER":1,
 		"MAGIC METER":1,
@@ -281,6 +292,7 @@ var skillList = {
 		"ASPECT": ELEMENT.Mundane,
 		"IMPACT TYPE": "PHYSICAL",
 		"TYPE":"SUPPORT",
+		"DURATION":3,
 		"STAT": "SPEED",
 		"STAT MOD": 0.0,
 		"LOOTING MODIFIER":0,
@@ -300,6 +312,7 @@ var skillList = {
 		"MIN BONUS":.9,
 		"MAX BONUS": 1.2,
 		"TYPE":"ATTACK",
+		
 		"LOOTING MODIFIER":0,
 		"CRIT PROBABILITY":1.2,
 		"ACTION METER COST":1,
@@ -331,6 +344,7 @@ var skillList = {
 		"IMPACT TYPE": "PHYSICAL",
 		"TYPE":"SUPPORT",
 		"STAT": "DEFENSE",
+		"DURATION":3,
 		"STAT MOD": 1.5,
 		
 		"MIN BONUS":.9,
@@ -364,6 +378,7 @@ var skillList = {
 		"ASPECT": ELEMENT.Mundane,
 		"IMPACT TYPE": "PHYSICAL",
 		"TYPE":"SUPPORT",
+		"DURATION":3,
 		"STAT": "ATTACK",
 		"STAT MOD": 1.5,
 		"LOOTING MODIFIER":0,

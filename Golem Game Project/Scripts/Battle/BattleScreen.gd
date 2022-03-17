@@ -54,6 +54,17 @@ enum SELECTIONSTATE{SKILLS,ENEMY,ALLY}
 onready var currentSelectionState=SELECTIONSTATE.SKILLS
 
 var lootToWin = []
+enum SPECIALKILL {OVERKILL,EXACTKILL,LINKKILL,DEBUFFKILL,FIREKILL,WATERKILL,LIGHTKILL,DARKKILL}
+var playerUsedSupport = []
+#- **Over Kill**: Obliterate a monster by sending its life into the extreme negative.
+#- **Exact Kill**: Kill a monster while not putting in the negative TOO MUCH
+#- **Link Kill**: Using a support combo
+#- **Debuff Kill**: Killing while a monster is debuffed.
+#- **Fire Kill**: Use Fire damage
+#- **Water Kill**: Use Water damage
+#- **Light Kill**: Use Lightning damage
+#- **Dark Kill**: Use Dark damage.
+var lootModifier = 1
 var battleWon = false
 ###################### BUILDING ENCOUNTER ############################################
 func _ready():
@@ -217,18 +228,7 @@ func find_turn_order():
 	else:
 		currentBattleState = BATTLESTATE.PLAYERTURN
 #
-#		turnOrder.append([playerFrontName,playerFront])
-#		turnOrder.append([enemyFrontName,enemyFront])
-#
-#		if playerCount >1:
-#			turnOrder.append([playerBackName,playerBack])
-#		elif playerCount <enemyCount:
-#			turnOrder.append([playerFrontName,playerFront])
-#		if enemyCount > 1:
-#			turnOrder.append([enemyBackName,enemyBack])
-#		elif enemyCount < playerCount:
-#			turnOrder.append([enemyFrontName,enemyFront])
-#	print(currentBattleState)
+
 
 
 ############################### BATTLE MECHANICS ##########################################
@@ -504,9 +504,10 @@ func resolve_turn():
 				
 				
 				if pendingSkills[i-1][1]["HP"]  <=  0:
-					pendingSkills[i-1][1]["HP"] = 0
+#					check_for_kill_bonus()
+#					pendingSkills[i-1][1]["HP"] = 0
 					if EnemyGolems.has(pendingSkills[i-1][1]):
-						enemy_death(pendingSkills[i-1][1])
+						enemy_death(pendingSkills[i-1][1],pendingSkills[i-1][0],pendingSkills[i-1][2])
 					elif AllyGolems.has(pendingSkills[i-1][1]):
 						if playerInBattle:
 							player_death()
@@ -591,13 +592,148 @@ func end_turn():
 		clear_golem_modifers()
 		next_turn()
 	
-func void_loot(golemToDie):
-	var lootTable = golemToDie["LOOT DROP"]
+func void_loot(golemToDie,golemThatKilled=null,skillUsedToKill=null):
+	var lootTable = golemToDie["NORMAL LOOT DROP"]
 	var itemName = lootTable.keys()
-	for i in itemName.size():
-		lootToWin.append([itemName[i],lootTable[itemName[i]]])
-func enemy_death(golemToDie):
-	void_loot(golemToDie)
+	var bonus = check_for_kill_bonus(golemToDie, golemThatKilled,skillUsedToKill)
+	######  Golem Name  ###########
+	if !lootToWin.empty():
+		lootToWin.append("\n")
+	lootToWin.append(golemToDie["NAME"])
+	###############################
+	
+	##### ROLLING FOR NORMAL LOOT#################
+	if !bonus.empty():
+		for i in bonus.size():
+			lootToWin.append(bonus[i])
+	if !itemName.empty():
+		for i in itemName.size():
+			lootToWin.append([itemName[i],ceil(lootTable[itemName[i]]*lootModifier)])
+			
+	##### ROLLING FOR Rare LOOT#################
+	var rareLootTable = golemToDie["RARE LOOT DROP"]
+	var rareItemName = rareLootTable.keys()
+	if !rareItemName.empty():
+		for i in rareItemName.size():
+			var chance = 0.2
+			chance *= lootModifier
+			var rollForLoot = SeedGenerator.rng.randf_range(0,1)
+			if chance <= rollForLoot:
+				lootToWin.append([rareItemName[i],rareLootTable[rareItemName[i]]])
+	lootModifier = 1.0
+
+func check_for_kill_bonus(golemToDie,golemThatKilled=null,skillUsedToKill=null):
+	var listOfKillSpecial = []
+	var currentHP = golemToDie["CURRENT HP"]
+	var OverDamge = -1* currentHP
+	var maxHP = golemToDie["HP"]
+	var ExactKillPercent = .01 #Percentage to compare against the ExactKill Stat
+	var OverKillPercent = .20 #Percentage to compare against the OverKill Stat
+	if OverDamge <= floor(golemToDie["CURRENT HP"]*ExactKillPercent) and OverDamge >=0:
+		listOfKillSpecial.append("Exact Kill Bonus")
+		lootModifier += 0.1
+	if OverDamge >= ceil(golemToDie["CURRENT HP"]*OverKillPercent) :
+		listOfKillSpecial.append("OverKill Bonus")
+		lootModifier += 0.3
+		
+	################LINK KILL#########################
+	if golemThatKilled != null:
+		if !golemThatKilled["MODIFIERS"].empty():
+			var keys =golemThatKilled["MODIFIERS"].keys()
+			var positiveBuff = false
+			###Attacking Golem is Buffed check
+			for i in keys.size():
+				if golemThatKilled["MODIFIERS"][keys[i]] >= 1: #####################################NEED BETTER LOGIC TO SEE IF ALLY GOLEM USED SKILL?
+					positiveBuff = true
+			if positiveBuff:
+				listOfKillSpecial.append("Link Kill Bonus")
+				lootModifier += 0.1
+	###############DEBUFF KILL########################
+	if !golemToDie["MODIFIERS"].empty():
+		var keys =golemToDie["MODIFIERS"].keys()
+		var negativeBuff = false
+		###Attacking Golem is Buffed check
+		for i in keys.size():
+			if golemToDie["MODIFIERS"][keys[i]] >= 1: #####################################NEED BETTER LOGIC TO SEE IF ALLY GOLEM USED SKILL?
+				negativeBuff = true
+		if negativeBuff:
+			listOfKillSpecial.append("Debuff Kill Bonus")
+			lootModifier += 0.1
+	################ELEMENTS ##########################
+	
+	if skillUsedToKill != null:
+	##############Nature##############################
+		if skillUsedToKill["ASPECT"] == StatBlocks.ELEMENT.Nature:
+			listOfKillSpecial.append("Nature Kill Bonus")
+			lootModifier += 0.1
+		elif golemToDie["DAMAGE OVER TIME"].has(StatBlocks.ELEMENT.Nature):
+			listOfKillSpecial.append("Nature Kill Bonus")
+			lootModifier += 0.1
+			
+			
+			
+	
+	
+	#################Lightning########################
+		if skillUsedToKill["ASPECT"] == StatBlocks.ELEMENT.Lightning:
+			listOfKillSpecial.append("Lightning Kill Bonus")
+			lootModifier += 0.1
+		elif golemToDie["DAMAGE OVER TIME"].has(StatBlocks.ELEMENT.Lightning):
+			listOfKillSpecial.append("Lightning Kill Bonus")
+			lootModifier += 0.1
+	#################Water############################
+		if skillUsedToKill["ASPECT"] == StatBlocks.ELEMENT.Water:
+			listOfKillSpecial.append("Water Kill Bonus")
+			lootModifier += 0.1
+		elif golemToDie["DAMAGE OVER TIME"].has(StatBlocks.ELEMENT.Water):
+			listOfKillSpecial.append("Water Kill Bonus")
+			lootModifier += 0.1
+	#################Fire############################# 
+		if skillUsedToKill["ASPECT"] == StatBlocks.ELEMENT.Fire:
+			listOfKillSpecial.append("Fire Kill Bonus")
+			lootModifier += 0.1
+		elif golemToDie["DAMAGE OVER TIME"].has(StatBlocks.ELEMENT.Fire):
+			listOfKillSpecial.append("Fire Kill Bonus")
+			lootModifier += 0.1
+	##################Ice#############################
+		if skillUsedToKill["ASPECT"] == StatBlocks.ELEMENT.Ice:
+			listOfKillSpecial.append("Ice Kill Bonus")
+			lootModifier += 0.1
+		elif golemToDie["DAMAGE OVER TIME"].has(StatBlocks.ELEMENT.Ice):
+			listOfKillSpecial.append("Ice Kill Bonus")
+			lootModifier += 0.1
+	##################Wind############################
+		if skillUsedToKill["ASPECT"] == StatBlocks.ELEMENT.Wind:
+			listOfKillSpecial.append("Wind Kill Bonus")
+			lootModifier += 0.1
+		elif golemToDie["DAMAGE OVER TIME"].has(StatBlocks.ELEMENT.Wind):
+			listOfKillSpecial.append("Wind Kill Bonus")
+			lootModifier += 0.1
+	##################Void############################
+		if skillUsedToKill["ASPECT"] == StatBlocks.ELEMENT.Void:
+			listOfKillSpecial.append("Void Kill Bonus")
+			lootModifier += 0.1
+		elif golemToDie["DAMAGE OVER TIME"].has(StatBlocks.ELEMENT.Void):
+			listOfKillSpecial.append("Void Kill Bonus")
+			lootModifier += 0.1
+	##################Divine########################## 
+		if skillUsedToKill["ASPECT"] == StatBlocks.ELEMENT.Divine:
+			listOfKillSpecial.append("Divine Kill Bonus")
+			lootModifier += 0.1
+		elif golemToDie["DAMAGE OVER TIME"].has(StatBlocks.ELEMENT.Divine):
+			listOfKillSpecial.append("Divine Kill Bonus")
+			lootModifier += 0.1
+	###################Mundane#########################
+		if skillUsedToKill["ASPECT"] == StatBlocks.ELEMENT.Mundane:
+			listOfKillSpecial.append("Mundane Kill Bonus")
+			lootModifier += 0.1
+		elif golemToDie["DAMAGE OVER TIME"].has(StatBlocks.ELEMENT.Mundane):
+			listOfKillSpecial.append("Mundane Kill Bonus")
+			lootModifier += 0.1
+	return listOfKillSpecial
+
+func enemy_death(golemToDie,golemThatKilled=null,skillUsedToKill=null):
+	void_loot(golemToDie,golemThatKilled,skillUsedToKill)
 	if EnemyGolems.size() > 1:
 		lose_1_enemy()
 		if enemyFront == golemToDie:
@@ -640,12 +776,15 @@ func win_battle():
 	currentMenu = MENU.WIN
 	battleWon = true
 	var lootLabel = battleWinScreen.get_node("Label")
-#	var itemNames = lootToWin.keys()
+	
 	for i in lootToWin.size():
-		var itemName = lootToWin[i][0]
-		var qty = lootToWin[i][1]
-		GlobalPlayer.add_loot(itemName,qty)
-		lootLabel.text += itemName + " x"+ str(qty) +"\n"
+		if lootToWin[i] is String:
+			lootLabel.text += lootToWin[i] + "\n"
+		else:
+			var itemName = lootToWin[i][0]
+			var qty = lootToWin[i][1]
+			GlobalPlayer.add_loot(itemName,qty)
+			lootLabel.text += itemName + " x"+ str(qty) +"\n"
 
 ################################ UI NAVIGATION ##############################################
 

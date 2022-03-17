@@ -1,10 +1,12 @@
 extends Node
 
-
-# Declare member variables here. Examples:
-# var a = 2
-# var b = "text"
-
+var itemList = {
+	"Rusty Magic Hammer" :{
+		"USE":"Golem",
+		"STAT":"HP",
+		"AMOUNT": 25,
+	},
+}
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
