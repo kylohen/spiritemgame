@@ -267,7 +267,7 @@ func enemy_turn():
 	textNode.text = ""
 	textNode.text = str(EnemyGolems[0]["NAME"])+" is about to use " + str(find_golems_attack_and_target(EnemyGolems[0])) +"\n"
 	
-	if enemyCount > 1:
+	if EnemyGolems.size() > 1:
 		textNode.text += str(EnemyGolems[1]["NAME"]) + "is about to use " + str(find_golems_attack_and_target(EnemyGolems[1])) +"\n"
 	textNode.text += "What will you do?"
 	var tween = prompt.get_node("PromptTween")
@@ -587,6 +587,7 @@ func end_turn():
 #	select_player_choice(playerSelection)
 	if EnemyGolems.empty():
 		win_battle()
+	
 	else:
 		reset_selection()
 		clear_golem_modifers()
