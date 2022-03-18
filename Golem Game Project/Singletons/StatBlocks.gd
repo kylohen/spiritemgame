@@ -251,8 +251,8 @@ var playerGolemBaseStatBlocks = {
 		"ATTACK SKILLS":{
 			"SKILL1":0,
 			"SKILL2":1,
-			"SKILL3":4,
-			"SKILL4":5,
+			"SKILL3":null,
+			"SKILL4":null,
 			},
 		"SUPPORT SKILLS":{
 			"SKILL1":3,

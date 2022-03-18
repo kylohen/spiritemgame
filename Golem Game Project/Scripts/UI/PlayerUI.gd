@@ -146,6 +146,10 @@ func process_player_input():
 			battleScreen.move_down()
 		if Input.is_action_just_pressed("ui_accept"):
 			battleScreen.ui_accept()
+		if Input.is_action_just_pressed("Next_Tool"):
+			battleScreen.switch_Golem(true) #Clockwise direction
+		elif Input.is_action_just_pressed("Previous_Tool"):
+			battleScreen.switch_Golem(false) #Counter Clockwise direction
 	pass
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 #func _process(delta):

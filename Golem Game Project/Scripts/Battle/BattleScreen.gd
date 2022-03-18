@@ -46,6 +46,7 @@ var AllyGolems = []
 var AllyGolemsSkillUsed = []
 var EnemyGolems = []
 var modifers = [{},{},{},{}]
+var selectableSkillOptions = []
 
 enum BATTLESTATE {ENEMYTURN,PLAYERTURN}
 var currentBattleState
@@ -252,6 +253,7 @@ func player_turn():
 	tween.interpolate_property(textNode,"percent_visible",0.0,1.0,2,Tween.TRANS_LINEAR)
 	tween.start()
 	selectedGolem = AllyGolems[0]
+	update_UI_selected_Ally_Golem()
 	waitingForPlayerInput = true
 	pass
 
@@ -274,6 +276,7 @@ func enemy_turn():
 	tween.interpolate_property(textNode,"percent_visible",0.0,1.0,2,Tween.TRANS_LINEAR)
 	tween.start()
 	selectedGolem = AllyGolems[0]
+	update_UI_selected_Ally_Golem()
 	waitingForPlayerInput = true
 func decide_enemy_move():
 	var GolemToAttack = SeedGenerator.rng.randi_range(0,EnemyGolems.size()-1)
@@ -341,6 +344,7 @@ func decide_enemy_move():
 	pass
 func update_skills(golem,menu):
 	var skillType
+	var selectableSkills = []
 	if menu == MENU.ATTACK:
 		skillType = "ATTACK SKILLS"
 	elif menu == MENU.SUPPORT:
@@ -349,8 +353,21 @@ func update_skills(golem,menu):
 		skillType = "DEFEND SKILLS"
 	var skills = golem[skillType]
 	for i in range (1,5,1):
+		var isSelectable = true
 		skillNameNodes.get_node("VBoxContainer/MenuItem"+str(i)).set_skill(skills["SKILL"+str(i)])
-	pass
+		if !check_skill_cost (golem,skills["SKILL"+str(i)]):
+			skillNameNodes.get_node("VBoxContainer/MenuItem"+str(i)).not_enough_energy()
+			isSelectable = false
+		selectableSkills.append(isSelectable)
+	selectableSkillOptions = selectableSkills
+
+func check_skill_cost(golem,skillNumber):
+	if skillNumber != null:
+		if golem["CURRENT ACTION"] >= StatBlocks.skillList[skillNumber]["ACTION METER COST"] and golem["CURRENT MAGIC"] >= StatBlocks.skillList[skillNumber]["MAGIC METER COST"]:
+			return true
+	return false
+
+
 func ui_main_menu_update():
 	skillNameNodes.get_node("VBoxContainer/MenuItem1").main_menu("Attack")
 	skillNameNodes.get_node("VBoxContainer/MenuItem2").main_menu("Support")
@@ -413,10 +430,15 @@ func update_combat_text(actionSet):
 	prompt.get_node("PromptText").text = actionSet[0]["NAME"]+" uses "+actionSet[2]["NAME"]+" on "+actionSet[1]["NAME"]
 	prompt.get_node("PromptTween").interpolate_property(prompt.get_node("PromptText"),"percent_visible",0.0,1.0,1)
 	prompt.get_node("PromptTween").start()
+
+func spend_energy(golem,skill):
+	golem["CURRENT ACTION"] -= skill["ACTION METER COST"]
+	golem["CURRENT MAGIC"] -= skill["MAGIC METER COST"]
+
 func resolve_turn():
 	GlobalPlayer.isInAnimation = true
 	while !pendingSkills.empty():
-		print (debug_pendingSkills())
+#		print (debug_pendingSkills())
 		pendingSkills.sort_custom(self,"sort_by_speed")
 		for i in range (pendingSkills.size(),0,-1):
 			print (debug_pendingSkills(), "\n Loop ",i)
@@ -426,6 +448,8 @@ func resolve_turn():
 				animate_sprite(pendingSkills[i-1][0]["NODE"],SUPPORT)
 				yield(pendingSkills[i-1][0]["NODE"],"sprite_animation_done")
 				update_ui_action_bars(pendingSkills[i-1][0]["UI NODE"],pendingSkills[i-1][2])
+				
+				spend_energy(pendingSkills[i-1][0],pendingSkills[i-1][2])
 				
 				pendingSkills.erase(pendingSkills[i-1])
 				
@@ -439,6 +463,9 @@ func resolve_turn():
 				animate_sprite(pendingSkills[i-1][0]["NODE"],DEFEND)
 				yield(pendingSkills[i-1][0]["NODE"],"sprite_animation_done")
 				update_ui_action_bars(pendingSkills[i-1][0]["UI NODE"],pendingSkills[i-1][2])
+				
+				spend_energy(pendingSkills[i-1][0],pendingSkills[i-1][2])
+				
 				pendingSkills.erase(pendingSkills[i-1])
 				
 				print (debug_pendingSkills(), "\n Loop ",i)
@@ -493,6 +520,9 @@ func resolve_turn():
 				##DEBUG rounding damage:
 				damage = ceil(damage)
 				pendingSkills[i-1][1]["HP"] -= damage
+				
+				spend_energy(pendingSkills[i-1][0],pendingSkills[i-1][2])
+				
 				prompt.get_node("PromptText").text= pendingSkills[i-1][0]["NAME"]+ " is attacking " + pendingSkills[i-1][1]["NAME"]+ " and is doing " + str(damage) + " damage" +"\n"
 				prompt.get_node("PromptText").text+= pendingSkills[i-1][1]["NAME"]+ " is at "+ str(pendingSkills[i-1][1]["HP"])+ " HP"
 				animate_sprite(pendingSkills[i-1][0]["NODE"],ATTACK)
@@ -530,18 +560,32 @@ func check_end_turn():
 			checkSkills = false
 	return checkSkills
 
-func change_selected_golem(newGolem = 1):
+func change_selected_golem(newGolem = 1):#, clockwise=true):
 	if AllyGolems.size()>1:
-		for i in AllyGolems.size():
-			if selectedGolem == AllyGolems[i]:
-				newGolem = i+newGolem
-				if newGolem > AllyGolems.size()-1:
-					newGolem = 0
-				elif newGolem <0:
-					newGolem = AllyGolems.size()-1
-				
-				if AllyGolemsSkillUsed[newGolem] == false:
-					selectedGolem = AllyGolems[newGolem]
+#		var rangeMin = 0
+#		var rangeMax = AllyGolems.size()
+#		var integerCount = 1
+#		if !clockwise:
+#			rangeMin = rangeMax
+#			rangeMax = 0
+#			integerCount -1
+		var countOfLoops = 0
+		while countOfLoops < 2: ##Should only take 2 loops to run though all Golems. If Logic has failed, force exit
+			countOfLoops +=1
+			for i in AllyGolems.size():#range(rangeMin,rangeMax,integerCount):
+				if selectedGolem == AllyGolems[i]:
+					newGolem = i+newGolem
+					if newGolem > AllyGolems.size()-1:
+						newGolem = 0
+					elif newGolem <0:
+						newGolem = AllyGolems.size()-1
+					
+					if AllyGolemsSkillUsed[newGolem] == false:
+						selectedGolem = AllyGolems[newGolem]
+						update_UI_selected_Ally_Golem(selectedGolem)
+						return selectedGolem
+					elif !AllyGolemsSkillUsed.has(false):
+						return selectedGolem
 				
 func store_choice(from,target,skill):
 	pendingSkills.append([from,target,skill])
@@ -869,6 +913,7 @@ func ui_cancel(arrowKeySelection = false):
 		update_player_choice(playerSelection)
 		currentMenu = MENU.NONE
 		ui_main_menu_update()
+		selectableSkillOptions = []
 	pass
 func move_right():
 	clear_player_choice(playerSelection)
@@ -979,21 +1024,33 @@ func ui_accept(arrowKeySelection = false):
 				update_skills(selectedGolem,currentMenu)
 				
 		elif currentMenu == MENU.ATTACK:
-			skillBeingUsed = select_skill(playerSelection-2) ##needs a number 1-4 to find and select the skill node in question
+			if selectableSkillOptions[playerSelection-3]: ##-3 to get the 0-3 array
+				skillBeingUsed = select_skill(playerSelection-2) ##needs a number 1-4 to find and select the skill node in question
 			pass
 		elif currentMenu == MENU.SUPPORT:
-			skillBeingUsed = select_skill(playerSelection-2) ##needs a number 1-4 to find and select the skill node in question
+			if selectableSkillOptions[playerSelection-3]:
+				skillBeingUsed = select_skill(playerSelection-2) ##needs a number 1-4 to find and select the skill node in question
 			pass
 		elif currentMenu == MENU.DEFEND:
-			skillBeingUsed = select_skill(playerSelection-2) ##needs a number 1-4 to find and select the skill node in question
+			if selectableSkillOptions[playerSelection-3]:
+				skillBeingUsed = select_skill(playerSelection-2) ##needs a number 1-4 to find and select the skill node in question
 			pass
 		elif currentMenu == MENU.WIN:
 			get_parent()._enemy_battle_end()
 			
-		
-			
-	pass
+func switch_Golem(clockwise = true):
+	if clockwise:
+		change_selected_golem(1)
+	else:change_selected_golem(-1)
 
+func update_UI_selected_Ally_Golem(newGolemSelected = selectedGolem):
+	if currentMenu == MENU.NONE:
+		for i in AllyGolems.size():
+			AllyGolems[i]["NODE"].cursor_visible(false)
+		newGolemSelected["NODE"].cursor_visible(true)
+	
+	pass
+	
 func load_in():
 	sceneLoadInAndOut.play("OverworldBattleIn")
 func load_out():
