@@ -57,14 +57,8 @@ onready var currentSelectionState=SELECTIONSTATE.SKILLS
 var lootToWin = []
 enum SPECIALKILL {OVERKILL,EXACTKILL,LINKKILL,DEBUFFKILL,FIREKILL,WATERKILL,LIGHTKILL,DARKKILL}
 var playerUsedSupport = []
-#- **Over Kill**: Obliterate a monster by sending its life into the extreme negative.
-#- **Exact Kill**: Kill a monster while not putting in the negative TOO MUCH
-#- **Link Kill**: Using a support combo
-#- **Debuff Kill**: Killing while a monster is debuffed.
-#- **Fire Kill**: Use Fire damage
-#- **Water Kill**: Use Water damage
-#- **Light Kill**: Use Lightning damage
-#- **Dark Kill**: Use Dark damage.
+
+var voidChanceToRun =0.25 #25% chance void will run away with Core
 var lootModifier = 1
 var battleWon = false
 ###################### BUILDING ENCOUNTER ############################################
@@ -541,8 +535,12 @@ func resolve_turn():
 					elif AllyGolems.has(pendingSkills[i-1][1]):
 						if playerInBattle:
 							player_death()
-						else:player_golem_death(pendingSkills[i-1][1])
-				
+						else:
+							player_golem_death(pendingSkills[i-1][1])
+							
+							if does_void_run_away(pendingSkills[i-1][1]):
+								WorldConductor.core_stolen(pendingSkills[i-1][1],pendingSkills[i-1][0])
+								void_ran_away(pendingSkills[i-1][0],pendingSkills[i-1][1])
 				pendingSkills.erase(pendingSkills[i-1])
 	GlobalPlayer.isInAnimation = false
 	end_turn()
@@ -812,7 +810,16 @@ func player_golem_death(golemToDie):
 		AllyGolems.remove(0)
 		load_front_player(GlobalPlayer.PLAYERSTATS)
 		AllyGolems.append(GlobalPlayer.PLAYERSTATS)
+	
+		
 	pass
+
+func does_void_run_away(golemDying):
+	var rollForChance = SeedGenerator.rng.randf_range(0,1)
+	if voidChanceToRun <= rollForChance:
+		return true
+	return false
+	
 func player_death():
 	get_tree().reload_current_scene()
 	pass
@@ -821,15 +828,33 @@ func win_battle():
 	currentMenu = MENU.WIN
 	battleWon = true
 	var lootLabel = battleWinScreen.get_node("Label")
+	lootLabel.text += generate_loot_text()
 	
+func void_ran_away(voidTaker,coreTaken = null):
+	battleWinScreen.show()
+	currentMenu = MENU.WIN
+	battleWon = true
+	var lootLabel = battleWinScreen.get_node("Label")
+	if EnemyGolems.size() > 1:
+		lootLabel.text = "Both Voids have escaped!\n"
+	else:lootLabel.text = voidTaker["NAME"] + " has escaped!\n"
+	if coreTaken != null:
+		lootLabel.text += voidTaker["NAME"] + " took " + coreTaken["NAME"]+"'s core"
+	
+	lootLabel.text += generate_loot_text()
+	
+func generate_loot_text():
+	var textToPrint = ""
 	for i in lootToWin.size():
 		if lootToWin[i] is String:
-			lootLabel.text += lootToWin[i] + "\n"
+			textToPrint += lootToWin[i] + "\n"
 		else:
 			var itemName = lootToWin[i][0]
 			var qty = lootToWin[i][1]
 			GlobalPlayer.add_loot(itemName,qty)
-			lootLabel.text += itemName + " x"+ str(qty) +"\n"
+			textToPrint += itemName + " x"+ str(qty) +"\n"
+	return textToPrint
+
 
 ################################ UI NAVIGATION ##############################################
 
