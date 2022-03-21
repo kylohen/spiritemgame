@@ -2,6 +2,7 @@ extends Node2D
 ##Grid is used to both generate the map and allows the player to interact with what is on the world
 onready var overworld = $Overworld
 onready var interactOverlay = $InteractOverlay
+onready var itemDrop = $ItemDrops
 onready var player = $Player
 onready var camera = $Camera2D
 onready var playerUI = $Camera2D/PlayerUI
@@ -16,6 +17,7 @@ onready var lootItemScene = preload("res://Scenes/Overworld/LootItem.tscn")
 onready var caveSystemScene = "res://Scenes/Overworld/CaveSystem.tscn"
 var gridMap = []
 var objectPlacement = []
+var itemDropPlacement = []
 export (int) var gridWidth  = 100
 export (int) var gridHeight = 100
 var caveLocations = []
@@ -52,6 +54,7 @@ signal loot_received
 func _ready():
 	initialize_gridMap()
 	initialize_objectPlacement()
+	initialize_itemDropPlacement()
 	
 	##Random Generator
 	makingNoise ()
@@ -74,6 +77,10 @@ func initialize_gridMap(width = gridWidth,height = gridHeight) -> void:
 ## called on startup to generate an empty array to fill up for gridMap
 func initialize_objectPlacement(width = gridWidth,height = gridHeight) -> void:
 	objectPlacement = new_grid_array(width,height)
+
+func initialize_itemDropPlacement(width = gridWidth,height = gridHeight) -> void:
+	itemDropPlacement = new_grid_array(width,height)
+	
 	
 ## return an empty grid with width and height
 func new_grid_array(width,height) -> Array:
@@ -160,6 +167,7 @@ func spawnCave(numberOfCaves = 5):
 func is_Open_Tile(currentPosition, directionToGo) -> bool:
 	var newPosition = currentPosition + directionToGo
 	var block = objectPlacement[newPosition.x][newPosition.y]
+	var itemCheck = itemDropPlacement[newPosition.x][newPosition.y]
 	if caveLocations.has(newPosition):
 		isActive = false
 		player.changeActiveState(isActive)
@@ -177,18 +185,20 @@ func is_Open_Tile(currentPosition, directionToGo) -> bool:
 #		player.reset_position()
 		add_child(newCave)
 		move_child(newCave,0)
+	if itemCheck != null:
+			if itemCheck.type == "loot":
+				emit_signal("loot_received",itemCheck.itemID, itemCheck.quantity)
+				itemCheck.queue_free()
+				itemDropPlacement[newPosition.x].remove(newPosition.y)
+				itemDropPlacement[newPosition.x].insert(newPosition.y,null)
 #		player.check_cave_terrain(true)
 #			get_parent().move_child(newCave,0)
 	elif block != null:
 		if !(block is int):##Walls and other impassable and immutable terrain is stored as ints
 			
+			
 			if block.type == "object":
 				return objectPlacement[newPosition.x][newPosition.y].is_passable()
-			if block.type == "loot":
-				emit_signal("loot_received",block.itemID, block.quantity)
-				block.queue_free()
-				objectPlacement[newPosition.x].remove(newPosition.y)
-				objectPlacement[newPosition.x].insert(newPosition.y,null)
 			return true
 		return false
 	return true
@@ -286,14 +296,16 @@ func _on_Player_useToolOnBlock(blockToCheck):
 	pass # Replace with function body.
 
 
-func _on_Player_useItemOnBlock(itemID,itemTexture,blockToCheck):
+func _on_Player_useItemOnBlock(itemID,itemTexture,blockToCheck,itemIndex):
 	var block = objectPlacement[blockToCheck.x][blockToCheck.y]
-	if !(block is Node2D):
+	var itemDropSpot = itemDropPlacement[blockToCheck.x][blockToCheck.y]
+	if !(block is Node2D) and !(itemDropSpot is Node2D):
 		var newLoot = lootItemScene.instance()
-		objectPlacement[blockToCheck.x].insert(blockToCheck.y,newLoot)
+		itemDropPlacement[blockToCheck.x].insert(blockToCheck.y,newLoot)
 		newLoot.position = Vector2(blockToCheck.x,blockToCheck.y)*TILE_SIZE
-		interactOverlay.add_child(newLoot)
+		itemDrop.add_child(newLoot)
 		newLoot.set_loot(itemID,itemTexture)
+		GlobalPlayer.use_item(itemID,itemIndex)
 
 func golem_checking ():
 	var locations = [Vector2(14,7),Vector2(15,8),Vector2(15,10),Vector2(14,11),Vector2(12,11),Vector2(11,10),Vector2(11,8),Vector2(12,7)]

@@ -56,11 +56,13 @@ onready var currentSelectionState=SELECTIONSTATE.SKILLS
 
 var lootToWin = []
 enum SPECIALKILL {OVERKILL,EXACTKILL,LINKKILL,DEBUFFKILL,FIREKILL,WATERKILL,LIGHTKILL,DARKKILL}
-var playerUsedSupport = []
+var playerUsedSupport = false
 
 var voidChanceToRun =0.25 #25% chance void will run away with Core
 var lootModifier = 1
 var battleWon = false
+
+
 ###################### BUILDING ENCOUNTER ############################################
 func _ready():
 	sceneSetup.play("RESET")
@@ -444,6 +446,9 @@ func resolve_turn():
 				update_ui_action_bars(pendingSkills[i-1][0]["UI NODE"],pendingSkills[i-1][2])
 				
 				spend_energy(pendingSkills[i-1][0],pendingSkills[i-1][2])
+				if AllyGolems.has(pendingSkills[i-1][0]):
+					playerUsedSupport = true
+				
 				
 				pendingSkills.erase(pendingSkills[i-1])
 				
@@ -466,6 +471,7 @@ func resolve_turn():
 		pendingSkills.sort_custom(self,"sort_by_speed")
 		for i in range (pendingSkills.size(),0,-1):
 			print (debug_pendingSkills(), "\n Loop ",i)
+			
 			if pendingSkills[i-1][2]["TYPE"] == "ATTACK":
 				var damage 
 				var attackWithMod
@@ -532,6 +538,7 @@ func resolve_turn():
 #					pendingSkills[i-1][1]["HP"] = 0
 					if EnemyGolems.has(pendingSkills[i-1][1]):
 						enemy_death(pendingSkills[i-1][1],pendingSkills[i-1][0],pendingSkills[i-1][2])
+						yield(pendingSkills[i-1][1]["NODE"],"sprite_animation_done")
 					elif AllyGolems.has(pendingSkills[i-1][1]):
 						if playerInBattle:
 							player_death()
@@ -541,6 +548,8 @@ func resolve_turn():
 							if does_void_run_away(pendingSkills[i-1][1]):
 								WorldConductor.core_stolen(pendingSkills[i-1][1],pendingSkills[i-1][0])
 								void_ran_away(pendingSkills[i-1][0],pendingSkills[i-1][1])
+							else:
+								GlobalPlayer.add_core(pendingSkills[i-1][1])
 				pendingSkills.erase(pendingSkills[i-1])
 	GlobalPlayer.isInAnimation = false
 	end_turn()
@@ -614,6 +623,7 @@ func reset_selection():
 	ui_main_menu_update()
 	change_selected_golem()
 	previousPlayerSelection = null
+	playerUsedSupport = false
 	currentSelectionState = SELECTIONSTATE.SKILLS
 	for i in AllyGolemsSkillUsed.size():
 		AllyGolemsSkillUsed[i] = false
@@ -652,7 +662,11 @@ func void_loot(golemToDie,golemThatKilled=null,skillUsedToKill=null):
 	if !itemName.empty():
 		for i in itemName.size():
 			lootToWin.append([itemName[i],ceil(lootTable[itemName[i]]*lootModifier)])
-			
+	if golemToDie.has("UNIQUE LOOT DROP"):
+		var uniqueLootTable = golemToDie["UNIQUE LOOT DROP"]
+		var uniqueItemName = lootTable.keys()
+		for i in uniqueItemName.size():
+			lootToWin.append([uniqueItemName[i],uniqueLootTable[uniqueItemName[i]]])
 	##### ROLLING FOR Rare LOOT#################
 	var rareLootTable = golemToDie["RARE LOOT DROP"]
 	var rareItemName = rareLootTable.keys()
@@ -697,7 +711,7 @@ func check_for_kill_bonus(golemToDie,golemThatKilled=null,skillUsedToKill=null):
 		var negativeBuff = false
 		###Attacking Golem is Buffed check
 		for i in keys.size():
-			if golemToDie["MODIFIERS"][keys[i]] >= 1: #####################################NEED BETTER LOGIC TO SEE IF ALLY GOLEM USED SKILL?
+			if golemToDie["MODIFIERS"][keys[i]] < 1: #####################################NEED BETTER LOGIC TO SEE IF ALLY GOLEM USED SKILL?
 				negativeBuff = true
 		if negativeBuff:
 			listOfKillSpecial.append("Debuff Kill Bonus")
@@ -777,17 +791,18 @@ func check_for_kill_bonus(golemToDie,golemThatKilled=null,skillUsedToKill=null):
 
 func enemy_death(golemToDie,golemThatKilled=null,skillUsedToKill=null):
 	void_loot(golemToDie,golemThatKilled,skillUsedToKill)
+	animate_sprite(golemToDie["NODE"],DEATH)
 	if EnemyGolems.size() > 1:
 		lose_1_enemy()
-		if enemyFront == golemToDie:
-			animate_sprite(EnemyGolems[0]["NODE"],DEATH)
+#		if enemyFront == golemToDie:
+		animate_sprite(golemToDie["NODE"],DEATH)
 #			yield(EnemyGolems[0]["NODE"],"sprite_animation_done")
-			EnemyGolems.remove(0)
-			load_front_enemy(EnemyGolems[0])
-		elif enemyBack == golemToDie:
-			animate_sprite(EnemyGolems[1]["NODE"],DEATH)
-#			yield(EnemyGolems[1]["NODE"],"sprite_animation_done")
-			EnemyGolems.remove(1)
+		EnemyGolems.erase(golemToDie)
+		load_front_enemy(EnemyGolems[0])
+#		elif enemyBack == golemToDie:
+#			animate_sprite(golemToDie["NODE"],DEATH)
+##			yield(EnemyGolems[1]["NODE"],"sprite_animation_done")
+#			EnemyGolems.remove(1)
 	else:
 		EnemyGolems.remove(0)
 		sceneSetup.play("WIN")
@@ -851,8 +866,13 @@ func generate_loot_text():
 		else:
 			var itemName = lootToWin[i][0]
 			var qty = lootToWin[i][1]
-			GlobalPlayer.add_loot(itemName,qty)
-			textToPrint += itemName + " x"+ str(qty) +"\n"
+			if qty is int:
+				GlobalPlayer.add_loot(itemName,qty)
+				textToPrint += itemName + " x"+ str(qty) +"\n"
+			elif qty is String:
+				if qty == "CORE":
+					itemName = GlobalPlayer.add_core(itemName)
+					textToPrint += itemName +"\n"
 	return textToPrint
 
 
@@ -983,7 +1003,7 @@ func move_left():
 		elif playerSelection == 91:
 			playerSelection=90
 	update_player_choice(playerSelection)
-	
+
 func move_up():
 	clear_player_choice(playerSelection)
 	

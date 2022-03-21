@@ -36,6 +36,7 @@ WorldConductor="*res://Singletons/WorldConductor.gd"
 StatBlocks="*res://Singletons/StatBlocks.gd"
 Recipes="*res://Singletons/Recipes.gd"
 Settings="*res://Singletons/Settings.gd"
+LootTable="*res://Singletons/LootTable.gd"
 
 [display]
 

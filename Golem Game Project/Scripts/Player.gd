@@ -146,8 +146,8 @@ func _on_WorldMap_Field_loot_received(lootType,quantityOfLoot):
 
 
 
-func _on_PlayerUI_useItem(itemID,itemTexture):
-	emit_signal("useItemOnBlock",itemID,itemTexture,gridCoords + facing_direction)
+func _on_PlayerUI_useItem(itemID,itemTexture,itemIndex):
+	emit_signal("useItemOnBlock",itemID,itemTexture,gridCoords + facing_direction,itemIndex)
 	pass # Replace with function body.
 
 

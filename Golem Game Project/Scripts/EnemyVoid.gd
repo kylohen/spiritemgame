@@ -24,8 +24,8 @@ func spawn_enemy(newEnemyID, newEnemyIDBack = -1):
 	statBlock["CURRENT HP"] = statBlock["HP"]
 	if newEnemyIDBack != -1:
 		statBlockBack = StatBlocks.enemyStatBlocks[newEnemyIDBack]
-		enemyBackName = statBlock["NAME"]
-		statBlockBack["CURRENT HP"] = statBlock["HP"]
+		enemyBackName = statBlockBack["NAME"]
+		statBlockBack["CURRENT HP"] = statBlockBack["HP"]
 	pass
 	
 # Called every frame. 'delta' is the elapsed time since the previous frame.

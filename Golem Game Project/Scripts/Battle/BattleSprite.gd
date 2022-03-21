@@ -36,6 +36,7 @@ func animation(type):
 
 func load_sprite(pathToImage:String):
 	sprite.texture = load(pathToImage)
+	animationPlayer.play("RESET")
 
 func cursor_visible (state:bool):
 	if state == true:

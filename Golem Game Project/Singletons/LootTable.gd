@@ -1,6 +1,6 @@
 extends Node
 
-var itemList = {
+var UseItemList = {
 	"Rusty Magic Hammer" :{
 		"USE":"Golem",
 		"STAT":"HP",

@@ -354,7 +354,7 @@ var skillList = {
 		"ACTION METER COST":1,
 		"MAGIC METER COST":0,
 		"PLAYER AFFINITY":0,
-		"TARGET":TARGET.ENEMY,
+		"TARGET":TARGET.ALLY,
 		},
 	5:{
 		"NAME":"Self Emolate",
