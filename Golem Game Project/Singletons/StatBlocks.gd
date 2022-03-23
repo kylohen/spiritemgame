@@ -323,7 +323,7 @@ var skillList = {
 	3:{
 		"NAME":"Flame Breath",
 		"BASE DAMAGE":1,
-		"ASPECT": ELEMENT.Mundane,
+		"ASPECT": ELEMENT.Fire,
 		"IMPACT TYPE": "MAGICAL",
 		"TYPE":"ATTACK",
 		
@@ -359,7 +359,7 @@ var skillList = {
 	5:{
 		"NAME":"Self Emolate",
 		"BASE DAMAGE":1,
-		"ASPECT": ELEMENT.Mundane,
+		"ASPECT": ELEMENT.Fire,
 		"IMPACT TYPE": "PHYSICAL",
 		"TYPE":"ATTACK",
 		

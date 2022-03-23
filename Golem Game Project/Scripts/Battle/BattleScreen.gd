@@ -14,7 +14,7 @@ onready var enemyBackUIBar= $EnemyGraphics/EnemyBackingBack/UI_Bars
 onready var battleWinScreen = $PopUpWindows/BattleWin
 onready var sceneLoadInAndOut = $SceneLoadInAndOut
 
-enum MENU{ATTACK,SUPPORT,DEFEND,FLEE, NONE, WIN}
+enum MENU{ATTACK,SUPPORT,DEFEND,ITEM,PARTY,FLEE, NONE, WIN}
 enum {REST,ATTACK,HIT,SUPPORT,DEFEND,FLEE,DEATH}
 var currentMenu = MENU.NONE
 var playerSelection  = 3
@@ -51,7 +51,7 @@ var selectableSkillOptions = []
 enum BATTLESTATE {ENEMYTURN,PLAYERTURN}
 var currentBattleState
 var waitingForPlayerInput = false
-enum SELECTIONSTATE{SKILLS,ENEMY,ALLY}
+enum SELECTIONSTATE{SKILLS,ENEMY,ALLY, SECONDARY}
 onready var currentSelectionState=SELECTIONSTATE.SKILLS
 
 var lootToWin = []
@@ -347,6 +347,8 @@ func update_skills(golem,menu):
 		skillType = "SUPPORT SKILLS"
 	elif menu == MENU.DEFEND:
 		skillType = "DEFEND SKILLS"
+	elif menu == MENU.FLEE:
+		store_choice(golem,null,StatBlocks.skillList[1])
 	var skills = golem[skillType]
 	for i in range (1,5,1):
 		var isSelectable = true
@@ -357,6 +359,40 @@ func update_skills(golem,menu):
 		selectableSkills.append(isSelectable)
 	selectableSkillOptions = selectableSkills
 
+
+func update_secondary(golem,menu):
+	var skillType
+	var selectableSkills = []
+	if menu == MENU.ITEM:
+		skillType = "ATTACK SKILLS"
+	elif menu == MENU.PARTY:
+		update_golem_list()
+	elif menu == MENU.FLEE:
+		skillBeingUsed = StatBlocks.skillList[1]
+		use_skill(null)
+	
+func update_golem_list(firstGolemOnList = 0):
+	var selectableSkills = []
+	
+	var listOfPartyMembers = GlobalPlayer.partyGolems
+	
+	if firstGolemOnList > listOfPartyMembers.size()+1:
+		firstGolemOnList = 0
+		
+	for i in range (firstGolemOnList, firstGolemOnList+5,1):
+		if listOfPartyMembers.size <= i:
+			skillNameNodes.get_node("VBoxContainer/MenuItem"+str(i+1)).set_golem(null,false)
+			selectableSkills.append(false)
+			
+		elif listOfPartyMembers[i]["PARTY POSITION"] == AllyGolems["PARTY POSITION"]:
+			skillNameNodes.get_node("VBoxContainer/MenuItem"+str(i+1)).set_golem(listOfPartyMembers[i],false)
+			selectableSkills.append(false)
+		else:
+			skillNameNodes.get_node("VBoxContainer/MenuItem"+str(i+1)).set_golem(listOfPartyMembers[i],true)
+			selectableSkills.append(true)
+		selectableSkillOptions = selectableSkills
+	
+	
 func check_skill_cost(golem,skillNumber):
 	if skillNumber != null:
 		if golem["CURRENT ACTION"] >= StatBlocks.skillList[skillNumber]["ACTION METER COST"] and golem["CURRENT MAGIC"] >= StatBlocks.skillList[skillNumber]["MAGIC METER COST"]:
@@ -370,6 +406,14 @@ func ui_main_menu_update():
 	skillNameNodes.get_node("VBoxContainer/MenuItem3").main_menu("Defend")
 	skillNameNodes.get_node("VBoxContainer/MenuItem4").main_menu("Flee")
 	currentMenu = MENU.NONE
+	pass
+func ui_secondary_menu_update():
+	skillNameNodes.get_node("VBoxContainer/MenuItem1").side_menu("Item")
+	skillNameNodes.get_node("VBoxContainer/MenuItem2").side_menu("Party")
+	skillNameNodes.get_node("VBoxContainer/MenuItem3").side_menu("Flee")
+	skillNameNodes.get_node("VBoxContainer/MenuItem4").side_menu("None")
+	currentMenu = MENU.NONE
+#	selectableSkillOptions = [true,true,true,false]
 	pass
 func select_skill(skillChoice:int): 
 	if skillChoice > 4 or skillChoice <0:
@@ -644,6 +688,7 @@ func end_turn():
 		reset_selection()
 		clear_golem_modifers()
 		next_turn()
+		update_global_golems()
 	
 func void_loot(golemToDie,golemThatKilled=null,skillUsedToKill=null):
 	var lootTable = golemToDie["NORMAL LOOT DROP"]
@@ -795,7 +840,7 @@ func enemy_death(golemToDie,golemThatKilled=null,skillUsedToKill=null):
 	if EnemyGolems.size() > 1:
 		lose_1_enemy()
 #		if enemyFront == golemToDie:
-		animate_sprite(golemToDie["NODE"],DEATH)
+#		animate_sprite(golemToDie["NODE"],DEATH)
 #			yield(EnemyGolems[0]["NODE"],"sprite_animation_done")
 		EnemyGolems.erase(golemToDie)
 		load_front_enemy(EnemyGolems[0])
@@ -809,15 +854,18 @@ func enemy_death(golemToDie,golemThatKilled=null,skillUsedToKill=null):
 	pass
 
 func player_golem_death(golemToDie):
+	animate_sprite(golemToDie["NODE"],DEATH)
 	if AllyGolems.size() > 1:
+		GlobalPlayer.remove_golem(golemToDie)
 		lose_1_player()
 		if playerFront == AllyGolems[0]:
-			animate_sprite(AllyGolems[0]["NODE"],DEATH)
 #			yield(AllyGolems[0]["NODE"],"sprite_animation_done")
 			AllyGolems.remove(0)
 			load_front_player(AllyGolems[0])
 		elif enemyBack == AllyGolems[1]:
-			animate_sprite(AllyGolems[1]["NODE"],DEATH)
+			
+			GlobalPlayer.remove_golem(golemToDie)
+#			animate_sprite(AllyGolems[1]["NODE"],DEATH)
 #			yield(AllyGolems[1]["NODE"],"sprite_animation_done")
 			AllyGolems.remove(1)
 	elif !playerInBattle:
@@ -825,7 +873,6 @@ func player_golem_death(golemToDie):
 		AllyGolems.remove(0)
 		load_front_player(GlobalPlayer.PLAYERSTATS)
 		AllyGolems.append(GlobalPlayer.PLAYERSTATS)
-	
 		
 	pass
 
@@ -844,11 +891,14 @@ func win_battle():
 	battleWon = true
 	var lootLabel = battleWinScreen.get_node("Label")
 	lootLabel.text += generate_loot_text()
+	update_global_golems()
+	
 	
 func void_ran_away(voidTaker,coreTaken = null):
 	battleWinScreen.show()
 	currentMenu = MENU.WIN
 	battleWon = true
+	update_global_golems()
 	var lootLabel = battleWinScreen.get_node("Label")
 	if EnemyGolems.size() > 1:
 		lootLabel.text = "Both Voids have escaped!\n"
@@ -866,16 +916,19 @@ func generate_loot_text():
 		else:
 			var itemName = lootToWin[i][0]
 			var qty = lootToWin[i][1]
-			if qty is int:
+			if typeof(qty) == TYPE_INT or typeof(qty) == TYPE_REAL :
 				GlobalPlayer.add_loot(itemName,qty)
 				textToPrint += itemName + " x"+ str(qty) +"\n"
-			elif qty is String:
+			elif typeof(qty) == TYPE_STRING:
 				if qty == "CORE":
 					itemName = GlobalPlayer.add_core(itemName)
 					textToPrint += itemName +"\n"
+					
 	return textToPrint
 
-
+func update_global_golems():
+	for i in AllyGolems.size():
+		GlobalPlayer.update_golem(AllyGolems[i])
 ################################ UI NAVIGATION ##############################################
 
 ## Skills and menu coices are 1-6
@@ -941,7 +994,17 @@ func update_cursor_location_on_current_SELECTIONSTATE():
 	
 	update_player_choice(playerSelection)
 		
+func secondary_combat_options():
+	if currentSelectionState != SELECTIONSTATE.SECONDARY:
+		currentSelectionState = SELECTIONSTATE.SECONDARY
+		ui_secondary_menu_update()
+		
+	else:
+		currentSelectionState = SELECTIONSTATE.SKILLS
+		ui_main_menu_update()
+		
 	
+
 func select_player_choice(newChoice):
 	
 	pass
@@ -967,7 +1030,17 @@ func move_right():
 			playerSelection = 2
 		elif playerSelection == 2:
 			playerSelection = 1
-		else: ui_accept(true)
+		else: secondary_combat_options()
+		
+	elif currentSelectionState == SELECTIONSTATE.SECONDARY:
+		if playerSelection == 1:
+			playerSelection = 2
+		elif playerSelection == 2:
+			playerSelection = 1
+		else: 
+			currentSelectionState = SELECTIONSTATE.SKILLS
+			ui_main_menu_update()
+		
 	
 	elif currentSelectionState == SELECTIONSTATE.ENEMY:
 		if playerSelection == 80:
@@ -989,7 +1062,16 @@ func move_left():
 			playerSelection = 2
 		elif playerSelection == 2:
 			playerSelection = 1
-		else: ui_cancel(true)
+		else: secondary_combat_options()
+		
+	elif currentSelectionState == SELECTIONSTATE.SECONDARY:
+		if playerSelection == 1:
+			playerSelection = 2
+		elif playerSelection == 2:
+			playerSelection = 1
+		else: 
+			currentSelectionState = SELECTIONSTATE.SKILLS
+			ui_main_menu_update()
 		
 	elif currentSelectionState == SELECTIONSTATE.ENEMY:
 		if playerSelection == 80:
@@ -1066,8 +1148,10 @@ func ui_accept(arrowKeySelection = false):
 				previousPlayerSelection = playerSelection
 				playerSelection = 3
 				update_player_choice(playerSelection)
-				update_skills(selectedGolem,currentMenu)
-				
+				if currentSelectionState == SELECTIONSTATE.SKILLS:
+					update_skills(selectedGolem,currentMenu)
+				elif currentSelectionState == SELECTIONSTATE.SECONDARY:
+					update_secondary(selectedGolem,currentMenu)
 		elif currentMenu == MENU.ATTACK:
 			if selectableSkillOptions[playerSelection-3]: ##-3 to get the 0-3 array
 				skillBeingUsed = select_skill(playerSelection-2) ##needs a number 1-4 to find and select the skill node in question

@@ -1,5 +1,8 @@
 extends Control
 onready var skillNameNode = $MarginContainer/HBoxContainer/SkillName
+onready var backingImageNode = $MarginContainer/SlotBackground
+onready var skillPictureNode = $MarginContainer/HBoxContainer/SkillPicture
+onready var partySlotMemberNode = $MarginContainer/PartySlotUI
 
 # Declare member variables here. Examples:
 # var a = 2
@@ -26,12 +29,31 @@ func not_enough_energy():
 	skillNameNode.set("custom_colors/font_color", Color(.75,.75,.75,1.0))
 
 func main_menu(newText):
+	reset()
+	skillNameNode.text = newText
+
+func side_menu(newText):
+	reset()
+	skillNameNode.text = newText
+	backingImageNode.modulate = Color("75b4ff")
+	if newText == "None":
+		not_enough_energy()
+
+func reset():
 	skillName = null
 	skillDetails = null
 	skillNumber = null
-	skillNameNode.text = newText
 	skillNameNode.set("custom_colors/font_color", Color(0,0,0,1))
-
+	backingImageNode.modulate = Color("ffffff")
+	partySlotMemberNode.hide()
+	
+	
+func set_golem(golem,selectable = true):
+	partySlotMemberNode.show()
+	
+	partySlotMemberNode.load_golem(golem)
+	if !selectable:
+		not_enough_energy()
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 #func _process(delta):
 #	pass

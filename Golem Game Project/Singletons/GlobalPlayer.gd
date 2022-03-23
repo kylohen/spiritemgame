@@ -205,5 +205,15 @@ func add_golem(golemID):
 		newGolemInput["CURRENT ACTION"] = newGolemInput["ACTION METER"]
 		newGolemInput["CURRENT MAGIC"] = newGolemInput["MAGIC METER"]
 		newGolemInput["CURRENT HP"] = newGolemInput["HP"]
+		newGolemInput["PARTY POSITION"] = partyGolems.size()
 		partyGolems.append(newGolemInput)
-
+		
+func remove_golem(golemStatBlock):
+	partyGolems.remove(golemStatBlock["PARTY POSITION"])
+	
+func update_golem(golemStatBlock):
+	var partyGolemNumber = golemStatBlock["PARTY POSITION"] 
+	partyGolems[partyGolemNumber]["CURRENT HP"] = golemStatBlock["CURRENT HP"] 
+	partyGolems[partyGolemNumber]["CURRENT ACTION"] = golemStatBlock["CURRENT ACTION"] 
+	partyGolems[partyGolemNumber]["CURRENT MAGIC"] = golemStatBlock["CURRENT MAGIC"] 
+		
