@@ -14,7 +14,7 @@ onready var enemyBackUIBar= $EnemyGraphics/EnemyBackingBack/UI_Bars
 onready var battleWinScreen = $PopUpWindows/BattleWin
 onready var sceneLoadInAndOut = $SceneLoadInAndOut
 
-enum MENU{ATTACK,SUPPORT,DEFEND,ITEM,PARTY,FLEE, NONE, WIN}
+enum MENU{ATTACK,SUPPORT,DEFEND,FLEE, ITEM,PARTY, NONE, WIN}
 enum {REST,ATTACK,HIT,SUPPORT,DEFEND,FLEE,DEATH}
 var currentMenu = MENU.NONE
 var playerSelection  = 3
@@ -61,7 +61,8 @@ var playerUsedSupport = false
 var voidChanceToRun =0.25 #25% chance void will run away with Core
 var lootModifier = 1
 var battleWon = false
-
+var partyChoice = 0
+onready var maxParty = GlobalPlayer.maxGolemParty
 
 ###################### BUILDING ENCOUNTER ############################################
 func _ready():
@@ -364,10 +365,13 @@ func update_secondary(golem,menu):
 	var skillType
 	var selectableSkills = []
 	if menu == MENU.ITEM:
+		currentMenu = MENU.ITEM
 		skillType = "ATTACK SKILLS"
 	elif menu == MENU.PARTY:
+		currentMenu = MENU.PARTY
 		update_golem_list()
 	elif menu == MENU.FLEE:
+		currentMenu = MENU.FLEE
 		skillBeingUsed = StatBlocks.skillList[1]
 		use_skill(null)
 	
@@ -375,22 +379,31 @@ func update_golem_list(firstGolemOnList = 0):
 	var selectableSkills = []
 	
 	var listOfPartyMembers = GlobalPlayer.partyGolems
-	
-	if firstGolemOnList > listOfPartyMembers.size()+1:
-		firstGolemOnList = 0
+	var golemDisplay = firstGolemOnList
 		
-	for i in range (firstGolemOnList, firstGolemOnList+5,1):
-		if listOfPartyMembers.size <= i:
+	for i in 4:
+		if golemDisplay > maxParty-1:
+			golemDisplay = 0
+		var foundMatch = false
+#		print (listOfPartyMembers.size()," < ",i,int(listOfPartyMembers.size()) < int(i))
+		if listOfPartyMembers.size() <= golemDisplay:
 			skillNameNodes.get_node("VBoxContainer/MenuItem"+str(i+1)).set_golem(null,false)
 			selectableSkills.append(false)
+			foundMatch = true
 			
-		elif listOfPartyMembers[i]["PARTY POSITION"] == AllyGolems["PARTY POSITION"]:
-			skillNameNodes.get_node("VBoxContainer/MenuItem"+str(i+1)).set_golem(listOfPartyMembers[i],false)
-			selectableSkills.append(false)
+		elif !foundMatch:
+			for j in AllyGolems.size():
+				
+				if  listOfPartyMembers[golemDisplay]["PARTY POSITION"] == AllyGolems[j]["PARTY POSITION"]:
+					skillNameNodes.get_node("VBoxContainer/MenuItem"+str(i+1)).set_golem(listOfPartyMembers[golemDisplay],false)
+					selectableSkills.append(false)
+					foundMatch = true
 		else:
-			skillNameNodes.get_node("VBoxContainer/MenuItem"+str(i+1)).set_golem(listOfPartyMembers[i],true)
+			skillNameNodes.get_node("VBoxContainer/MenuItem"+str(i+1)).set_golem(listOfPartyMembers[golemDisplay],true)
 			selectableSkills.append(true)
 		selectableSkillOptions = selectableSkills
+		
+		golemDisplay += 1
 	
 	
 func check_skill_cost(golem,skillNumber):
@@ -1085,14 +1098,28 @@ func move_left():
 		elif playerSelection == 91:
 			playerSelection=90
 	update_player_choice(playerSelection)
-
+func update_partyChoice(num = 1):
+	partyChoice += num
+	if partyChoice < 0:
+		partyChoice = maxParty-1
+	elif partyChoice > maxParty-1:
+		partyChoice = 0
+			
 func move_up():
 	clear_player_choice(playerSelection)
 	
-	if currentSelectionState == SELECTIONSTATE.SKILLS:
-		if playerSelection == 1:
-			playerSelection = 6
-		else: playerSelection -= 1
+	if currentSelectionState == SELECTIONSTATE.SKILLS or currentSelectionState == SELECTIONSTATE.SECONDARY:
+		if currentMenu == MENU.PARTY:
+			if playerSelection == 3:
+				update_partyChoice(-1)
+				update_golem_list(partyChoice)
+			else: playerSelection -= 1
+			
+			
+		else:
+			if playerSelection == 1:
+				playerSelection = 6
+			else: playerSelection -= 1
 	
 	elif currentSelectionState == SELECTIONSTATE.ENEMY:
 		if playerSelection == 80:
@@ -1110,11 +1137,17 @@ func move_up():
 func move_down():
 	clear_player_choice(playerSelection)
 	
-	if currentSelectionState == SELECTIONSTATE.SKILLS:
-		if playerSelection == 6:
-			playerSelection = 1
-		else: playerSelection += 1
-	
+	if currentSelectionState == SELECTIONSTATE.SKILLS or currentSelectionState == SELECTIONSTATE.SECONDARY:
+		if currentMenu == MENU.PARTY:
+			if playerSelection == 6:
+				update_partyChoice(1)
+				update_golem_list(partyChoice)
+			else: playerSelection += 1
+		else:
+			if playerSelection == 6:
+				playerSelection = 1
+			else: playerSelection += 1
+		
 	elif currentSelectionState == SELECTIONSTATE.ENEMY:
 		if playerSelection == 80:
 			playerSelection=81
@@ -1140,6 +1173,12 @@ func ui_accept(arrowKeySelection = false):
 				use_skill(playerFront)
 			elif playerSelection == 91:
 				use_skill(playerBack)
+#		elif currentSelectionState == SELECTIONSTATE.SECONDARY:
+#			currentMenu = playerSelection-3
+#			clear_player_choice(playerSelection)
+#			previousPlayerSelection = playerSelection
+#			playerSelection = 3
+#			update_player_choice(playerSelection)
 			
 		elif currentMenu == MENU.NONE:
 			if playerSelection >= 3 and playerSelection <=6:
@@ -1151,7 +1190,7 @@ func ui_accept(arrowKeySelection = false):
 				if currentSelectionState == SELECTIONSTATE.SKILLS:
 					update_skills(selectedGolem,currentMenu)
 				elif currentSelectionState == SELECTIONSTATE.SECONDARY:
-					update_secondary(selectedGolem,currentMenu)
+					update_secondary(selectedGolem,currentMenu+4) #this is for the MENU.ENUMS provided, going through the list integers
 		elif currentMenu == MENU.ATTACK:
 			if selectableSkillOptions[playerSelection-3]: ##-3 to get the 0-3 array
 				skillBeingUsed = select_skill(playerSelection-2) ##needs a number 1-4 to find and select the skill node in question

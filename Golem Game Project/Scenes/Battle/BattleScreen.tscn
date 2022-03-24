@@ -34,8 +34,8 @@ tracks/0/keys = {
 [node name="BattleScreen" type="Control"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-margin_right = 10560.0
-margin_bottom = 5940.0
+margin_right = 11040.0
+margin_bottom = 6210.0
 script = ExtResource( 2 )
 __meta__ = {
 "_edit_use_anchors_": false
