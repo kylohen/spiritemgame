@@ -65,6 +65,8 @@ var partyChoice = 0
 var golemSwitch = null
 onready var maxParty = GlobalPlayer.maxGolemParty
 
+
+var itemChoice = 0
 ###################### BUILDING ENCOUNTER ############################################
 func _ready():
 	sceneSetup.play("RESET")
@@ -415,7 +417,7 @@ func update_secondary(golem,menu):
 	var selectableSkills = []
 	if menu == MENU.ITEM:
 		currentMenu = MENU.ITEM
-		skillType = "ATTACK SKILLS"
+		update_item_list()
 	elif menu == MENU.PARTY:
 		currentMenu = MENU.PARTY
 		partyChoice = 0
@@ -463,6 +465,59 @@ func update_golem_list(firstGolemOnList = 0):
 	
 	selectableSkillOptions = selectableSkills
 	print (selectableSkillOptions)
+
+func find_usable_items():
+	var itemIndex = GlobalPlayer.itemIndexDict
+	var itemIndexKeys = itemIndex.keys()
+	var itemList = GlobalPlayer.inventoryListDict
+	var usable_items = []
+	for i in itemIndexKeys.size():
+		if LootTable.UseItemList.has(itemIndex[itemIndexKeys[i]]):
+			usable_items.append(GlobalPlayer.get_item_and_quantity(itemIndexKeys[i]))
+	return usable_items
+func update_item_list(firstItemOnList = 0):
+	var selectableItems = []
+	var itemDisplay = firstItemOnList
+	
+	var listOfItems = find_usable_items()
+	if listOfItems.size() < 4:
+		while listOfItems.size()<4:
+			listOfItems.append([null,null])
+	for i in 4:
+		if itemDisplay > listOfItems.size()-1:
+			itemDisplay = 0
+		if itemDisplay< 0:
+			itemDisplay += listOfItems.size()
+#		var foundMatch = false
+#		print (listOfPartyMembers.size()," < ",i,int(listOfPartyMembers.size()) < int(i))
+#		if listOfItems.size() <= itemDisplay:s
+#			skillNameNodes.get_node("VBoxContainer/MenuItem"+str(i+1)).set_item(listOfItems[itemDisplay][0],listOfItems[itemDisplay][1])
+#			selectableItems.append(false)
+#			foundMatch = true
+#		set_item(itemID:String,itemCount:int,newIndex:int)
+#		elif golemSwitch != null :
+#			if  listOfPartyMembers[itemDisplay]["PARTY POSITION"] == golemSwitch["PARTY POSITION"] :  ###Removes the ability of selecting the same golem twice
+#				skillNameNodes.get_node("VBoxContainer/MenuItem"+str(i+1)).set_golem(listOfPartyMembers[itemDisplay],false)
+#				selectableItems.append(false)
+#				foundMatch = true
+#
+#		if !foundMatch:
+#			for j in AllyGolems.size():
+#
+#				if  listOfPartyMembers[itemDisplay]["PARTY POSITION"] == AllyGolems[j]["PARTY POSITION"]:
+#					skillNameNodes.get_node("VBoxContainer/MenuItem"+str(i+1)).set_golem(listOfPartyMembers[itemDisplay],false)
+#					selectableItems.append(false)
+#					foundMatch = true
+#		if !foundMatch:
+#			skillNameNodes.get_node("VBoxContainer/MenuItem"+str(i+1)).set_item(listOfPartyMembers[itemDisplay],true)
+		skillNameNodes.get_node("VBoxContainer/MenuItem"+str(i+1)).set_item(listOfItems[itemDisplay][0],listOfItems[itemDisplay][1],itemDisplay)
+		if listOfItems[itemDisplay] != null:
+			selectableItems.append(true)
+		else: selectableItems.append(false)
+		itemDisplay += 1
+	
+#	selectableSkillOptions = selectableSkills
+#	print (selectableSkillOptions)
 	
 func check_skill_cost(golem,skillNumber):
 	if skillNumber != null:
@@ -1192,6 +1247,14 @@ func update_partyChoice(num = 1):
 	elif partyChoice > maxParty-1:
 		partyChoice = 0
 	print ("partyChoice = ", partyChoice)
+func update_itemChoice(num = 1):
+	itemChoice += num
+	if itemChoice < 0:
+		itemChoice = GlobalPlayer.itemIndexDict.size()-1
+	elif itemChoice > GlobalPlayer.itemIndexDict.size()-1:
+		itemChoice = 0
+	
+	
 func move_up():
 	clear_player_choice(playerSelection)
 	
@@ -1203,7 +1266,13 @@ func move_up():
 			else: 
 				playerSelection -= 1
 				update_partyChoice(-1)
-			
+		elif currentMenu == MENU.ITEM:
+			if playerSelection == 3:
+				update_itemChoice(-1)
+				update_item_list(itemChoice)
+			else: 
+				playerSelection -= 1
+				update_itemChoice(-1)
 			
 		else:
 			if playerSelection == 1:
@@ -1234,6 +1303,14 @@ func move_down():
 			else: 
 				update_partyChoice(1)
 				playerSelection += 1
+		elif currentMenu == MENU.ITEM:
+			if playerSelection == 6:
+				update_itemChoice(1)
+				update_item_list(partyChoice-3)
+			else: 
+				update_itemChoice(1)
+				playerSelection += 1
+			
 		else:
 			if playerSelection == 6:
 				playerSelection = 1

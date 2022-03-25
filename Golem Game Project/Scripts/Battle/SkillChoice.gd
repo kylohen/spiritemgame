@@ -3,7 +3,10 @@ onready var skillNameNode = $MarginContainer/HBoxContainer/SkillName
 onready var backingImageNode = $MarginContainer/SlotBackground
 onready var skillPictureNode = $MarginContainer/HBoxContainer/SkillPicture
 onready var partySlotMemberNode = $MarginContainer/PartySlotUI
+onready var itemSlotNode = $MarginContainer/Item_Choice/InventorySlotUI
 
+onready var itemChoice = $MarginContainer/Item_Choice
+onready var itemLabel = $MarginContainer/Item_Choice/Label
 # Declare member variables here. Examples:
 # var a = 2
 # var b = "text"
@@ -47,6 +50,8 @@ func reset():
 	backingImageNode.modulate = Color("ffffff")
 	partySlotMemberNode.modulate = Color(1,1,1,1)
 	partySlotMemberNode.hide()
+	itemChoice.hide()
+	itemSlotNode.reset()
 	
 	
 func set_golem(golem,selectable = true):
@@ -55,6 +60,12 @@ func set_golem(golem,selectable = true):
 	partySlotMemberNode.load_golem(golem)
 	if !selectable:
 		partySlotMemberNode.modulate = Color(.75,.75,.75,1.0)
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-#func _process(delta):
-#	pass
+
+func set_item(newItemName,newQuantity,newIndex):
+	itemChoice.show()
+	itemSlotNode.reset()
+	itemLabel.text =""
+	if newItemName != null:
+		itemLabel.text = newItemName+" x"+str(newQuantity)
+		itemSlotNode.set_item(newItemName,newQuantity,newIndex)
+	pass

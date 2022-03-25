@@ -17,6 +17,12 @@ var inventoryListDict={}
 #}
 ###
 var itemIndexDict ={}
+#{IndexNumber:ItemName}
+#EXAMPLE:
+#{
+#0:Rusty Hammer,
+#}
+
 var nextInventoryIndex=0
 var maxGolemParty = 6
 var levelOfCave = 0
@@ -181,6 +187,14 @@ func use_item(itemToUse,indexToUse, quantityToUse = 1):
 
 func has_item(itemToCheck):
 	return inventoryListDict.has(itemToCheck)
+
+func get_item_and_quantity(key):
+	if itemIndexDict.has(key):
+		var itemName = itemIndexDict[key]
+		var qty = inventoryListDict[itemName][key]
+		return [itemName,qty]
+	
+	
 
 func has_item_and_quantity(itemToCheck, quantity):
 	if inventoryListDict.has(itemToCheck):
