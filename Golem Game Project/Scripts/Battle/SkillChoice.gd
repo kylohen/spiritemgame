@@ -45,15 +45,16 @@ func reset():
 	skillNumber = null
 	skillNameNode.set("custom_colors/font_color", Color(0,0,0,1))
 	backingImageNode.modulate = Color("ffffff")
+	partySlotMemberNode.modulate = Color(1,1,1,1)
 	partySlotMemberNode.hide()
 	
 	
 func set_golem(golem,selectable = true):
+	reset()
 	partySlotMemberNode.show()
-	
 	partySlotMemberNode.load_golem(golem)
 	if !selectable:
-		not_enough_energy()
+		partySlotMemberNode.modulate = Color(.75,.75,.75,1.0)
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 #func _process(delta):
 #	pass
