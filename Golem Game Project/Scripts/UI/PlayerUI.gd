@@ -60,8 +60,8 @@ func _next_Tool():
 func _previous_Tool():
 	emit_signal("previousTool")
 
-func _use_item(itemID,itemTexture):
-	emit_signal("useItem",itemID,itemTexture)
+func _use_item(itemID,itemTexture,itemIndex):
+	emit_signal("useItem",itemID,itemTexture,itemIndex)
 
 func process_player_input():
 	if GlobalPlayer.is_PLAYSTATE(GlobalPlayer.PLAYSTATE.GAME):
@@ -85,10 +85,7 @@ func process_player_input():
 			pass
 		if currentMenu == INVENTORY:
 			if Input.is_action_just_released("ui_cancel"):
-				GlobalPlayer.currentPLAYSTATE = GlobalPlayer.PLAYSTATE.GAME
-				inventoryUI.hide()
-				currentMenu = NONE
-				inventoryUI.not_primary()
+				close_inventory_UI()
 			if Input.is_action_just_pressed("ui_right"):
 				inventoryUI.move_right()
 			elif Input.is_action_just_pressed("ui_left"):
@@ -146,6 +143,10 @@ func process_player_input():
 			battleScreen.move_down()
 		if Input.is_action_just_pressed("ui_accept"):
 			battleScreen.ui_accept()
+		if Input.is_action_just_pressed("Next_Tool"):
+			battleScreen.switch_Golem(true) #Clockwise direction
+		elif Input.is_action_just_pressed("Previous_Tool"):
+			battleScreen.switch_Golem(false) #Counter Clockwise direction
 	pass
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 #func _process(delta):
@@ -165,6 +166,13 @@ func _on_WorldMap_Field_loot_received(lootType,quantityOfLoot):
 	
 	pass # Replace with function body.
 
+func close_inventory_UI():
+	GlobalPlayer.currentPLAYSTATE = GlobalPlayer.PLAYSTATE.GAME
+	inventoryUI.hide()
+	currentMenu = NONE
+	inventoryUI.not_primary()
+
+	pass
 
 func _on_InventoryUI_sub_menu(state):
 	if state == true:

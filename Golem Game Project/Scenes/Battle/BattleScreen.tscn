@@ -34,12 +34,9 @@ tracks/0/keys = {
 [node name="BattleScreen" type="Control"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-margin_right = 5280.0
-margin_bottom = 2970.0
+margin_right = 15360.0
+margin_bottom = 8640.0
 script = ExtResource( 2 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="EnemyGraphics" type="Control" parent="."]
 margin_right = 40.0
@@ -165,10 +162,10 @@ __meta__ = {
 }
 
 [node name="PlayerSpriteFront" parent="PlayerGraphics" instance=ExtResource( 5 )]
-margin_left = -300.0
-margin_top = -10.0
-margin_right = -60.0
-margin_bottom = 230.0
+margin_left = -240.0
+margin_top = 20.0
+margin_right = 0.0
+margin_bottom = 260.0
 rect_scale = Vector2( 0.6, 0.6 )
 isPlayerSprite = true
 
@@ -182,7 +179,6 @@ rect_scale = Vector2( 0.6, 0.6 )
 isPlayerSprite = true
 
 [node name="PlayerBackingBack" type="TextureRect" parent="PlayerGraphics"]
-visible = false
 margin_left = -335.0
 margin_top = 112.0
 margin_right = -191.0
@@ -526,7 +522,7 @@ expand = true
 margin_right = 233.0
 margin_bottom = 200.0
 custom_colors/font_color = Color( 0, 0, 0, 1 )
-text = "You Won:
+text = "
 "
 
 [node name="SceneSetup" type="AnimationPlayer" parent="."]

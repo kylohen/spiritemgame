@@ -9,13 +9,28 @@ var toolSelected
 var currentPLAYSTATE
 
 var inventoryListDict={}
+####
+#{ "Wood":{   #Item Name
+#	0:99,     #Index of item: qty of item 
+#	1:12
+#	}
+#}
+###
 var itemIndexDict ={}
-var nextInventoryIndex=0
+#{IndexNumber:ItemName}
+#EXAMPLE:
+#{
+#0:Rusty Hammer,
+#}
 
+var nextInventoryIndex=0
+var maxGolemParty = 6
 var levelOfCave = 0
 var deepestLevelOfCave = 0
 var playerName = "Player"
 var partyGolems = []
+var coresInInventory ={}
+
 var PLAYERSTATS = {
 	"ATTACK":1,
 	"HP":20,
@@ -31,6 +46,11 @@ var PLAYERSTATS = {
 var isInAnimation = false
 func _ready():
 	currentPLAYSTATE = PLAYSTATE.GAME
+	toolSelected = TOOLS.PICKAXE
+	
+	
+	####################debug####################
+	add_loot("Rusty Magic Hammer",5)
 	pass # Replace with function body.
 
 ## updates the selected tool to the new tool provided
@@ -49,8 +69,22 @@ class _add_loot_sorter:
 		if valueA[0]<valueB[0]:
 			return true
 		return false
-	
+
+func add_core(coreStatBlock):
+	var indexItem = new_index()
+	var coreName = coreStatBlock["NAME"]+"'s Core"
+	inventoryListDict[coreName] = {indexItem:""}
+	inventoryListDict[coreName][indexItem] = "UNIQUE"
+	itemIndexDict[indexItem] = coreName
+	coresInInventory[indexItem] = coreStatBlock
+
 func add_loot(lootType,quantity):
+	if quantity is String:
+		if quantity == "CORE":
+			var indexItem = new_index()
+			inventoryListDict[lootType] = {indexItem:""}
+			inventoryListDict[lootType][indexItem] = quantity
+			itemIndexDict[indexItem] = lootType
 	if inventoryListDict.has(lootType):
 		var keys = inventoryListDict[lootType].keys()
 		keys.sort_custom(_add_loot_sorter, "sort_ascending")
@@ -66,16 +100,19 @@ func add_loot(lootType,quantity):
 					
 	####if it doesn't have the key or the quantity is still more than the max existing and needs a new key
 	if quantity > 0:
+		var remaindingInventory = quantity
 		for i in range (0,quantity,99):
-			if i+99 > quantity:
+			if 99 > remaindingInventory:
 				var indexItem = new_index()
 				inventoryListDict[lootType] = {indexItem:0}
-				inventoryListDict[lootType][indexItem] += quantity
+				inventoryListDict[lootType][indexItem] += remaindingInventory
 				itemIndexDict[indexItem] = lootType
 			else:
 				var indexItem = new_index()
+				
 				inventoryListDict[lootType] = {indexItem:0}
-				inventoryListDict[lootType][indexItem] += i+99
+				inventoryListDict[lootType][indexItem] += 99
+				remaindingInventory -= 99
 				itemIndexDict[indexItem] = lootType
 func new_index():
 	var unusedNumber = 0
@@ -151,6 +188,16 @@ func use_item(itemToUse,indexToUse, quantityToUse = 1):
 func has_item(itemToCheck):
 	return inventoryListDict.has(itemToCheck)
 
+func get_item_and_quantity(key,withIndex=false):
+	if itemIndexDict.has(key):
+		var itemName = itemIndexDict[key]
+		var qty = inventoryListDict[itemName][key]
+		if withIndex:
+			return [itemName,qty,key]
+		else: return [itemName,qty]
+	
+	
+
 func has_item_and_quantity(itemToCheck, quantity):
 	if inventoryListDict.has(itemToCheck):
 		var keys = inventoryListDict[itemToCheck].keys()
@@ -174,5 +221,15 @@ func add_golem(golemID):
 		newGolemInput["CURRENT ACTION"] = newGolemInput["ACTION METER"]
 		newGolemInput["CURRENT MAGIC"] = newGolemInput["MAGIC METER"]
 		newGolemInput["CURRENT HP"] = newGolemInput["HP"]
+		newGolemInput["PARTY POSITION"] = partyGolems.size()
 		partyGolems.append(newGolemInput)
-
+		
+func remove_golem(golemStatBlock):
+	partyGolems.remove(golemStatBlock["PARTY POSITION"])
+	
+func update_golem(golemStatBlock):
+	var partyGolemNumber = golemStatBlock["PARTY POSITION"] 
+	partyGolems[partyGolemNumber]["CURRENT HP"] = golemStatBlock["CURRENT HP"] 
+	partyGolems[partyGolemNumber]["CURRENT ACTION"] = golemStatBlock["CURRENT ACTION"] 
+	partyGolems[partyGolemNumber]["CURRENT MAGIC"] = golemStatBlock["CURRENT MAGIC"] 
+		

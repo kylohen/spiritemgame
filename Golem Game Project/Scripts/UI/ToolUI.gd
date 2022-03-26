@@ -18,7 +18,7 @@ onready var arrowSelectImage = $ArrowSelection
 
 var selectedOpacity = 128
 var notSelectedOpacity = 0
-var toolSelected = GlobalPlayer.TOOLS.PICKAXE
+onready var toolSelected = GlobalPlayer.toolSelected
 # Declare member variables here. Examples:
 # var a = 2
 # var b = "text"
@@ -27,7 +27,11 @@ var toolSelected = GlobalPlayer.TOOLS.PICKAXE
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	set_selection_Highlight(toolSelected)
-	
+	var rotateDegree = 0
+	if toolSelected > 0:
+		for i in toolSelected:
+			rotateDegree += 90
+	rotate_dial(rotateDegree)
 	pass # Replace with function body.
 
 ##Should only be passing 90 degree increments

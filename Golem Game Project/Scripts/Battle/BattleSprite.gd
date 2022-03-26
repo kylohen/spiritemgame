@@ -2,7 +2,7 @@ extends Control
 onready var sprite = $Sprite
 onready var playerCursor = $Sprite/PlayerSelection
 onready var animationPlayer =$AnimationPlayer
-enum {REST,ATTACK,HIT,SUPPORT,DEFEND,FLEE,DEATH}
+enum {REST,ATTACK,HIT,SUPPORT,DEFEND,FLEE,DEATH, SENDOUT,SENDIN}
 # Declare member variables here. Examples:
 # var a = 2
 # var b = "text"
@@ -30,12 +30,19 @@ func animation(type):
 		animationPlayer.play("DEFEND")
 	elif type == DEATH:
 		animationPlayer.play("DEATH")
+	elif type == SENDOUT:
+		animationPlayer.play("SENDOUT")
+	elif type == SENDIN:
+		animationPlayer.play("SENDIN")
+	elif type == FLEE:
+		animationPlayer.play("FLEE")
 		
 #	if animationPlayer.is_playing():
 #		GlobalPlayer.isInAnimation = true
 
 func load_sprite(pathToImage:String):
 	sprite.texture = load(pathToImage)
+	animationPlayer.play("RESET")
 
 func cursor_visible (state:bool):
 	if state == true:

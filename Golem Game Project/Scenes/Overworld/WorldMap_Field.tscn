@@ -13,10 +13,10 @@
 [ext_resource path="res://Assets/OverworldObjects/sprite_overworld_cave_entrance.png" type="Texture" id=11]
 [ext_resource path="res://Scripts/Overworld/EnemyManager.gd" type="Script" id=13]
 
-[sub_resource type="ConvexPolygonShape2D" id=5]
+[sub_resource type="ConvexPolygonShape2D" id=4]
 points = PoolVector2Array( 0, 2.00049, 24, 2.00049, 24, 24, 0, 23.4898 )
 
-[sub_resource type="ConvexPolygonShape2D" id=4]
+[sub_resource type="ConvexPolygonShape2D" id=5]
 points = PoolVector2Array( 32, 32, 0, 32, 0, 0, 32, 0 )
 
 [sub_resource type="TileSet" id=1]
@@ -65,14 +65,14 @@ points = PoolVector2Array( 32, 32, 0, 32, 0, 0, 32, 0 )
 5/navigation_offset = Vector2( 0, 0 )
 5/shape_offset = Vector2( 0, 0 )
 5/shape_transform = Transform2D( 1, 0, 0, 1, 0, 0 )
-5/shape = SubResource( 4 )
+5/shape = SubResource( 5 )
 5/shape_one_way = false
 5/shape_one_way_margin = 1.0
 5/shapes = [ {
 "autotile_coord": Vector2( 0, 0 ),
 "one_way": false,
 "one_way_margin": 1.0,
-"shape": SubResource( 4 ),
+"shape": SubResource( 5 ),
 "shape_transform": Transform2D( 1, 0, 0, 1, 0, 0 )
 } ]
 5/z_index = 0
@@ -142,14 +142,14 @@ points = PoolVector2Array( 32, 32, 0, 32, 0, 0, 32, 0 )
 10/navigation_offset = Vector2( 0, 0 )
 10/shape_offset = Vector2( 0, 0 )
 10/shape_transform = Transform2D( 1, 0, 0, 1, 0, 0 )
-10/shape = SubResource( 5 )
+10/shape = SubResource( 4 )
 10/shape_one_way = false
 10/shape_one_way_margin = 1.0
 10/shapes = [ {
 "autotile_coord": Vector2( 0, 0 ),
 "one_way": false,
 "one_way_margin": 1.0,
-"shape": SubResource( 5 ),
+"shape": SubResource( 4 ),
 "shape_transform": Transform2D( 1, 0, 0, 1, 0, 0 )
 } ]
 10/z_index = 0
@@ -247,6 +247,13 @@ cell_quadrant_size = 24
 format = 1
 tile_data = PoolIntArray( 458764, 3, 0, 458766, 3, 0, 524299, 3, 0, 524303, 3, 0, 589837, 10, 0, 655371, 3, 0, 655375, 3, 0, 720908, 3, 0, 720910, 3, 0 )
 
+[node name="ItemDrops" type="TileMap" parent="."]
+tile_set = SubResource( 1 )
+cell_size = Vector2( 24, 24 )
+cell_quadrant_size = 24
+format = 1
+tile_data = PoolIntArray( 458764, 3, 0, 458766, 3, 0, 524299, 3, 0, 524303, 3, 0, 589837, 10, 0, 655371, 3, 0, 655375, 3, 0, 720908, 3, 0, 720910, 3, 0 )
+
 [node name="Player" parent="." instance=ExtResource( 2 )]
 
 [node name="SpawnGolem" type="Sprite" parent="."]
@@ -271,7 +278,6 @@ anims/GolemSpawning = ExtResource( 9 )
 anims/RESET = SubResource( 3 )
 
 [node name="BackgroundMusic" type="AudioStreamPlayer" parent="."]
-bus = "BackgroundMusic"
 
 [connection signal="loot_received" from="." to="Player" method="_on_WorldMap_Field_loot_received"]
 [connection signal="loot_received" from="." to="Camera2D/PlayerUI" method="_on_WorldMap_Field_loot_received"]

@@ -30,7 +30,7 @@ func update_inventory():
 		if GlobalPlayer.itemIndexDict.has(i):
 			var nextItem = GlobalPlayer.itemIndexDict[i]
 			var nextQuantity = GlobalPlayer.inventoryListDict[nextItem][i]
-			inventorySlots.get_child(i).set_item(nextItem,GlobalPlayer.inventoryListDict[nextItem][i])
+			inventorySlots.get_child(i).set_item(nextItem,GlobalPlayer.inventoryListDict[nextItem][i],i)
 		else:inventorySlots.get_child(i).reset()
 	current_player_selection_highlight (playerCurrentSelection)
 	
@@ -263,9 +263,7 @@ func selected():
 		add_child(subMenuNode)
 		subMenuNode.rect_position = inventoryPlayerSelection.get_child(playerCurrentSelection).rect_position+Vector2(130,80)
 		subMenuNode.connect("selected",self,"_on_SubInventoryMenu_selected")
-		if nodeSelected.type == null:
-			subMenuNode.set_choices(false)
-		else:subMenuNode.set_choices(true)
+		subMenuNode.set_choices(nodeSelected.type)
 		inventoryHighlightToMove = playerCurrentSelection
 		pass
 	pass
@@ -311,10 +309,11 @@ func _on_SubInventoryMenu_selected(selected):
 		pass
 	elif selected == PLACE:
 	##########################some use function
-		GlobalPlayer.use_item(nodeSelected.type,playerCurrentSelection + inventoryPage*inventorySlots.get_child_count())
-		get_parent()._use_item(nodeSelected.type, nodeSelected.selectedItemTexture)
+		
+		get_parent()._use_item(nodeSelected.type, nodeSelected.selectedItemTexture,nodeSelected.itemIndex)
 		update_inventory()
 		emit_signal("sub_menu",false)
+		get_parent().close_inventory_UI()
 		
 		pass
 	elif selected == DISCARD:

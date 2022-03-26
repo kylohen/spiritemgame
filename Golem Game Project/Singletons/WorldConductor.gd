@@ -2,6 +2,8 @@ extends Node
 ## Conductor helps advise the other nodes of the objects in the world
 
 const TILE_SIZE = 24
+var golemCoreStolen = []
+
 
 enum objectTypes {TallGrass,Boulders,Trees,Logs,Clay}
 var objectTextures = {
@@ -74,4 +76,12 @@ onready var lootTable = {
 }
 func test():
 	var pull = lootTable[0].keys()
+	pass
+
+func core_stolen(golemCore,voidGolemResponsible):
+	golemCoreStolen.append([golemCore,voidGolemResponsible])
+	pass
+
+func core_retrieved():
+	
 	pass

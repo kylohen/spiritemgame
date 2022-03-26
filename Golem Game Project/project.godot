@@ -36,14 +36,13 @@ WorldConductor="*res://Singletons/WorldConductor.gd"
 StatBlocks="*res://Singletons/StatBlocks.gd"
 Recipes="*res://Singletons/Recipes.gd"
 Settings="*res://Singletons/Settings.gd"
+LootTable="*res://Singletons/LootTable.gd"
 
 [display]
 
 window/size/width=480
 window/size/height=270
 window/size/resizable=false
-window/size/test_width=1920
-window/size/test_height=1080
 window/stretch/mode="2d"
 
 [global]
