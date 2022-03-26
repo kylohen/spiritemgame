@@ -34,6 +34,8 @@ func animation(type):
 		animationPlayer.play("SENDOUT")
 	elif type == SENDIN:
 		animationPlayer.play("SENDIN")
+	elif type == FLEE:
+		animationPlayer.play("FLEE")
 		
 #	if animationPlayer.is_playing():
 #		GlobalPlayer.isInAnimation = true

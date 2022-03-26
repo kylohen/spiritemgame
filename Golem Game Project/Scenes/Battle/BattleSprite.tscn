@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=2]
+[gd_scene load_steps=13 format=2]
 
 [ext_resource path="res://Assets/sprites/BattleSprites/VoidSprites/Sprite-0008.png" type="Texture" id=1]
 [ext_resource path="res://Assets/UI/Inventory/inventory_selectcursor1.png" type="Texture" id=2]
@@ -11,6 +11,7 @@
 [ext_resource path="res://Animations/Battle/Sprites/DEATH.tres" type="Animation" id=9]
 [ext_resource path="res://Animations/Battle/Sprites/SENDIN.tres" type="Animation" id=10]
 [ext_resource path="res://Animations/Battle/Sprites/SENDOUT.tres" type="Animation" id=11]
+[ext_resource path="res://Animations/Battle/Sprites/FLEE.tres" type="Animation" id=12]
 
 [node name="BattleSprite" type="Control"]
 margin_left = -120.0
@@ -26,8 +27,8 @@ __meta__ = {
 [node name="Sprite" type="TextureRect" parent="."]
 anchor_right = 1.0
 anchor_bottom = 1.0
-margin_right = 9360.0
-margin_bottom = 9360.0
+margin_right = 9840.0
+margin_bottom = 9840.0
 grow_horizontal = 0
 grow_vertical = 0
 rect_pivot_offset = Vector2( 120, 120 )
@@ -56,6 +57,7 @@ __meta__ = {
 anims/ATTACK = ExtResource( 3 )
 anims/DEATH = ExtResource( 9 )
 anims/DEFEND = ExtResource( 7 )
+anims/FLEE = ExtResource( 12 )
 anims/HIT = ExtResource( 4 )
 anims/RESET = ExtResource( 6 )
 anims/SENDIN = ExtResource( 10 )

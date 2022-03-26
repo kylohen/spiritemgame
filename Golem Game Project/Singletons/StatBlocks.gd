@@ -2,7 +2,7 @@ extends Node
 
 enum ELEMENT{Nature, Lightning, Water, Fire, Ice, Wind, Void, Divine, Mundane, NONE}
 #enum STATE
-enum TARGET{SELF,ENEMY,ALLY,AOE}
+enum TARGET{SELF,ENEMY,ALLY,AOE,BOTH}
 
 var aspectSprite = {
 	ELEMENT.Nature : "res://Assets/UI/Bars/UI_Aspect_Nature.png",

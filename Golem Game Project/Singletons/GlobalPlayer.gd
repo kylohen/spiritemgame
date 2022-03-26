@@ -188,11 +188,13 @@ func use_item(itemToUse,indexToUse, quantityToUse = 1):
 func has_item(itemToCheck):
 	return inventoryListDict.has(itemToCheck)
 
-func get_item_and_quantity(key):
+func get_item_and_quantity(key,withIndex=false):
 	if itemIndexDict.has(key):
 		var itemName = itemIndexDict[key]
 		var qty = inventoryListDict[itemName][key]
-		return [itemName,qty]
+		if withIndex:
+			return [itemName,qty,key]
+		else: return [itemName,qty]
 	
 	
 

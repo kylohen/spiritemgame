@@ -47,11 +47,14 @@ func reset():
 	skillDetails = null
 	skillNumber = null
 	skillNameNode.set("custom_colors/font_color", Color(0,0,0,1))
+	itemLabel.set("custom_colors/font_color", Color(0,0,0,1))
 	backingImageNode.modulate = Color("ffffff")
 	partySlotMemberNode.modulate = Color(1,1,1,1)
 	partySlotMemberNode.hide()
+	itemSlotNode.modulate = Color(1,1,1,1)
 	itemChoice.hide()
 	itemSlotNode.reset()
+	
 	
 	
 func set_golem(golem,selectable = true):
@@ -61,11 +64,13 @@ func set_golem(golem,selectable = true):
 	if !selectable:
 		partySlotMemberNode.modulate = Color(.75,.75,.75,1.0)
 
-func set_item(newItemName,newQuantity,newIndex):
+func set_item(newItemName=null,newQuantity=null,newIndex=null, selectable = true):
 	itemChoice.show()
 	itemSlotNode.reset()
 	itemLabel.text =""
 	if newItemName != null:
 		itemLabel.text = newItemName+" x"+str(newQuantity)
 		itemSlotNode.set_item(newItemName,newQuantity,newIndex)
-	pass
+	if !selectable:
+		itemLabel.set("custom_colors/font_color", Color(.75,.75,.75,1.0))
+		itemSlotNode.modulate = Color(.75,.75,.75,1.0)

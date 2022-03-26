@@ -1,10 +1,11 @@
 extends Node
 
-var UseItemList = {
+onready var UseItemList = {
 	"Rusty Magic Hammer" :{
 		"USE":"Golem",
-		"STAT":"HP",
-		"AMOUNT": 25,
+		"STAT":"CURRENT HP",
+		"MODIFIERS": 25,
+		"TARGET":StatBlocks.TARGET.BOTH,
 	},
 }
 

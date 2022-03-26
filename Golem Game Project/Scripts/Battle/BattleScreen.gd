@@ -51,8 +51,8 @@ var selectableSkillOptions = []
 enum BATTLESTATE {ENEMYTURN,PLAYERTURN}
 var currentBattleState
 var waitingForPlayerInput = false
-enum SELECTIONSTATE{SKILLS,ENEMY,ALLY, SECONDARY}
-onready var currentSelectionState=SELECTIONSTATE.SKILLS
+enum SELECTIONSTATE{SKILLS,ENEMY,ALLY, BOTH, SECONDARY,MAIN}
+onready var currentSelectionState=SELECTIONSTATE.MAIN
 
 var lootToWin = []
 enum SPECIALKILL {OVERKILL,EXACTKILL,LINKKILL,DEBUFFKILL,FIREKILL,WATERKILL,LIGHTKILL,DARKKILL}
@@ -67,6 +67,8 @@ onready var maxParty = GlobalPlayer.maxGolemParty
 
 
 var itemChoice = 0
+var listOfUseableItems =[]
+var itemUsed = null
 ###################### BUILDING ENCOUNTER ############################################
 func _ready():
 	sceneSetup.play("RESET")
@@ -400,7 +402,9 @@ func update_skills(golem,menu):
 	elif menu == MENU.DEFEND:
 		skillType = "DEFEND SKILLS"
 	elif menu == MENU.FLEE:
-		store_choice(golem,null,StatBlocks.skillList[1])
+		skillBeingUsed = StatBlocks.skillList[1]
+		use_skill(golem)
+		return
 	var skills = golem[skillType]
 	for i in range (1,5,1):
 		var isSelectable = true
@@ -473,51 +477,36 @@ func find_usable_items():
 	var usable_items = []
 	for i in itemIndexKeys.size():
 		if LootTable.UseItemList.has(itemIndex[itemIndexKeys[i]]):
-			usable_items.append(GlobalPlayer.get_item_and_quantity(itemIndexKeys[i]))
+			usable_items.append(GlobalPlayer.get_item_and_quantity(itemIndexKeys[i],true))
+			
 	return usable_items
 func update_item_list(firstItemOnList = 0):
 	var selectableItems = []
 	var itemDisplay = firstItemOnList
 	
-	var listOfItems = find_usable_items()
-	if listOfItems.size() < 4:
-		while listOfItems.size()<4:
-			listOfItems.append([null,null])
-	for i in 4:
-		if itemDisplay > listOfItems.size()-1:
-			itemDisplay = 0
-		if itemDisplay< 0:
-			itemDisplay += listOfItems.size()
-#		var foundMatch = false
-#		print (listOfPartyMembers.size()," < ",i,int(listOfPartyMembers.size()) < int(i))
-#		if listOfItems.size() <= itemDisplay:s
-#			skillNameNodes.get_node("VBoxContainer/MenuItem"+str(i+1)).set_item(listOfItems[itemDisplay][0],listOfItems[itemDisplay][1])
-#			selectableItems.append(false)
-#			foundMatch = true
-#		set_item(itemID:String,itemCount:int,newIndex:int)
-#		elif golemSwitch != null :
-#			if  listOfPartyMembers[itemDisplay]["PARTY POSITION"] == golemSwitch["PARTY POSITION"] :  ###Removes the ability of selecting the same golem twice
-#				skillNameNodes.get_node("VBoxContainer/MenuItem"+str(i+1)).set_golem(listOfPartyMembers[itemDisplay],false)
-#				selectableItems.append(false)
-#				foundMatch = true
-#
-#		if !foundMatch:
-#			for j in AllyGolems.size():
-#
-#				if  listOfPartyMembers[itemDisplay]["PARTY POSITION"] == AllyGolems[j]["PARTY POSITION"]:
-#					skillNameNodes.get_node("VBoxContainer/MenuItem"+str(i+1)).set_golem(listOfPartyMembers[itemDisplay],false)
-#					selectableItems.append(false)
-#					foundMatch = true
-#		if !foundMatch:
-#			skillNameNodes.get_node("VBoxContainer/MenuItem"+str(i+1)).set_item(listOfPartyMembers[itemDisplay],true)
-		skillNameNodes.get_node("VBoxContainer/MenuItem"+str(i+1)).set_item(listOfItems[itemDisplay][0],listOfItems[itemDisplay][1],itemDisplay)
-		if listOfItems[itemDisplay] != null:
-			selectableItems.append(true)
-		else: selectableItems.append(false)
-		itemDisplay += 1
+	listOfUseableItems = find_usable_items()
+	if listOfUseableItems.size() < 4:
+		while listOfUseableItems.size()<4:
+			listOfUseableItems.append([null,null])
 	
-#	selectableSkillOptions = selectableSkills
-#	print (selectableSkillOptions)
+	for i in 4:
+		if itemDisplay > listOfUseableItems.size()-1:
+			itemDisplay = 0
+		elif itemDisplay< 0:
+			itemDisplay += listOfUseableItems.size()
+#		
+		if listOfUseableItems[itemDisplay] == itemUsed and (listOfUseableItems[itemDisplay][1]-itemUsed[1]) <=0:
+			
+			print (listOfUseableItems[itemDisplay][1], " - ", itemUsed[1])
+			skillNameNodes.get_node("VBoxContainer/MenuItem"+str(i+1)).set_item(listOfUseableItems[itemDisplay][0],listOfUseableItems[itemDisplay][1],itemDisplay,false)
+			selectableItems.append(false)
+		else:
+			skillNameNodes.get_node("VBoxContainer/MenuItem"+str(i+1)).set_item(listOfUseableItems[itemDisplay][0],listOfUseableItems[itemDisplay][1],itemDisplay)
+			if listOfUseableItems[itemDisplay] != [null,null,null]:
+				selectableItems.append(true)
+			else: selectableItems.append(false)
+		itemDisplay += 1
+	selectableSkillOptions = selectableItems
 	
 func check_skill_cost(golem,skillNumber):
 	if skillNumber != null:
@@ -532,6 +521,7 @@ func ui_main_menu_update():
 	skillNameNodes.get_node("VBoxContainer/MenuItem3").main_menu("Defend")
 	skillNameNodes.get_node("VBoxContainer/MenuItem4").main_menu("Flee")
 	currentMenu = MENU.NONE
+	currentSelectionState = SELECTIONSTATE.MAIN
 	pass
 func ui_secondary_menu_update():
 	skillNameNodes.get_node("VBoxContainer/MenuItem1").side_menu("Item")
@@ -539,6 +529,7 @@ func ui_secondary_menu_update():
 	skillNameNodes.get_node("VBoxContainer/MenuItem3").side_menu("Flee")
 	skillNameNodes.get_node("VBoxContainer/MenuItem4").side_menu("None")
 	currentMenu = MENU.NONE
+	currentSelectionState = SELECTIONSTATE.SECONDARY
 #	selectableSkillOptions = [true,true,true,false]
 	pass
 func select_skill(skillChoice:int): 
@@ -546,7 +537,8 @@ func select_skill(skillChoice:int):
 		ERR_INVALID_DATA
 	var skillDetails = skillNameNodes.get_node("VBoxContainer/MenuItem"+str(skillChoice)).skillDetails
 	if skillDetails["TARGET"] == StatBlocks.TARGET.SELF:
-		use_skill(StatBlocks.TARGET.SELF)
+		skillBeingUsed = skillDetails
+		use_skill(selectedGolem)
 	elif skillDetails["TARGET"] == StatBlocks.TARGET.ENEMY:
 		currentSelectionState = SELECTIONSTATE.ENEMY
 		update_cursor_location_on_current_SELECTIONSTATE()
@@ -560,7 +552,14 @@ func animate_sprite(nodeToAnimate,TypeOfAnimation):
 #	yield(nodeToAnimate,"sprite_animation_done")
 
 func update_ui_action_bars(nodeToUpdate,skillUsedForCost):
-	nodeToUpdate.update_ui_action_bars(skillUsedForCost["ACTION METER COST"],skillUsedForCost["MAGIC METER COST"])
+	var actionCost = 0
+	var magicCost = 0
+	if skillUsedForCost.has("ACTION METER COST"):
+		actionCost =  skillUsedForCost["ACTION METER COST"]
+	if skillUsedForCost.has("MAGIC METER COST"):
+		magicCost =  skillUsedForCost["MAGIC METER COST"]
+		
+	nodeToUpdate.update_ui_action_bars(actionCost,magicCost)
 	pass
 func update_ui_health_bar(nodeToUpdate,newHP):
 	nodeToUpdate.update_ui_health_bar(newHP)
@@ -607,7 +606,25 @@ func resolve_turn():
 #		print (debug_pendingSkills())
 		pendingSkills.sort_custom(self,"sort_by_speed")
 		for i in range (pendingSkills.size(),0,-1):
-			print (typeof(pendingSkills[i-1][2]), " is String number ",TYPE_STRING,"?")
+			if pendingSkills[i-1][2]["NAME"] == "Flee":
+				update_combat_text(pendingSkills[i-1])
+				
+				animate_sprite(pendingSkills[i-1][0]["NODE"],FLEE)
+				yield(pendingSkills[i-1][0]["NODE"],"sprite_animation_done")
+				var rollForFlee = SeedGenerator.rng.randf_range(0,1)
+				var chanceForSuccess = pendingSkills[i-1][0]["SPEED"]/100
+				
+				if chanceForSuccess>=rollForFlee :
+					if EnemyGolems.has(pendingSkills[i-1][0]):
+						void_ran_away(pendingSkills[i-1][0])
+					else:
+						lose_battle()
+				
+#				animate_sprite(pendingSkills[i-1][0]["NODE"],SENDIN)
+#				yield(pendingSkills[i-1][0]["NODE"],"sprite_animation_done")
+				
+				pendingSkills.erase(pendingSkills[i-1])
+		for i in range (pendingSkills.size(),0,-1):
 			if pendingSkills[i-1][2]["NAME"] == "SWITCH":
 				update_combat_text(pendingSkills[i-1])
 				
@@ -623,6 +640,24 @@ func resolve_turn():
 				
 				pendingSkills.erase(pendingSkills[i-1])
 			
+		for i in range (pendingSkills.size(),0,-1):
+			if pendingSkills[i-1][2]["TYPE"] == "ITEM":
+				update_combat_text(pendingSkills[i-1])
+				
+				animate_sprite(pendingSkills[i-1][0]["NODE"],SUPPORT)
+				yield(pendingSkills[i-1][0]["NODE"],"sprite_animation_done")
+				var statName = pendingSkills[i-1][2]["STAT"]
+				var newValue = pendingSkills[i-1][2]["MODIFIERS"]
+				if statName == "CURRENT HP":
+					pendingSkills[i-1][1]["CURRENT HP"] += newValue
+				else:
+					pendingSkills[i-1][1]["MODIFIERS"] += {statName:newValue}
+				
+				update_ui_action_bars(pendingSkills[i-1][0]["UI NODE"],pendingSkills[i-1][2])
+				update_ui_health_bar(pendingSkills[i-1][1]["UI NODE"],pendingSkills[i-1][1]["CURRENT HP"])
+				
+				GlobalPlayer.use_item(pendingSkills[i-1][2]["NAME"],pendingSkills[i-1][2]["ITEM INDEX"],1)
+				pendingSkills.erase(pendingSkills[i-1])
 		for i in range (pendingSkills.size(),0,-1):
 #			print (debug_pendingSkills(), "\n Loop ",i)
 			if pendingSkills[i-1][2]["TYPE"] == "SUPPORT":
@@ -714,21 +749,21 @@ func resolve_turn():
 				damage = attackWithMod/targetDefenseWithMod*pendingSkills[i-1][2]["BASE DAMAGE"] * (pendingSkills[i-1][0]["LEVEL"]*0.2)*pendingSkills[i-1][0]["AFFINITY"] * skillRand# * CoreMultiplier * CompostionMultiplier * EnvironmentalMultiplier #
 				##DEBUG rounding damage:
 				damage = ceil(damage)
-				pendingSkills[i-1][1]["HP"] -= damage
+				pendingSkills[i-1][1]["CURRENT HP"] -= damage
 				
 				spend_energy(pendingSkills[i-1][0],pendingSkills[i-1][2])
 				
 				prompt.get_node("PromptText").text= pendingSkills[i-1][0]["NAME"]+ " is attacking " + pendingSkills[i-1][1]["NAME"]+ " and is doing " + str(damage) + " damage" +"\n"
-				prompt.get_node("PromptText").text+= pendingSkills[i-1][1]["NAME"]+ " is at "+ str(pendingSkills[i-1][1]["HP"])+ " HP"
+				prompt.get_node("PromptText").text+= pendingSkills[i-1][1]["NAME"]+ " is at "+ str(pendingSkills[i-1][1]["CURRENT HP"])+ " HP"
 				animate_sprite(pendingSkills[i-1][0]["NODE"],ATTACK)
 				yield(pendingSkills[i-1][0]["NODE"],"sprite_animation_done")
 				animate_sprite(pendingSkills[i-1][1]["NODE"],HIT)
 				yield(pendingSkills[i-1][1]["NODE"],"sprite_animation_done")
 				update_ui_action_bars(pendingSkills[i-1][0]["UI NODE"],pendingSkills[i-1][2])
-				update_ui_health_bar(pendingSkills[i-1][1]["UI NODE"],pendingSkills[i-1][1]["HP"])
+				update_ui_health_bar(pendingSkills[i-1][1]["UI NODE"],pendingSkills[i-1][1]["CURRENT HP"])
 				
 				
-				if pendingSkills[i-1][1]["HP"]  <=  0:
+				if pendingSkills[i-1][1]["CURRENT HP"]  <=  0:
 #					check_for_kill_bonus()
 #					pendingSkills[i-1][1]["HP"] = 0
 					if EnemyGolems.has(pendingSkills[i-1][1]):
@@ -801,7 +836,7 @@ func use_skill(target):
 			AllyGolemsSkillUsed[i] = true 
 
 	skillBeingUsed = null
-	currentSelectionState = SELECTIONSTATE.SKILLS
+	currentSelectionState = SELECTIONSTATE.MAIN
 	ui_main_menu_update()
 	clear_player_choice(playerSelection)
 	update_cursor_location_on_current_SELECTIONSTATE()
@@ -822,8 +857,10 @@ func reset_selection():
 	previousPlayerSelection = null
 	playerUsedSupport = false
 	partyChoice = 0
+	itemChoice = 0
+	itemUsed = null
 	golemSwitch = null
-	currentSelectionState = SELECTIONSTATE.SKILLS
+	currentSelectionState = SELECTIONSTATE.MAIN
 	for i in AllyGolemsSkillUsed.size():
 		AllyGolemsSkillUsed[i] = false
 	
@@ -1045,9 +1082,18 @@ func win_battle():
 	currentMenu = MENU.WIN
 	battleWon = true
 	var lootLabel = battleWinScreen.get_node("Label")
+	lootLabel = "You Won:\n"
 	lootLabel.text += generate_loot_text()
 	update_global_golems()
-	
+
+func lose_battle():
+	battleWinScreen.show()
+	currentMenu = MENU.WIN
+	battleWon = true
+	var lootLabel = battleWinScreen.get_node("Label")
+	lootLabel.text = "You Fled:"
+	lootLabel.text += generate_loot_text()
+	update_global_golems()
 	
 func void_ran_away(voidTaker,coreTaken = null):
 	battleWinScreen.show()
@@ -1136,7 +1182,7 @@ func update_cursor_location_on_current_SELECTIONSTATE():
 	
 	clear_player_choice(playerSelection)
 	
-	if currentSelectionState == SELECTIONSTATE.SKILLS:
+	if currentSelectionState == SELECTIONSTATE.MAIN or currentBattleState == SELECTIONSTATE.SECONDARY:
 		if previousPlayerSelection != null:
 			playerSelection = previousPlayerSelection
 			previousPlayerSelection = null
@@ -1147,28 +1193,34 @@ func update_cursor_location_on_current_SELECTIONSTATE():
 	elif currentSelectionState == SELECTIONSTATE.ALLY:
 		playerSelection = 90
 	
+	elif currentSelectionState == SELECTIONSTATE.BOTH:
+		playerSelection = 80
+	
 	update_player_choice(playerSelection)
 		
 func secondary_combat_options():
-	if currentSelectionState != SELECTIONSTATE.SECONDARY:
-		currentSelectionState = SELECTIONSTATE.SECONDARY
+	if currentSelectionState == SELECTIONSTATE.MAIN:
 		ui_secondary_menu_update()
 		
 	else:
-		currentSelectionState = SELECTIONSTATE.SKILLS
 		ui_main_menu_update()
 		
 	
 
-func select_player_choice(newChoice):
-	
-	pass
 	
 func ui_cancel(arrowKeySelection = false):
-	if currentSelectionState != SELECTIONSTATE.SKILLS:
-		currentSelectionState = SELECTIONSTATE.SKILLS
-		update_cursor_location_on_current_SELECTIONSTATE()
-		skillBeingUsed = null
+#	if currentSelectionState != SELECTIONSTATE.MAIN or currentSelectionState != SELECTIONSTATE.SECONDARY:
+#		currentSelectionState = SELECTIONSTATE.MAIN
+#		update_cursor_location_on_current_SELECTIONSTATE()
+#		skillBeingUsed = null
+	if currentMenu == MENU.ITEM or currentMenu == MENU.PARTY:
+		clear_player_choice(playerSelection)
+		previousPlayerSelection=null
+		playerSelection = currentMenu-1
+		update_player_choice(playerSelection)
+		currentMenu = MENU.NONE
+		ui_secondary_menu_update()
+		selectableSkillOptions = []
 	elif currentMenu != MENU.NONE:
 		clear_player_choice(playerSelection)
 		previousPlayerSelection=null
@@ -1177,24 +1229,30 @@ func ui_cancel(arrowKeySelection = false):
 		currentMenu = MENU.NONE
 		ui_main_menu_update()
 		selectableSkillOptions = []
+#	elif
+
+#		elif currentMenu == MENU.NONE:
+#			if playerSelection >= 3 and playerSelection <=6:
+#				currentMenu = playerSelection-3
+#				clear_player_choice(playerSelection)
+#				previousPlayerSelection = playerSelection
+#				playerSelection = 3
+#				update_player_choice(playerSelection)
+#				if currentSelectionState == SELECTIONSTATE.MAIN:
+#					update_skills(selectedGolem,currentMenu)
+#				elif currentSelectionState == SELECTIONSTATE.SECONDARY:
+#					update_secondary(selectedGolem,currentMenu+4)
 	pass
 func move_right():
 	clear_player_choice(playerSelection)
-	if currentSelectionState == SELECTIONSTATE.SKILLS:
-		if playerSelection == 1:
-			playerSelection = 2
-		elif playerSelection == 2:
-			playerSelection = 1
-		else: secondary_combat_options()
-		
-	elif currentSelectionState == SELECTIONSTATE.SECONDARY:
-		if playerSelection == 1:
-			playerSelection = 2
-		elif playerSelection == 2:
-			playerSelection = 1
-		else: 
-			currentSelectionState = SELECTIONSTATE.SKILLS
-			ui_main_menu_update()
+	if playerSelection == 1:
+		playerSelection = 2
+	elif playerSelection == 2:
+		playerSelection = 1
+	elif currentSelectionState == SELECTIONSTATE.MAIN and currentMenu == MENU.NONE:
+		secondary_combat_options()
+	elif currentSelectionState == SELECTIONSTATE.SECONDARY and currentMenu == MENU.NONE:
+		ui_main_menu_update()
 		
 	
 	elif currentSelectionState == SELECTIONSTATE.ENEMY:
@@ -1208,25 +1266,27 @@ func move_right():
 			playerSelection=91
 		elif playerSelection == 91:
 			playerSelection=90
+	elif currentSelectionState == SELECTIONSTATE.BOTH:
+		if playerSelection == 80:
+			playerSelection=81
+		elif playerSelection == 81:
+			playerSelection=80
+		elif playerSelection == 90:
+			playerSelection=91
+		elif playerSelection == 91:
+			playerSelection=90
 	update_player_choice(playerSelection)
 func move_left():
 	clear_player_choice(playerSelection)
-	
-	if currentSelectionState == SELECTIONSTATE.SKILLS:
-		if playerSelection == 1:
-			playerSelection = 2
-		elif playerSelection == 2:
-			playerSelection = 1
-		else: secondary_combat_options()
-		
-	elif currentSelectionState == SELECTIONSTATE.SECONDARY:
-		if playerSelection == 1:
-			playerSelection = 2
-		elif playerSelection == 2:
-			playerSelection = 1
-		else: 
-			currentSelectionState = SELECTIONSTATE.SKILLS
-			ui_main_menu_update()
+
+	if playerSelection == 1:
+		playerSelection = 2
+	elif playerSelection == 2:
+		playerSelection = 1
+	elif currentSelectionState == SELECTIONSTATE.MAIN and currentMenu == MENU.NONE:
+		secondary_combat_options()
+	elif currentSelectionState == SELECTIONSTATE.SECONDARY  and currentMenu == MENU.NONE:
+		ui_main_menu_update()
 		
 	elif currentSelectionState == SELECTIONSTATE.ENEMY:
 		if playerSelection == 80:
@@ -1236,6 +1296,16 @@ func move_left():
 	
 	elif currentSelectionState == SELECTIONSTATE.ALLY:
 		if playerSelection == 90:
+			playerSelection=91
+		elif playerSelection == 91:
+			playerSelection=90
+			
+	elif currentSelectionState == SELECTIONSTATE.BOTH:
+		if playerSelection == 80:
+			playerSelection=81
+		elif playerSelection == 81:
+			playerSelection=80
+		elif playerSelection == 90:
 			playerSelection=91
 		elif playerSelection == 91:
 			playerSelection=90
@@ -1250,34 +1320,28 @@ func update_partyChoice(num = 1):
 func update_itemChoice(num = 1):
 	itemChoice += num
 	if itemChoice < 0:
-		itemChoice = GlobalPlayer.itemIndexDict.size()-1
-	elif itemChoice > GlobalPlayer.itemIndexDict.size()-1:
+		itemChoice = listOfUseableItems.size()-1
+	elif itemChoice > listOfUseableItems.size()-1:
 		itemChoice = 0
-	
+	print (itemChoice)
 	
 func move_up():
 	clear_player_choice(playerSelection)
-	
-	if currentSelectionState == SELECTIONSTATE.SKILLS or currentSelectionState == SELECTIONSTATE.SECONDARY:
-		if currentMenu == MENU.PARTY:
-			if playerSelection == 3:
-				update_partyChoice(-1)
-				update_golem_list(partyChoice)
-			else: 
-				playerSelection -= 1
-				update_partyChoice(-1)
-		elif currentMenu == MENU.ITEM:
-			if playerSelection == 3:
-				update_itemChoice(-1)
-				update_item_list(itemChoice)
-			else: 
-				playerSelection -= 1
-				update_itemChoice(-1)
-			
-		else:
-			if playerSelection == 1:
-				playerSelection = 6
-			else: playerSelection -= 1
+
+	if currentMenu == MENU.PARTY:
+		if playerSelection == 3:
+			update_partyChoice(-1)
+			update_golem_list(partyChoice)
+		else: 
+			playerSelection -= 1
+			update_partyChoice(-1)
+	elif currentMenu == MENU.ITEM:
+		if playerSelection == 3:
+			update_itemChoice(-1)
+			update_item_list(itemChoice)
+		else: 
+			playerSelection -= 1
+			update_itemChoice(-1)
 	
 	elif currentSelectionState == SELECTIONSTATE.ENEMY:
 		if playerSelection == 80:
@@ -1290,31 +1354,42 @@ func move_up():
 			playerSelection=91
 		elif playerSelection == 91:
 			playerSelection=90
+			
+	elif currentSelectionState == SELECTIONSTATE.BOTH:
+		if playerSelection == 80:
+			playerSelection=90
+		elif playerSelection == 81:
+			playerSelection=91
+		elif playerSelection == 90:
+			playerSelection=80
+		elif playerSelection == 91:
+			playerSelection=81
+		
+	else:
+		if playerSelection == 1:
+			playerSelection = 6
+		else: playerSelection -= 1
+		
 	update_player_choice(playerSelection)
 	
 func move_down():
 	clear_player_choice(playerSelection)
 	
-	if currentSelectionState == SELECTIONSTATE.SKILLS or currentSelectionState == SELECTIONSTATE.SECONDARY:
-		if currentMenu == MENU.PARTY:
-			if playerSelection == 6:
-				update_partyChoice(1)
-				update_golem_list(partyChoice-3)
-			else: 
-				update_partyChoice(1)
-				playerSelection += 1
-		elif currentMenu == MENU.ITEM:
-			if playerSelection == 6:
-				update_itemChoice(1)
-				update_item_list(partyChoice-3)
-			else: 
-				update_itemChoice(1)
-				playerSelection += 1
-			
-		else:
-			if playerSelection == 6:
-				playerSelection = 1
-			else: playerSelection += 1
+	if currentMenu == MENU.PARTY:
+		if playerSelection == 6:
+			update_partyChoice(1)
+			update_golem_list(partyChoice-3)
+		else: 
+			update_partyChoice(1)
+			playerSelection += 1
+	elif currentMenu == MENU.ITEM:
+		if playerSelection == 6:
+			update_itemChoice(1)
+			update_item_list(itemChoice-3)
+		else: 
+			update_itemChoice(1)
+			playerSelection += 1
+		
 		
 	elif currentSelectionState == SELECTIONSTATE.ENEMY:
 		if playerSelection == 80:
@@ -1327,11 +1402,26 @@ func move_down():
 			playerSelection=91
 		elif playerSelection == 91:
 			playerSelection=90
+	elif currentSelectionState == SELECTIONSTATE.BOTH:
+		if playerSelection == 80:
+			playerSelection=90
+		elif playerSelection == 81:
+			playerSelection=91
+		elif playerSelection == 90:
+			playerSelection=80
+		elif playerSelection == 91:
+			playerSelection=81
+		
+	else:
+		if playerSelection == 6:
+			playerSelection = 1
+		else: playerSelection += 1
+	
 	update_player_choice(playerSelection)
 	
 func ui_accept(arrowKeySelection = false):
 	if waitingForPlayerInput:
-		if currentSelectionState == SELECTIONSTATE.ENEMY:
+		if currentSelectionState == SELECTIONSTATE.ENEMY  :
 			if playerSelection == 80:
 				use_skill(enemyFront)
 			elif playerSelection == 81:
@@ -1341,12 +1431,16 @@ func ui_accept(arrowKeySelection = false):
 				use_skill(playerFront)
 			elif playerSelection == 91:
 				use_skill(playerBack)
-#		elif currentSelectionState == SELECTIONSTATE.SECONDARY:
-#			currentMenu = playerSelection-3
-#			clear_player_choice(playerSelection)
-#			previousPlayerSelection = playerSelection
-#			playerSelection = 3
-#			update_player_choice(playerSelection)
+		elif currentSelectionState == SELECTIONSTATE.BOTH:
+			if playerSelection == 80:
+				use_skill(enemyFront)
+			elif playerSelection == 81:
+				use_skill(enemyBack)
+			elif playerSelection == 90:
+				use_skill(playerFront)
+			elif playerSelection == 91:
+				use_skill(playerBack)
+			
 			
 		elif currentMenu == MENU.NONE:
 			if playerSelection >= 3 and playerSelection <=6:
@@ -1355,7 +1449,7 @@ func ui_accept(arrowKeySelection = false):
 				previousPlayerSelection = playerSelection
 				playerSelection = 3
 				update_player_choice(playerSelection)
-				if currentSelectionState == SELECTIONSTATE.SKILLS:
+				if currentSelectionState == SELECTIONSTATE.MAIN:
 					update_skills(selectedGolem,currentMenu)
 				elif currentSelectionState == SELECTIONSTATE.SECONDARY:
 					update_secondary(selectedGolem,currentMenu+4) #this is for the MENU.ENUMS provided, going through the list integers
@@ -1377,6 +1471,24 @@ func ui_accept(arrowKeySelection = false):
 				golemSwitch = GlobalPlayer.partyGolems[partyChoice]
 #				print ("Picked ",golemSwitch["NAME"], " as partyChoice ",partyChoice)
 				use_skill(GlobalPlayer.partyGolems[partyChoice].duplicate())
+		elif currentMenu == MENU.ITEM:
+			if selectableSkillOptions[playerSelection-3]:
+				skillBeingUsed = LootTable.UseItemList[listOfUseableItems[itemChoice][0]].duplicate()
+				skillBeingUsed["NAME"] = listOfUseableItems[itemChoice][0]
+				skillBeingUsed["TYPE"] = "ITEM"
+				skillBeingUsed["ITEM INDEX"] = listOfUseableItems[itemChoice][2]
+				
+				var itemTarget = LootTable.UseItemList[listOfUseableItems[itemChoice][0]]["TARGET"]
+				if itemTarget == StatBlocks.TARGET.ALLY:
+					currentSelectionState = SELECTIONSTATE.ALLY
+				elif itemTarget == StatBlocks.TARGET.ENEMY:
+					currentSelectionState = SELECTIONSTATE.ENEMY
+				elif itemTarget == StatBlocks.TARGET.BOTH:
+					currentSelectionState = SELECTIONSTATE.BOTH
+				itemUsed =listOfUseableItems[itemChoice]
+				itemUsed[1] = 1
+			update_cursor_location_on_current_SELECTIONSTATE()
+#				use_skill(GlobalPlayer.partyGolems[partyChoice].duplicate())
 		elif currentMenu == MENU.WIN:
 			get_parent()._enemy_battle_end()
 			
