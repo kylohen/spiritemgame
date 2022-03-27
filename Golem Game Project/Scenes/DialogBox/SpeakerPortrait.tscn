@@ -1,0 +1,31 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://Assets/Animations/Slide_In_NPC.tres" type="Animation" id=2]
+[ext_resource path="res://Assets/Animations/Slide_Out_NPC.tres" type="Animation" id=3]
+[ext_resource path="res://Scripts/DialogBox/SpeakerPortrait.gd" type="Script" id=4]
+
+[node name="SpeakerPortrait" type="Control"]
+anchor_left = 0.8
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 213.8
+margin_right = 213.801
+script = ExtResource( 4 )
+
+[node name="TextureRect" type="TextureRect" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 0
+grow_vertical = 0
+expand = true
+stretch_mode = 5
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+anims/Slide_In = ExtResource( 2 )
+anims/Slide_Out = ExtResource( 3 )
+
+[connection signal="animation_finished" from="AnimationPlayer" to="." method="_on_AnimationPlayer_animation_finished"]

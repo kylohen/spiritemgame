@@ -27,7 +27,11 @@ var nextInventoryIndex=0
 var maxGolemParty = 6
 var levelOfCave = 0
 var deepestLevelOfCave = 0
-var playerName = "Player"
+
+var playerName = "Player Red"
+var playerGender = ""
+var playerAvatar = ""
+
 var partyGolems = []
 var coresInInventory ={}
 

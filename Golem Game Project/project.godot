@@ -37,6 +37,7 @@ StatBlocks="*res://Singletons/StatBlocks.gd"
 Recipes="*res://Singletons/Recipes.gd"
 Settings="*res://Singletons/Settings.gd"
 LootTable="*res://Singletons/LootTable.gd"
+DialogStorage="*res://Singletons/DialogStorage.gd"
 
 [display]
 

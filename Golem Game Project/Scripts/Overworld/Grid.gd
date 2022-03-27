@@ -15,6 +15,8 @@ const TILE_SIZE = 24
 onready var overworldObjectScene = preload("res://Scenes/Overworld/OverworldObjects.tscn")
 onready var lootItemScene = preload("res://Scenes/Overworld/LootItem.tscn")
 onready var caveSystemScene = "res://Scenes/Overworld/CaveSystem.tscn"
+onready var dialogSystemNode = preload("res://Scenes/DialogBox/FullDialogWindow.tscn")
+
 var gridMap = []
 var objectPlacement = []
 var itemDropPlacement = []
@@ -71,6 +73,7 @@ func _ready():
 	GlobalPlayer.add_golem(SeedGenerator.rng.randi_range(0,StatBlocks.playerGolemBaseStatBlocks.keys().size()-1))
 	GlobalPlayer.add_golem(SeedGenerator.rng.randi_range(0,StatBlocks.playerGolemBaseStatBlocks.keys().size()-1))
 #	randomize_Objects()
+	runDialog()
 	pass
 	
 ## called on startup to generate an empty array to fill up for gridMap
@@ -353,3 +356,12 @@ func _on_EnemyManager_enemy_contact(enemyNode):
 	enemyNode.queue_free()
 	pass # Replace with function body.
 
+##################################################################################################
+######################################DIALOG######################################################
+##################################################################################################
+
+func runDialog(partToPlay=null):
+	var newDialog = dialogSystemNode.instance()
+	playerUI.add_child(newDialog)
+
+pass
