@@ -18,6 +18,8 @@ var nodeToMove = null
 var indexToMove = null
 var inventoryHighlightToMove = null
 
+var itemToUse = null
+
 signal sub_menu
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -47,7 +49,7 @@ func current_player_selection_highlight (currentSelection):
 		nodeSelected = inventoryPageTurning.get_node("NextButton")
 	elif currentSelection >= 18 and currentSelection <= 23:
 		partyMemberSelection.get_child(currentSelection-18).modulate.a = 1.0
-		nodeSelected = partyMemberSelection.get_child(currentSelection-18)
+		nodeSelected = partySlots.get_child(currentSelection-18)
 	playerCurrentSelection = currentSelection
 
 func remove_previous_selection_highlight (previousSelection):
@@ -66,9 +68,15 @@ func remove_previous_selection_highlight (previousSelection):
 	
 func load_golems():
 	var golemList = GlobalPlayer.partyGolems
+	for i in partySlots.get_child_count():
+#		if golemList[i] != null:
+		partySlots.get_child(i).load_golem(golemList[i])
+	pass
+func refresh_golems():
+	var golemList = GlobalPlayer.partyGolems
 	for i in golemList.size():
 		
-		partySlots.get_child(i).load_golem(golemList[i])
+		partySlots.get_child(i).refresh()
 	pass
 func reset_all_selections():
 	for i in inventoryPlayerSelection.get_child_count():
@@ -98,6 +106,8 @@ func move_right():
 		elif playerCurrentSelection == 17:
 			newNumber = 16
 		else:newNumber = playerCurrentSelection + 1
+	elif currentState == USE:
+		newNumber = playerCurrentSelection
 	else:
 		if playerCurrentSelection == 3:
 			newNumber = 18
@@ -122,8 +132,9 @@ func move_right():
 		elif playerCurrentSelection == 17:
 			newNumber = 23
 		else:newNumber = playerCurrentSelection + 1
-	remove_previous_selection_highlight(playerCurrentSelection)
-	current_player_selection_highlight(newNumber)
+	if newNumber != null:
+		remove_previous_selection_highlight(playerCurrentSelection)
+		current_player_selection_highlight(newNumber)
 	
 	pass
 func move_left():
@@ -141,6 +152,8 @@ func move_left():
 		elif playerCurrentSelection == 16:
 			newNumber = 17
 		else:newNumber = playerCurrentSelection - 1
+	elif currentState == USE:
+		newNumber = playerCurrentSelection
 	else:
 		if playerCurrentSelection == 0:
 			newNumber = 18
@@ -167,27 +180,37 @@ func move_left():
 		elif playerCurrentSelection == 16:
 			newNumber = 23
 		else:newNumber = playerCurrentSelection - 1
-	remove_previous_selection_highlight(playerCurrentSelection)
-	current_player_selection_highlight(newNumber)
+	if newNumber != null:
+		remove_previous_selection_highlight(playerCurrentSelection)
+		current_player_selection_highlight(newNumber)
 	
 	pass
 func move_up():
 	var newNumber
 	if currentState == MOVE:
-		if playerCurrentSelection == 0:
-			newNumber = 12
-		elif playerCurrentSelection == 1:
-			newNumber = 16
-		elif playerCurrentSelection == 2:
-			newNumber = 17
-		elif playerCurrentSelection == 3:
-			newNumber = 15
-		elif playerCurrentSelection == 16:
-			newNumber = 13
-		elif playerCurrentSelection == 17:
-			newNumber = 14
-		elif playerCurrentSelection >= 4 and playerCurrentSelection<=15:
-			newNumber = playerCurrentSelection-4
+		if playerCurrentSelection >= 0 and playerCurrentSelection <=17:
+			if playerCurrentSelection == 0:
+				newNumber = 12
+			elif playerCurrentSelection == 1:
+				newNumber = 16
+			elif playerCurrentSelection == 2:
+				newNumber = 17
+			elif playerCurrentSelection == 3:
+				newNumber = 15
+			elif playerCurrentSelection == 16:
+				newNumber = 13
+			elif playerCurrentSelection == 17:
+				newNumber = 14
+			elif playerCurrentSelection >= 4 and playerCurrentSelection<=15:
+				newNumber = playerCurrentSelection-4
+		elif playerCurrentSelection >= 18 and playerCurrentSelection <=23:
+			if playerCurrentSelection == 18:
+				newNumber = 23
+			else:newNumber = playerCurrentSelection - 1
+	elif currentState == USE:
+		if playerCurrentSelection == 18:
+			newNumber = 23
+		else:newNumber = playerCurrentSelection - 1
 	else:
 		if playerCurrentSelection == 0:
 			newNumber = 12
@@ -211,20 +234,30 @@ func move_up():
 func move_down():
 	var newNumber
 	if currentState == MOVE:
-		if playerCurrentSelection == 12:
-			newNumber = 0
-		elif playerCurrentSelection == 13:
-			newNumber = 16
-		elif playerCurrentSelection == 14:
-			newNumber = 17
-		elif playerCurrentSelection == 15:
-			newNumber = 3
-		elif playerCurrentSelection == 16:
-			newNumber = 1
-		elif playerCurrentSelection == 17:
-			newNumber = 2
-		elif playerCurrentSelection >= 0 and playerCurrentSelection<=11:
-			newNumber = playerCurrentSelection+4
+		if playerCurrentSelection >= 0 and playerCurrentSelection <=17:
+			if playerCurrentSelection == 12:
+				newNumber = 0
+			elif playerCurrentSelection == 13:
+				newNumber = 16
+			elif playerCurrentSelection == 14:
+				newNumber = 17
+			elif playerCurrentSelection == 15:
+				newNumber = 3
+			elif playerCurrentSelection == 16:
+				newNumber = 1
+			elif playerCurrentSelection == 17:
+				newNumber = 2
+			elif playerCurrentSelection >= 0 and playerCurrentSelection<=11:
+				newNumber = playerCurrentSelection+4
+			
+		elif playerCurrentSelection >= 18 and playerCurrentSelection <=23:
+			if playerCurrentSelection == 23:
+				newNumber = 18
+			else:newNumber = playerCurrentSelection + 1
+	elif currentState == USE:
+		if playerCurrentSelection == 23:
+			newNumber = 18
+		else:newNumber = playerCurrentSelection + 1
 	else:
 		if playerCurrentSelection == 12:
 			newNumber = 0
@@ -251,17 +284,55 @@ func selected():
 	if nodeSelected is TextureButton:
 		nodeSelected.pressed = true
 	elif currentState == MOVE:
-		GlobalPlayer.swap_item_locations(nodeToMove.type,indexToMove,nodeSelected.type,playerCurrentSelection + inventoryPage*inventorySlots.get_child_count())
-		subMenuNode.queue_free()
+		if (playerCurrentSelection >= 0 and playerCurrentSelection<=15):
+			GlobalPlayer.swap_item_locations(nodeToMove.type,indexToMove,nodeSelected.type,playerCurrentSelection + inventoryPage*inventorySlots.get_child_count())
+			subMenuNode.queue_free()
+			currentState = null
+			reset_all_selections()
+			inventoryHighlightToMove = null
+			update_inventory()
+		elif playerCurrentSelection >= 18 and playerCurrentSelection<=23:
+			GlobalPlayer.swap_golem_position(indexToMove,playerCurrentSelection-18)
+			subMenuNode.queue_free()
+			currentState = null
+			reset_all_selections()
+			inventoryHighlightToMove = null
+			load_golems()
+	elif currentState == USE:
+		print (itemToUse)
+		var itemDetails = null
+		
+		if LootTable.UseItemList.has(GlobalPlayer.itemIndexDict[itemToUse]):
+			itemDetails = LootTable.UseItemList[GlobalPlayer.itemIndexDict[itemToUse]]
+		var golemPosition = playerCurrentSelection-18 ##18 is based off of the number that these options are sitting at
+		var golemChosen = GlobalPlayer.partyGolems[golemPosition]
+		if itemDetails != null:
+			golemChosen[itemDetails["STAT"]] += itemDetails["MODIFIERS"]
+			if golemChosen[itemDetails["STAT"]] > golemChosen[itemDetails["STAT"].right(8)]: ###ONLY WOULD WORK IF ALL CURRENT STATS USED BY ITEMS HAVE CURRENT
+				golemChosen[itemDetails["STAT"]] = golemChosen[itemDetails["STAT"].right(8)]  
+			GlobalPlayer.use_item(GlobalPlayer.itemIndexDict[itemToUse],itemToUse,1)
+		
+		
 		currentState = null
 		reset_all_selections()
 		inventoryHighlightToMove = null
+		itemToUse = null
 		update_inventory()
+		load_golems()
+		
 	elif playerCurrentSelection >= 0 and playerCurrentSelection<=15:
 		emit_signal("sub_menu",true)
 		subMenuNode = subMenuInventoryScene.instance()
 		add_child(subMenuNode)
 		subMenuNode.rect_position = inventoryPlayerSelection.get_child(playerCurrentSelection).rect_position+Vector2(130,80)
+		subMenuNode.connect("selected",self,"_on_SubInventoryMenu_selected")
+		subMenuNode.set_choices(nodeSelected.type)
+		inventoryHighlightToMove = playerCurrentSelection
+	elif playerCurrentSelection >= 18 and playerCurrentSelection<=23:
+		emit_signal("sub_menu",true)
+		subMenuNode = subMenuInventoryScene.instance()
+		add_child(subMenuNode)
+		subMenuNode.rect_position = partyMemberSelection.get_child(playerCurrentSelection-18).rect_position+Vector2(130,80)
 		subMenuNode.connect("selected",self,"_on_SubInventoryMenu_selected")
 		subMenuNode.set_choices(nodeSelected.type)
 		inventoryHighlightToMove = playerCurrentSelection
@@ -296,15 +367,19 @@ func _on_SubInventoryMenu_selected(selected):
 #	if nodeSelected.type != null:
 	if selected == MOVE:
 		nodeToMove = nodeSelected
-		indexToMove = playerCurrentSelection + inventoryPage*inventorySlots.get_child_count()
 		emit_signal("sub_menu",false)
 		currentState = MOVE
+		if playerCurrentSelection>=0 and playerCurrentSelection <=15:
+			indexToMove = playerCurrentSelection + inventoryPage*inventorySlots.get_child_count()
+		elif playerCurrentSelection >=18 and playerCurrentSelection <=23:
+			indexToMove = playerCurrentSelection-18
 	elif selected == USE:
-		##########################some use function
-#		GlobalPlayer.use_item(nodeSelected.type,playerCurrentSelection + inventoryPage*inventorySlots.get_child_count())
-#		get_parent()._use_item(nodeSelected.type, nodeSelected.selectedItemTexture)
-#		update_inventory()
-#		emit_signal("sub_menu",false)
+		nodeToMove = nodeSelected
+		itemToUse = playerCurrentSelection + inventoryPage*inventorySlots.get_child_count()
+		emit_signal("sub_menu",false)
+		currentState = USE
+		playerCurrentSelection = 18
+		current_player_selection_highlight(playerCurrentSelection)
 		
 		pass
 	elif selected == PLACE:
@@ -317,9 +392,14 @@ func _on_SubInventoryMenu_selected(selected):
 		
 		pass
 	elif selected == DISCARD:
-		GlobalPlayer.delete_item(nodeSelected.type,inventoryPage * inventorySlots.get_child_count()+playerCurrentSelection)
+		if nodeSelected.type == "golem":
+			GlobalPlayer.remove_golem(GlobalPlayer.partyGolems[playerCurrentSelection-18])
+		else:
+			GlobalPlayer.delete_item(nodeSelected.type,inventoryPage * inventorySlots.get_child_count()+playerCurrentSelection)
 		update_inventory()
+		load_golems()
 		emit_signal("sub_menu",false)
+		reset_all_selections()
 
 
 

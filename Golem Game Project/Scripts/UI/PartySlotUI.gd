@@ -8,7 +8,7 @@ onready var actionLabel = $SlotBackground/Action
 onready var magicLabel = $SlotBackground/Magic
 
 var golem = {}
-
+var type = null
 
 
 
@@ -24,7 +24,7 @@ func show_all_info():
 	for i in get_child(0).get_child_count():
 		get_child(0).get_child(i).show()
 
-func load_golem(newGolem = golem):
+func load_golem(newGolem = null):
 	reset()
 	if newGolem != null:
 		if !newGolem.empty():
@@ -36,7 +36,7 @@ func load_golem(newGolem = golem):
 			actionLabel.text = str(golem["CURRENT ACTION"]) + "/" + str(golem["ACTION METER"])
 			magicLabel.text = str(golem["CURRENT MAGIC"]) + "/" + str(golem["MAGIC METER"])
 			show_all_info()
-			
+			type = "golem"
 			
 	
 func refresh():
@@ -50,3 +50,4 @@ func reset():
 	hpLabel.text = ""
 	actionLabel.text = ""
 	magicLabel.text = ""
+	type = null

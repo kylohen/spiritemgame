@@ -468,7 +468,7 @@ func update_golem_list(firstGolemOnList = 0):
 		golemDisplay += 1
 	
 	selectableSkillOptions = selectableSkills
-	print (selectableSkillOptions)
+#	print (selectableSkillOptions)
 
 func find_usable_items():
 	var itemIndex = GlobalPlayer.itemIndexDict
@@ -497,7 +497,7 @@ func update_item_list(firstItemOnList = 0):
 #		
 		if listOfUseableItems[itemDisplay] == itemUsed and (listOfUseableItems[itemDisplay][1]-itemUsed[1]) <=0:
 			
-			print (listOfUseableItems[itemDisplay][1], " - ", itemUsed[1])
+#			print (listOfUseableItems[itemDisplay][1], " - ", itemUsed[1])
 			skillNameNodes.get_node("VBoxContainer/MenuItem"+str(i+1)).set_item(listOfUseableItems[itemDisplay][0],listOfUseableItems[itemDisplay][1],itemDisplay,false)
 			selectableItems.append(false)
 		else:
@@ -1316,14 +1316,14 @@ func update_partyChoice(num = 1):
 		partyChoice = maxParty-1
 	elif partyChoice > maxParty-1:
 		partyChoice = 0
-	print ("partyChoice = ", partyChoice)
+#	print ("partyChoice = ", partyChoice)
 func update_itemChoice(num = 1):
 	itemChoice += num
 	if itemChoice < 0:
 		itemChoice = listOfUseableItems.size()-1
 	elif itemChoice > listOfUseableItems.size()-1:
 		itemChoice = 0
-	print (itemChoice)
+#	print (itemChoice)
 	
 func move_up():
 	clear_player_choice(playerSelection)

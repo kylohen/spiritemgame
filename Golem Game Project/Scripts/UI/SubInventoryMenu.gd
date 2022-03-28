@@ -16,14 +16,22 @@ signal selected
 func set_choices(itemType):
 	for i in playerChoice.get_child_count():
 		if i == MOVE:
-			selectableChoices.append(MOVE)
-		if i == USE:
+			selectableChoices.append(true)
+		elif i == USE:
 			if LootTable.UseItemList.has(itemType):
-				selectableChoices.append(USE)
-		if itemType != null:
-			selectableChoices.append(i)
+				selectableChoices.append(true)
+			else:
+				selectableChoices.append(false)
+		elif i == DISCARD and itemType == "golem":
+			selectableChoices.append(true)
+			
+		elif itemType != null and itemType != "golem":
+			selectableChoices.append(true)
+		else:
+			selectableChoices.append(false)
 	for i in options.get_child_count():
-		if !selectableChoices.has(i):
+		if !selectableChoices[i]:
+			
 			options.get_child(i).get_child(0).add_color_override("font_color", Color("adadad"))
 
 	
@@ -49,7 +57,7 @@ func move_down():
 		currentPlayerSelection += 1
 		if currentPlayerSelection >= options.get_child_count():
 			currentPlayerSelection = 0
-		if selectableChoices.has(currentPlayerSelection):
+		if selectableChoices[currentPlayerSelection]:
 			foundNextSelection = true
 	update_selection()
 func move_up():
@@ -59,7 +67,7 @@ func move_up():
 		if currentPlayerSelection < 0:
 			currentPlayerSelection = options.get_child_count()-1
 		
-		if selectableChoices.has(currentPlayerSelection):
+		if selectableChoices[currentPlayerSelection]:
 			foundNextSelection = true
 	update_selection()
 
