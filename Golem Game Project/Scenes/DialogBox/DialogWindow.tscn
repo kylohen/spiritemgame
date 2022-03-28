@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=2]
+[gd_scene load_steps=9 format=2]
 
 [ext_resource path="res://Assets/Dialog/AutoMode_Off_Clean.png" type="Texture" id=1]
 [ext_resource path="res://Assets/Dialog/NamePlate.png" type="Texture" id=2]
@@ -7,15 +7,16 @@
 [ext_resource path="res://Assets/Dialog/AutoMode_On_Clean.png" type="Texture" id=5]
 [ext_resource path="res://Assets/Dialog/Options.png" type="Texture" id=6]
 [ext_resource path="res://Assets/Dialog/DialogBacking.png" type="Texture" id=7]
+[ext_resource path="res://Assets/Font/UI_FONT/Dialog.tres" type="DynamicFont" id=8]
 
 [node name="DialogWindow" type="Control"]
-anchor_left = 0.15
-anchor_top = 0.5
+anchor_top = 0.289
 anchor_right = 0.85
 anchor_bottom = 1.0
 script = ExtResource( 3 )
 __meta__ = {
-"_edit_horizontal_guides_": [ -336.31 ]
+"_edit_horizontal_guides_": [ -336.31 ],
+"_edit_use_anchors_": false
 }
 
 [node name="DialogTexture" type="TextureRect" parent="."]
@@ -33,12 +34,10 @@ anchor_left = 0.05
 anchor_top = 0.15
 anchor_right = 0.95
 anchor_bottom = 0.95
-margin_left = 3.8147e-06
-custom_fonts/normal_font = ExtResource( 4 )
-text = "Hello, 
-is anyone there?
-
-Where am I?"
+margin_right = -144.4
+margin_bottom = -51.0
+rect_scale = Vector2( 1.25, 1.25 )
+custom_fonts/normal_font = ExtResource( 8 )
 fit_content_height = true
 scroll_active = false
 __meta__ = {
@@ -46,22 +45,21 @@ __meta__ = {
 }
 
 [node name="DialogBox" type="MarginContainer" parent="."]
-anchor_top = 0.1
 anchor_right = 1.0
 anchor_bottom = 1.0
 
 [node name="Speaker" type="MarginContainer" parent="."]
-anchor_right = 0.321
-anchor_bottom = 0.2
-margin_top = -2.0
-margin_right = -0.0928192
+anchor_right = 0.116
+anchor_bottom = 0.074
+margin_right = 118.0
+margin_bottom = 35.0
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="SpeakerNameTexture" type="TextureRect" parent="Speaker"]
-margin_right = 107.0
-margin_bottom = 29.0
+margin_right = 165.0
+margin_bottom = 49.0
 grow_horizontal = 0
 size_flags_horizontal = 3
 texture = ExtResource( 2 )
@@ -80,19 +78,24 @@ margin_top = 3.0
 margin_right = 0.019989
 margin_bottom = 2.984
 custom_fonts/font = ExtResource( 4 )
-text = "Player"
 align = 1
 valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="Division" type="HBoxContainer" parent="Speaker"]
-margin_right = 107.0
-margin_bottom = 29.0
+margin_right = 165.0
+margin_bottom = 49.0
 
 [node name="ButtonBar" type="MarginContainer" parent="."]
 margin_left = 284.0
 margin_top = -11.0
 margin_right = 716.0
 margin_bottom = 59.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="Button Backing" type="TextureRect" parent="ButtonBar"]
 margin_right = 432.0

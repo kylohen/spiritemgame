@@ -67,6 +67,8 @@ func is_PLAYSTATE(state)->bool:
 		return true
 	return false
 
+func update_PLAYSTATE(state):
+	currentPLAYSTATE = state
 ##Sorter key for index of where items are stored in inventory slots
 class _add_loot_sorter:
 	static func sort_ascending(valueA,valueB):
@@ -237,3 +239,5 @@ func update_golem(golemStatBlock):
 	partyGolems[partyGolemNumber]["CURRENT ACTION"] = golemStatBlock["CURRENT ACTION"] 
 	partyGolems[partyGolemNumber]["CURRENT MAGIC"] = golemStatBlock["CURRENT MAGIC"] 
 		
+func _process(delta):
+	print (currentPLAYSTATE)

@@ -7,12 +7,14 @@ onready var loreBookUI = $LoreBookUI
 onready var craftingBookUI = $CraftingBookUI
 #onready var animationPlayer = $AnimationPlayer
 onready var battleScreenScene = preload("res://Scenes/Battle/BattleScreen.tscn")
+onready var dialogSystemNode = preload("res://Scenes/DialogBox/FullDialogWindow.tscn")
 var battleScreen
 enum {NONE,INVENTORY,INVENTORY_SUBMENU,LORE,CRAFTING}
 # Declare member variables here. Examples:
 # var a = 2
 # var b = "text"
 var currentMenu = NONE
+var previousPLAYSTATE
 signal nextTool
 signal previousTool
 signal useItem
@@ -70,7 +72,7 @@ func process_player_input():
 		elif Input.is_action_just_released("Previous_Tool"):
 			_previous_Tool();
 		if Input.is_action_just_pressed("Pause"):
-			GlobalPlayer.currentPLAYSTATE = GlobalPlayer.PLAYSTATE.PAUSE
+			GlobalPlayer.update_PLAYSTATE(GlobalPlayer.PLAYSTATE.PAUSE)
 			currentMenu = INVENTORY
 			inventoryUI.update_inventory()
 			inventoryUI.show()
@@ -107,7 +109,7 @@ func process_player_input():
 				inventoryUI.sub_cancel()
 		elif currentMenu == LORE:
 			if Input.is_action_just_released("ui_cancel"):
-				GlobalPlayer.currentPLAYSTATE = GlobalPlayer.PLAYSTATE.GAME
+				GlobalPlayer.update_PLAYSTATE(GlobalPlayer.PLAYSTATE.GAME)
 				loreBookUI.hide()
 				currentMenu = NONE
 				loreBookUI.not_primary()
@@ -120,7 +122,7 @@ func process_player_input():
 			
 		elif currentMenu == CRAFTING:
 			if Input.is_action_just_released("ui_cancel"):
-				GlobalPlayer.currentPLAYSTATE = GlobalPlayer.PLAYSTATE.GAME
+				GlobalPlayer.update_PLAYSTATE(GlobalPlayer.PLAYSTATE.GAME)
 				craftingBookUI.hide()
 				currentMenu = NONE
 				craftingBookUI.not_primary()
@@ -167,7 +169,7 @@ func _on_WorldMap_Field_loot_received(lootType,quantityOfLoot):
 	pass # Replace with function body.
 
 func close_inventory_UI():
-	GlobalPlayer.currentPLAYSTATE = GlobalPlayer.PLAYSTATE.GAME
+	GlobalPlayer.update_PLAYSTATE(GlobalPlayer.PLAYSTATE.GAME)
 	inventoryUI.hide()
 	currentMenu = NONE
 	inventoryUI.not_primary()
@@ -181,7 +183,7 @@ func _on_InventoryUI_sub_menu(state):
 	pass # Replace with function body.
 
 func item_use():
-	GlobalPlayer.currentPLAYSTATE = GlobalPlayer.PLAYSTATE.GAME
+	GlobalPlayer.update_PLAYSTATE(GlobalPlayer.PLAYSTATE.GAME)
 	inventoryUI.hide()
 	currentMenu = NONE
 
@@ -209,9 +211,25 @@ func _enemy_battle_start(enemyNode):
 	battleScreen.load_in()
 func _enemy_battle_end():
 	battleScreen.load_out()
-	GlobalPlayer.currentPLAYSTATE = GlobalPlayer.PLAYSTATE.GAME
+	GlobalPlayer.update_PLAYSTATE(GlobalPlayer.PLAYSTATE.GAME)
 
 		
 	
+	
+	pass # Replace with function body.
+
+func run_Dialog(partToUse=null):
+	if partToUse != null:
+		previousPLAYSTATE = GlobalPlayer.currentPLAYSTATE
+		GlobalPlayer.update_PLAYSTATE(GlobalPlayer.PLAYSTATE.PAUSE)
+		GlobalPlayer.isInAnimation = true
+		var newDialog = dialogSystemNode.instance()
+		newDialog.connect("dialogDone",self,"_on_FullDialogWindow_dialogDone")
+		add_child(newDialog)
+		newDialog.load_dialogs(partToUse)
+		
+func _on_FullDialogWindow_dialogDone():
+	GlobalPlayer.update_PLAYSTATE(previousPLAYSTATE)
+	GlobalPlayer.isInAnimation = false
 	
 	pass # Replace with function body.

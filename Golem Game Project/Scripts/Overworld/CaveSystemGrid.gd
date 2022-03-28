@@ -3,6 +3,7 @@ extends Node2D
 onready var overworld = $Overworld
 onready var interactOverlay = $InteractOverlay
 onready var player = $Player
+onready var sceneTransitions = $Camera2D/SceneTransitions
 
 const TILE_SIZE = 24
 
@@ -46,6 +47,8 @@ enum direction {Up,Right,Down,Left}
 
 
 signal loot_received
+
+var whatToDoAfterTransition = null
 ## Game world runs in this script, responsible for checking against player location/object location
 
 var golemRecipes= {
@@ -62,6 +65,7 @@ func _ready():
 	build_terrain()
 	build_stairs()
 #	randomize_Objects()
+	sceneTransitions.run_Transition("radial_wipe_on")
 	pass
 	
 ## called on startup to generate an empty array to fill up for gridMap
@@ -156,15 +160,15 @@ func is_Open_Tile(currentPosition, directionToGo) -> bool:
 	var newPosition = currentPosition + directionToGo
 	var block = objectPlacement[newPosition.x][newPosition.y]
 	if newPosition == leaveCave:
-		emit_signal("leave_cave")
-		queue_free()
+		
+		whatToDoAfterTransition = "Leave Cave"
+		sceneTransitions.run_Transition("radial_wipe_off")
 	elif arrayOfStairs.has(newPosition):
 #		var newLevel = self.duplicate()
 #		get_parent().add_child(newLevel)
 #		get_tree().reload_current_scene()
-		emit_signal("new_level_cave")
-		GlobalPlayer.Go_Down_A_Level()
-		queue_free()
+		whatToDoAfterTransition  = "Cave Load"
+		sceneTransitions.run_Transition("radial_wipe_off")
 	elif block != null:
 		if !(block is int):##Walls and other impassable and immutable terrain is stored as ints
 			
@@ -181,9 +185,16 @@ func is_Open_Tile(currentPosition, directionToGo) -> bool:
 		return false
 	return true
 
+func new_cave():
+	emit_signal("new_level_cave")
+	GlobalPlayer.Go_Down_A_Level()
+	queue_free()
+func exit_cave():
+	emit_signal("leave_cave")
+	queue_free()
 func build_stairs(stairCount = 2):
 	for i in stairCount:
-		var randomChoice = SeedGenerator.rng.randi_range(0,arrayOfBoulders.size())
+		var randomChoice = SeedGenerator.rng.randi_range(0,arrayOfBoulders.size()-1)
 		var selectedPos = arrayOfBoulders[randomChoice]
 		overworld.set_cell(selectedPos.x,selectedPos.y,stairsTile)
 		arrayOfStairs.append(selectedPos)
@@ -288,3 +299,11 @@ func take_golem_items():
 			objectPlacement[locations[i].x].remove(locations[i].y)
 			objectPlacement[locations[i].x].insert(locations[i].y,null)
 	pass
+
+func _on_SceneTransitions_transitionDone(transitionAnimation):
+	if transitionAnimation == "radial_wipe_off":
+		if whatToDoAfterTransition == "Cave Load":
+			new_cave()
+		elif whatToDoAfterTransition == "Leave Cave":
+			exit_cave()
+	pass # Replace with function body.

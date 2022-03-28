@@ -29,7 +29,8 @@ func _on_AnimationPlayer_animation_finished(anim_name):
 		self.hide()
 
 
-func _on_VisualNovelWindow_speakerAnimation(animation,speaker = "none",newTexture = "none"):
+
+func _on_FullDialogWindow_speakerAnimation(animation,speaker = "none",newTexture = "none"):
 	
 	if animation == "hide" and showing:
 		showing = false
@@ -48,3 +49,4 @@ func _on_VisualNovelWindow_speakerAnimation(animation,speaker = "none",newTextur
 		slide_in();
 		previousSpeaker = speaker
 	pass # Replace with function body.
+

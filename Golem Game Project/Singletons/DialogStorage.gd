@@ -15,7 +15,7 @@ extends Node
 #}
 
 var conversation = {
-	"IntroPart1":"res://Assets/Dialog/Dialog Text/IntroPart1.txt"
+	"IntroPart1":"res://Assets/Dialog/DialogText/IntroPart1.txt"
 }
 var VNDialogToLoad = ""
 var VNBackground = ''

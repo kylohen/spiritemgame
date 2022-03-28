@@ -9,13 +9,13 @@ onready var playerUI = $Camera2D/PlayerUI
 onready var spawnGolem = $SpawnGolem
 onready var enemyManager = $EnemyManager
 onready var animationPlayer = $AnimationPlayer
+onready var sceneTransitions = $Camera2D/SceneTransitions
 
 const TILE_SIZE = 24
 
 onready var overworldObjectScene = preload("res://Scenes/Overworld/OverworldObjects.tscn")
 onready var lootItemScene = preload("res://Scenes/Overworld/LootItem.tscn")
 onready var caveSystemScene = "res://Scenes/Overworld/CaveSystem.tscn"
-onready var dialogSystemNode = preload("res://Scenes/DialogBox/FullDialogWindow.tscn")
 
 var gridMap = []
 var objectPlacement = []
@@ -51,6 +51,9 @@ enum direction {Up,Right,Down,Left}
 
 
 signal loot_received
+
+
+var whatToDoAfterTransition = null
 ## Game world runs in this script, responsible for checking against player location/object location
 
 func _ready():
@@ -73,7 +76,7 @@ func _ready():
 	GlobalPlayer.add_golem(SeedGenerator.rng.randi_range(0,StatBlocks.playerGolemBaseStatBlocks.keys().size()-1))
 	GlobalPlayer.add_golem(SeedGenerator.rng.randi_range(0,StatBlocks.playerGolemBaseStatBlocks.keys().size()-1))
 #	randomize_Objects()
-	runDialog()
+	run_Dialog(DialogStorage.conversation["IntroPart1"])
 	pass
 	
 ## called on startup to generate an empty array to fill up for gridMap
@@ -175,22 +178,19 @@ func is_Open_Tile(currentPosition, directionToGo) -> bool:
 	var block = objectPlacement[newPosition.x][newPosition.y]
 	var itemCheck = itemDropPlacement[newPosition.x][newPosition.y]
 	if caveLocations.has(newPosition):
-		isActive = false
-		player.changeActiveState(isActive)
-		overworld.hide()
-		interactOverlay.hide()
-		spawnGolem.hide()
-		player.hide()
-		camera.hide()
-#		previousPosition = player.position
+		sceneTransitions.run_Transition("radial_wipe_off")
+		whatToDoAfterTransition = "Cave Load"
 		
-		var newCave = load(caveSystemScene).instance()
-		update_signal_path(newCave)
-
-
-#		player.reset_position()
-		add_child(newCave)
-		move_child(newCave,0)
+		
+#		previousPosition = player.position
+#
+#		var newCave = load(caveSystemScene).instance()
+#		update_signal_path(newCave)
+#
+#
+##		player.reset_position()
+#		add_child(newCave)
+#		move_child(newCave,0)
 	if itemCheck != null:
 			if itemCheck.type == "loot":
 				emit_signal("loot_received",itemCheck.itemID, itemCheck.quantity)
@@ -211,6 +211,17 @@ func is_Open_Tile(currentPosition, directionToGo) -> bool:
 
 
 func _on_leave_cave_CaveSystem():
+	whatToDoAfterTransition = "Leave Cave"
+	isActive = true
+	player.changeActiveState(isActive)
+	overworld.show()
+	interactOverlay.show()
+	spawnGolem.show()
+	player.show()
+	camera.show()
+	sceneTransitions.run_Transition("radial_wipe_on")
+
+func exit_cave():
 	isActive = true
 	player.changeActiveState(isActive)
 	overworld.show()
@@ -226,6 +237,13 @@ func _on_leave_cave_CaveSystem():
 #	player.check_cave_terrain(false)
 	
 func _on_new_level_cave_CaveSystem():
+	isActive = false
+	player.changeActiveState(isActive)
+	overworld.hide()
+	interactOverlay.hide()
+	spawnGolem.hide()
+	player.hide()
+	camera.hide()
 	var newCave = load(caveSystemScene).instance()
 	update_signal_path(newCave)
 	
@@ -233,7 +251,7 @@ func _on_new_level_cave_CaveSystem():
 	add_child(newCave)
 	move_child(newCave,0)
 #	player.check_cave_terrain(true)
-#
+	
 func update_signal_path(newNode:Node2D):
 	newNode.connect("leave_cave",self,"_on_leave_cave_CaveSystem")
 	newNode.connect("new_level_cave",self,"_on_new_level_cave_CaveSystem")
@@ -351,7 +369,7 @@ func take_golem_items():
 
 
 func _on_EnemyManager_enemy_contact(enemyNode):
-	GlobalPlayer.currentPLAYSTATE = GlobalPlayer.PLAYSTATE.BATTLE
+	GlobalPlayer.update_PLAYSTATE(GlobalPlayer.PLAYSTATE.BATTLE)
 	playerUI._enemy_battle_start(enemyNode)
 	enemyNode.queue_free()
 	pass # Replace with function body.
@@ -360,8 +378,20 @@ func _on_EnemyManager_enemy_contact(enemyNode):
 ######################################DIALOG######################################################
 ##################################################################################################
 
-func runDialog(partToPlay=null):
-	var newDialog = dialogSystemNode.instance()
-	playerUI.add_child(newDialog)
+func run_Dialog(partToPlay=null):
+	if partToPlay != null:
+		playerUI.run_Dialog(partToPlay)
 
-pass
+
+##################################################################################################
+######################################Transitions#################################################
+##################################################################################################
+
+
+func _on_SceneTransitions_transitionDone(transitionAnimation):
+	if transitionAnimation == "radial_wipe_off":
+		if whatToDoAfterTransition == "Cave Load":
+			_on_new_level_cave_CaveSystem()
+		elif whatToDoAfterTransition == "Leave Cave":
+			_on_leave_cave_CaveSystem()
+	pass # Replace with function body.

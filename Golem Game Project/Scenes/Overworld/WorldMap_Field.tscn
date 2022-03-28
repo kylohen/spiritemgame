@@ -1,4 +1,4 @@
-[gd_scene load_steps=17 format=2]
+[gd_scene load_steps=18 format=2]
 
 [ext_resource path="res://Assets/Tilesets/grass1_tileset.png" type="Texture" id=1]
 [ext_resource path="res://Scenes/Player.tscn" type="PackedScene" id=2]
@@ -11,6 +11,7 @@
 [ext_resource path="res://Animations/GolemSpawning.tres" type="Animation" id=9]
 [ext_resource path="res://Assets/Tilesets/Terrain-Tileset.png" type="Texture" id=10]
 [ext_resource path="res://Assets/OverworldObjects/sprite_overworld_cave_entrance.png" type="Texture" id=11]
+[ext_resource path="res://Scenes/SceneTransitions.tscn" type="PackedScene" id=12]
 [ext_resource path="res://Scripts/Overworld/EnemyManager.gd" type="Script" id=13]
 
 [sub_resource type="ConvexPolygonShape2D" id=4]
@@ -273,6 +274,13 @@ margin_top = -135.0
 margin_right = -240.0
 margin_bottom = -135.0
 
+[node name="SceneTransitions" parent="Camera2D" instance=ExtResource( 12 )]
+visible = false
+margin_left = 11.0
+margin_top = 10.0
+margin_right = 51.0
+margin_bottom = 50.0
+
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 anims/GolemSpawning = ExtResource( 9 )
 anims/RESET = SubResource( 3 )
@@ -288,3 +296,4 @@ anims/RESET = SubResource( 3 )
 [connection signal="useToolOnBlock" from="Player" to="." method="_on_Player_useToolOnBlock"]
 [connection signal="enemy_contact" from="EnemyManager" to="." method="_on_EnemyManager_enemy_contact"]
 [connection signal="useItem" from="Camera2D/PlayerUI" to="Player" method="_on_PlayerUI_useItem"]
+[connection signal="transitionDone" from="Camera2D/SceneTransitions" to="." method="_on_SceneTransitions_transitionDone"]

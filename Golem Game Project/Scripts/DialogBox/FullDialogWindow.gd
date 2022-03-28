@@ -12,15 +12,16 @@ onready var NextButton = $NextButton
 onready var ConfirmationWindow = $ConfirmationWindow
 onready var AutoTimer = $AutoTimer
 onready var BackgroundNode = $Background
-onready var backgrounds = {
-	"AlleyWay" : "res://Backgrounds/AlleyWay.png",
-	"Mall" : "res://Backgrounds/Mall.png",
-	"Park" : "res://Backgrounds/Park.png",
-	"Neighbourhood" : "res://Backgrounds/Park.png",
-		
-}
+onready var animationPlayer = $AnimationPlayer
+#onready var backgrounds = {
+#	"AlleyWay" : "res://Backgrounds/AlleyWay.png",
+#	"Mall" : "res://Backgrounds/Mall.png",
+#	"Park" : "res://Backgrounds/Park.png",
+#	"Neighbourhood" : "res://Backgrounds/Park.png",
+#
+#}
 
-onready var sceneToLoad = 0
+#onready var sceneToLoad = 0
 var playerName 
 var playerGender 
 var playerAvatar
@@ -56,38 +57,38 @@ var auto_state = false
 
 signal playerAnimation
 signal speakerAnimation
-
+signal dialogDone
 var activeSection = true ## if path in text file doesn't match up, will skip through lines
 
 var changingScene = false;
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	print (int("a"))
-	print (int("b"))
-	print (int("A"))
-	print (int("B"))
+#	print (int("a"))
+#	print (int("b"))
+#	print (int("A"))
+#	print (int("B"))
 	text_speed = Settings.text_speed
 	auto_speed = Settings.auto_speed
 	auto_state = Settings.auto_state
-
+#
 	playerName = GlobalPlayer.playerName
 	playerGender = GlobalPlayer.playerGender
 	playerAvatar = GlobalPlayer.playerAvatar
-
-	debug();
-	Dialog.update_Auto(auto_state);
-	button_positions = Dialog.button_hitboxes();
-	var dialogFile = DialogStorage.VNDialogToLoad
-	##Troubelshooting
-	load_dialogs(dialogFile)
-	updateBackground();
-	update_dialog(speakerNameContent[playerPosition],dialogContent[playerPosition],currentEmotions[playerPosition]);
-	text_speed = Settings.text_speed;
-	auto_speed = Settings.auto_speed;
-	auto_state = Settings.auto_state;
-	Dialog.update_Auto(auto_state);
-	
-	fade_in()
+#
+#	debug();
+#	Dialog.update_Auto(auto_state);
+#	button_positions = Dialog.button_hitboxes();
+#	var dialogFile = DialogStorage.VNDialogToLoad
+#	##Troubelshooting
+	animationPlayer.play("Slide_In_Dialog")
+#	updateBackground();
+#	update_dialog(speakerNameContent[playerPosition],dialogContent[playerPosition],currentEmotions[playerPosition]);
+#	text_speed = Settings.text_speed;
+#	auto_speed = Settings.auto_speed;
+#	auto_state = Settings.auto_state;
+#	Dialog.update_Auto(auto_state);
+#
+#	fade_in()
 
 	pass # Replace with function body.
 
@@ -231,7 +232,10 @@ func parse_square_brackets(dialogText,lineNumber):
 ##Brackets are handled by the functions after, to cycle through the info in brackets
 func load_dialogs(file_location):
 	var d = File.new();
-	d.open(file_location,File.READ)
+	var error = d.open(file_location,File.READ)
+	if error != 0:
+		print (error, " when attempting to open \"",file_location,"\"")
+		return
 #	troubleshooting
 #	var index = 0
 	var nameofSpeaker = "";
@@ -282,6 +286,8 @@ func load_dialogs(file_location):
 					break;
 			dialog = parse_square_brackets(dialog,lineCount-1); ##parsing the speach, if there is no name, then processes square brackted
 			print ("name of speaker = ", nameofSpeaker);
+			if nameofSpeaker == "PC":
+				nameofSpeaker = playerName
 			nameofSpeaker = emotion_check(nameofSpeaker);
 			speakerNameContent.append(nameofSpeaker)
 #			if dialog != "" and dialog != null:
@@ -290,7 +296,7 @@ func load_dialogs(file_location):
 			dialogContent.append(dialog.replace("\\n", "\n\n"))
 			dialogCount += 1;
 				
-			
+	update_dialog(speakerNameContent[playerPosition],dialogContent[playerPosition],currentEmotions[playerPosition])
 #troubleshooting
 #		line += " "
 #		print(troubleshootingline + " " + str(index))
@@ -351,7 +357,7 @@ func emotion_check(speakerText):
 		if character == "[":
 			has_emotion = true
 			reading_emotion = true
-		if reading_emotion and character == "]":
+		elif reading_emotion and character == "]":
 			reading_emotion = false;
 		elif reading_emotion:
 			emotion += character
@@ -362,13 +368,15 @@ func emotion_check(speakerText):
 		else:
 			speakerText = null
 	if has_emotion:
+		var foundEmotion = false
 		for i in emotionStates.size():
-			var checkState = emotionStates[i];
-			if checkState in speakerText:
+			var checkState = str(emotionStates[i]);
+			if checkState in emotion:
 				currentEmotions.append(checkState);
-			else:
-				print ("Error: No Emotion found")
-				currentEmotions.append("Default")
+				foundEmotion = true
+		if !foundEmotion:
+#			print ("Error: No Emotion found")
+			currentEmotions.append("Default")
 	if !has_emotion:
 		currentEmotions.append("Default")
 	#	print ("speakerText after emotions = "+speakerText)
@@ -430,12 +438,19 @@ func play_next_dialog():
 	elif gameState == loading:
 		save_settings()
 		newPath(lineDataDict[playerPosition])
+	elif isDoneDialog():
+		end_dialog()
 	else:
 		update_dialog(speakerNameContent[playerPosition],dialogContent[playerPosition],currentEmotions[playerPosition])
 		pass
+func isDoneDialog():
+	if speakerNameContent.size()<=playerPosition or dialogContent.size()<=playerPosition:
+		return true
+	return false
+		
 #update to animation states at later dates
 func update_dialog(speaker,conversation,emotion):
-	print ("update dialoge speaker " + speaker)
+	print ("updat e dialoge speaker " + speaker)
 	NextButton.hide();
 	if emotion != "Unchanged":
 		if emotion == "???":
@@ -457,16 +472,11 @@ func update_dialog(speaker,conversation,emotion):
 		emit_signal("playerAnimation","hide")
 		emit_signal("speakerAnimation","hide")
 
-	elif speaker == "PC":
+	elif speaker == playerName:
 		emit_signal("playerAnimation","show",speaker,textureFileLocation)
 		emit_signal("speakerAnimation","hide")
 		speaker = playerName
-	
-	elif speaker == "Mama" and DialogStorage.currentVNDialog == "Intro":
-		emit_signal("playerAnimation","show",speaker,textureFileLocation)
-		emit_signal("speakerAnimation","hide")
-		
-		
+			
 	else:
 		emit_signal("playerAnimation","hide")
 		emit_signal("speakerAnimation","show",speaker,textureFileLocation)
@@ -495,14 +505,14 @@ func newPath (pathWay):
 
 func _process(delta):
 	if gameState == regular:
-		if Input.is_action_just_pressed("ui_touch"):
-			if !is_a_button(get_global_mouse_position()):
-				if currentlyAnimating:
-					Dialog.done_Writing()
-				elif waitingForSelection:
-					pass
-				else:
-					play_next_dialog();
+		if Input.is_action_just_pressed("ui_accept") or Input.is_action_just_pressed("ui_right") or Input.is_action_just_pressed("ui_down") or Input.is_action_just_pressed("ui_up") or Input.is_action_just_pressed("ui_left") or Input.is_action_just_pressed("ui_focus_next") or Input.is_action_just_pressed("ui_focus_prev"):
+#			if !is_a_button(get_global_mouse_position()):
+			if currentlyAnimating:
+				Dialog.done_Writing()
+			elif waitingForSelection:
+				pass
+			else:
+				play_next_dialog();
 		elif !currentlyAnimating and auto_state and AutoTimer.time_left == 0 and autoJustTurnedOn:
 			AutoTimer.start();
 			autoJustTurnedOn = false;
@@ -518,10 +528,6 @@ func is_a_button(position):
 	return false
 	
 func save_settings():
-#	ConfigManager.text_speed = text_speed;
-#	ConfigManager.auto_speed = auto_speed;
-#	ConfigManager.auto_state = auto_state;
-#	ConfigManager.update_files();
 	pass
 ###Post Next Button as we are ready to move on
 func next_button_ready():
@@ -578,7 +584,7 @@ func save_state():
 
 func _on_ConfirmationWindow_confirmation(confirmation):
 	if confirmation:
-		change_to_next_scene();
+		end_dialog();
 	else:
 		ConfirmationWindow.hide();
 		pause(previousState)
@@ -597,7 +603,7 @@ func _on_DialogWindow_choiceMade(choice):
 	play_next_dialog()
 	pass # Replace with function body.
 
-
+#
 func fade_in():
 	$BlackOut/BlackOutTween.interpolate_property($BlackOut,"modulate",Color(1,1,1,1),Color(1,1,1,0),1.0)
 	$BlackOut/BlackOutTween.start()
@@ -616,4 +622,13 @@ func _on_BlackOutTween_tween_completed(object, key):
 		$BlackOut.hide()
 	elif object.modulate ==Color(1,1,1,1):
 		get_tree().change_scene("res://Scenes/VisualNovelWindow.tscn")
+	pass # Replace with function body.
+func end_dialog():
+	emit_signal("dialogDone")
+	animationPlayer.play("Slide_Out_Dialog")
+
+
+func _on_AnimationPlayer_animation_finished(anim_name):
+	if anim_name == "Slide_Out_Dialog":
+		self.queue_free()
 	pass # Replace with function body.

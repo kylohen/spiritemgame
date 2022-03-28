@@ -1082,7 +1082,7 @@ func win_battle():
 	currentMenu = MENU.WIN
 	battleWon = true
 	var lootLabel = battleWinScreen.get_node("Label")
-	lootLabel = "You Won:\n"
+	lootLabel.text = "You Won:\n"
 	lootLabel.text += generate_loot_text()
 	update_global_golems()
 
