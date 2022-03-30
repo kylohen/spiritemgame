@@ -1,5 +1,9 @@
 extends Control
+<<<<<<< HEAD
 enum {MOVE,USE,PLACE,DISCARD,VIEW}
+=======
+enum {MOVE,USE,PLACE,DISCARD, VIEW}
+>>>>>>> Battle
 enum {ITEM,PARTY}
 var currentPlayerSelection = 0
 var ongoingSelection = false
@@ -11,34 +15,71 @@ var typeOfSubMenu
 var onlyOneOption = false  ##Disables any movement
 
 var selectableChoices = []
-
+var typeOfSubMenu
 signal selected
 
 func set_choices(itemType):
+	if itemType == "golem":
+		typeOfSubMenu = PARTY
+		set_part_sub ()
+	else:
+		typeOfSubMenu = ITEM
 	for i in playerChoice.get_child_count():
 		if i == MOVE:
+<<<<<<< HEAD
 			selectableChoices.append(MOVE)
 		if itemType == "golem":
 			typeOfSubMenu = PARTY
 			set_part_sub ()
 #			if i == USE:
+=======
+			selectableChoices.append(true)
+		elif i== USE and typeOfSubMenu == PARTY:
+			selectableChoices.append(true)
+		elif i == USE:
+>>>>>>> Battle
 			if LootTable.UseItemList.has(itemType):
-				selectableChoices.append(USE)
-		if itemType != null:
-			selectableChoices.append(i)
-	for i in options.get_child_count():
-		if !selectableChoices.has(i):
-			options.get_child(i).get_child(0).add_color_override("font_color", Color("adadad"))
+				selectableChoices.append(true)
+			else:
+				selectableChoices.append(false)
+		elif i == DISCARD:
+			selectableChoices.append(true)
+		
+		elif itemType != null and typeOfSubMenu != PARTY:
+			selectableChoices.append(true)
+		else:
+			selectableChoices.append(false)
+			
+			
+	###Determining what gets displayed as selectable or not. Option 5 is View, 
+	###so the number count for i is altered based on what's being displayes
+	for i in playerChoice.get_child_count():
+		if !selectableChoices[i]:
+			if typeOfSubMenu == PARTY and i >= 1:
+				options.get_child(i+1).get_child(0).add_color_override("font_color", Color("adadad"))
+			elif typeOfSubMenu == ITEM and i >= 2:
+				options.get_child(i+1).get_child(0).add_color_override("font_color", Color("adadad"))
+			else:
+				options.get_child(i).get_child(0).add_color_override("font_color", Color("adadad"))
 
 func set_part_sub ():
 	$Options/Option5.show()
 	$Options/Option2.hide()
+<<<<<<< HEAD
+=======
+# Called when the node enters the scene tree for the first time.
+>>>>>>> Battle
 func _ready():
 	update_selection()
 	pass # Replace with function body.
 
 func select():
+<<<<<<< HEAD
 #	if
+=======
+	if typeOfSubMenu == PARTY and currentPlayerSelection == USE:
+		currentPlayerSelection = VIEW
+>>>>>>> Battle
 	emit_signal("selected",currentPlayerSelection)
 	if currentPlayerSelection == MOVE:
 		ongoingSelection = true
@@ -53,9 +94,9 @@ func move_down():
 	var foundNextSelection = false
 	while !foundNextSelection:
 		currentPlayerSelection += 1
-		if currentPlayerSelection >= options.get_child_count():
+		if currentPlayerSelection >= playerChoice.get_child_count():
 			currentPlayerSelection = 0
-		if selectableChoices.has(currentPlayerSelection):
+		if selectableChoices[currentPlayerSelection]:
 			foundNextSelection = true
 	update_selection()
 func move_up():
@@ -63,9 +104,9 @@ func move_up():
 	while !foundNextSelection:
 		currentPlayerSelection -= 1
 		if currentPlayerSelection < 0:
-			currentPlayerSelection = options.get_child_count()-1
+			currentPlayerSelection = playerChoice.get_child_count()-1
 		
-		if selectableChoices.has(currentPlayerSelection):
+		if selectableChoices[currentPlayerSelection]:
 			foundNextSelection = true
 	update_selection()
 

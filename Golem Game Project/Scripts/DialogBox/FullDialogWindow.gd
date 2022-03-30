@@ -233,7 +233,7 @@ func parse_square_brackets(dialogText,lineNumber):
 func load_dialogs(file_location):
 	var d = File.new();
 	var error = d.open(file_location,File.READ)
-	if error != 0:
+	if error != OK:
 		print (error, " when attempting to open \"",file_location,"\"")
 		return
 #	troubleshooting
@@ -274,7 +274,7 @@ func load_dialogs(file_location):
 #							else:
 #								contentString += line.left(2);
 #								line = line.right(2)
-						print (character)
+#						print (character)
 					else:
 						dialog=contentString+character;
 #						print ("character null = ", dialog)
@@ -285,7 +285,7 @@ func load_dialogs(file_location):
 #					print ("found split = ", dialog)
 					break;
 			dialog = parse_square_brackets(dialog,lineCount-1); ##parsing the speach, if there is no name, then processes square brackted
-			print ("name of speaker = ", nameofSpeaker);
+#			print ("name of speaker = ", nameofSpeaker);
 			if nameofSpeaker == "PC":
 				nameofSpeaker = playerName
 			nameofSpeaker = emotion_check(nameofSpeaker);
@@ -318,7 +318,7 @@ func determine_Gender_value ():
 
 #Gendered word Choice  ambiguousWord = 0, maleWord = 1, femaleWord = 2
 func player_gendered_Dictionary (genderWordsToPick):
-	print ("Gender words sifting = " + genderWordsToPick)
+#	print ("Gender words sifting = " + genderWordsToPick)
 	var replacementWord;
 #	var wordsToChooseFrom = [];
 	var currentWord = "";
@@ -330,10 +330,10 @@ func player_gendered_Dictionary (genderWordsToPick):
 	var characterCount = genderWordsToPick.length();
 	for i in characterCount+1:
 		var character = genderWordsToPick.left(1);
-		print ("i = ",i,"  Character Count = ",characterCount)
+#		print ("i = ",i,"  Character Count = ",characterCount)
 		if character == "/" or character == "]" or i == characterCount:
 			if wordCount == genderWordToFind:
-				print (currentWord)
+#				print (currentWord)
 				return currentWord
 			else:
 				currentWord = "";
@@ -346,14 +346,14 @@ func player_gendered_Dictionary (genderWordsToPick):
 	
 	
 func emotion_check(speakerText):
-	print ("Emotion Check Words = " + speakerText)
+#	print ("Emotion Check Words = " + speakerText)
 	var speakerName = ""
 	var emotion = ""
 	var has_emotion = false
 	var reading_emotion = false
 	for i in speakerText.length()+1:
 		var character = speakerText.left(1);
-		print ("i = ",i,"  Character = ",character)
+#		print ("i = ",i,"  Character = ",character)
 		if character == "[":
 			has_emotion = true
 			reading_emotion = true
@@ -430,7 +430,7 @@ func play_next_dialog():
 	playerPosition += 1;
 	save_state();
 	checkActiveDialog(playerPosition)
-	print ("Player Position = ",playerPosition)
+#	print ("Player Position = ",playerPosition)
 	if checkPath(playerPosition):
 		play_next_dialog()
 	elif gameState == passing:
@@ -450,7 +450,7 @@ func isDoneDialog():
 		
 #update to animation states at later dates
 func update_dialog(speaker,conversation,emotion):
-	print ("updat e dialoge speaker " + speaker)
+#	print ("updat e dialoge speaker " + speaker)
 	NextButton.hide();
 	if emotion != "Unchanged":
 		if emotion == "???":
@@ -460,7 +460,7 @@ func update_dialog(speaker,conversation,emotion):
 			speakerPortrait.modulate = Color(1,1,1)
 		if !emotionStates.has(emotion):
 			emotion = "Default"
-			print ("other emotions called")
+#			print ("other emotions called")
 	
 	var textureFileLocation = "res://Assets/Portraits/"
 	if speaker == playerName:
@@ -573,7 +573,7 @@ func pause(state):
 
 
 func change_to_next_scene():
-	print ("change scene function here")
+#	print ("change scene function here")
 	save_settings()
 	pass
 

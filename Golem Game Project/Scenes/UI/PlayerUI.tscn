@@ -232,6 +232,9 @@ visible = false
 [node name="CraftingBookUI" parent="." instance=ExtResource( 12 )]
 visible = false
 
+[node name="StatPageUI" parent="." instance=ExtResource( 13 )]
+visible = false
+
 [connection signal="nextTool" from="." to="ToolUI" method="_on_PlayerUI_nextTool"]
 [connection signal="previousTool" from="." to="ToolUI" method="_on_PlayerUI_previousTool"]
 [connection signal="sub_menu" from="InventoryUI" to="." method="_on_InventoryUI_sub_menu"]

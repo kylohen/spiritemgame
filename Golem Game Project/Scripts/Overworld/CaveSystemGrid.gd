@@ -109,7 +109,7 @@ func build_terrain():
 				gridMap[x][y] = selectedTile
 				
 				chanceOfSpawningResource(x,y,selectedTile)
-		print(gridMap[x])
+#		print(gridMap[x])
 
 func makingNoise ():
 
@@ -249,9 +249,9 @@ func _on_Player_useToolOnBlock(blockToCheck):
 #			block.free()
 #			remove_child(block)
 #			block.queue_free()
-			print(block)
+#			print(block)
 	elif blockToCheck == Vector2(13,9):
-		print ("Checking Golem")
+#		print ("Checking Golem")
 		golem_checking ()
 	pass # Replace with function body.
 
@@ -285,10 +285,10 @@ func golem_checking ():
 			elif golemRecipes[keys[i]][recipeItems[j]]>itemsFound[recipeItems[j]]:
 				hasEverything = false
 		if hasEverything:
-			print ("ITS ALIVE! ",keys[i]," IS ALIVE")
+#			print ("ITS ALIVE! ",keys[i]," IS ALIVE")
 			take_golem_items()
 			$AnimationPlayer.play("GolemSpawning")
-	print (itemsFound)
+#	print (itemsFound)
 	
 func take_golem_items():
 	var locations = [Vector2(14,7),Vector2(15,8),Vector2(15,10),Vector2(14,11),Vector2(12,11),Vector2(11,10),Vector2(11,8),Vector2(12,7)]

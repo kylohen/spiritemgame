@@ -37,7 +37,7 @@ func pause(state):
 	gameState = state;
 	if gameState == pause:
 		TextDelayTimer.stop();
-		print ("Text Delay Stop")
+#		print ("Text Delay Stop")
 	else:
 		TextDelayTimer.start();
 
@@ -106,7 +106,7 @@ func _on_Settings_pressed():
 
 func _on_AutoPlay_pressed():
 	emit_signal("AutoPlay")
-	print("autoplay Pressed")
+#	print("autoplay Pressed")
 	pass # Replace with function body.
 
 
@@ -139,11 +139,11 @@ func new_Choices (speaker,choiceArray):
 			newOption.choice = i+1
 			newOption.connect("choiceHighlighted",self,"_on_Choice_choiceHighlighted")
 			currentChoices.append(newOption)
-			print(newOption.text)
+#			print(newOption.text)
 				
 func selected_Choice ():
 	emit_signal("choiceMade",currentSelection)
-	print ("sent signal #",currentSelection)
+#	print ("sent signal #",currentSelection)
 	currentSelection = 0
 	deleteArrayOfChoices(currentChoices)
 	currentChoices.clear()
@@ -163,5 +163,5 @@ func _process(delta):
 
 func _on_Choice_choiceHighlighted(highlightedSelection):
 	currentSelection = highlightedSelection
-	print (currentSelection)
+#	print (currentSelection)
 	pass # Replace with function body.

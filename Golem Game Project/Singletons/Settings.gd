@@ -40,7 +40,7 @@ func update_audio_bus_configurations():
 	AudioServer.set_bus_volume_db(AudioServer.get_bus_index("SoundEffects"),linear2db(soundVolume));
 	AudioServer.set_bus_mute(AudioServer.get_bus_index("BackgroundMusic"),musicPlaying);
 	AudioServer.set_bus_volume_db(AudioServer.get_bus_index("BackgroundMusic"),linear2db(musicVolume));
-	print("Sound: ", soundPlaying, "/", soundVolume, " || Music: ",musicPlaying, "/", musicVolume)
+#	print("Sound: ", soundPlaying, "/", soundVolume, " || Music: ",musicPlaying, "/", musicVolume)
 
 
 

@@ -51,7 +51,7 @@ var isInAnimation = false
 func _ready():
 	currentPLAYSTATE = PLAYSTATE.GAME
 	toolSelected = TOOLS.PICKAXE
-	
+	buildEmptyPartyList()
 	
 	####################debug####################
 	add_loot("Rusty Magic Hammer",5)
@@ -178,8 +178,8 @@ func swap_item_locations (itemA,itemAIndex,itemB,itemBIndex):
 			if dictB != null:
 				inventoryListDict[itemB][itemAIndex] = dictB 
 			else:inventoryListDict[itemA].erase(itemAIndex)
-			print ("itemIndexDict: ",itemIndexDict)
-			print ("inventoryListDict: ",inventoryListDict)
+#			print ("itemIndexDict: ",itemIndexDict)
+#			print ("inventoryListDict: ",inventoryListDict)
 	
 func delete_item (itemToDelete,IndexToClear):
 	inventoryListDict[itemToDelete].erase(IndexToClear)
@@ -222,22 +222,45 @@ func add_golem(golemID):
 	if partyGolems.size() >= 7:
 		return false
 	else:
-		var newGolemInput = StatBlocks.playerGolemBaseStatBlocks[golemID].duplicate()
-#		print(newGolemInput[golemName]["ACTION METER"])
-		newGolemInput["CURRENT ACTION"] = newGolemInput["ACTION METER"]
-		newGolemInput["CURRENT MAGIC"] = newGolemInput["MAGIC METER"]
-		newGolemInput["CURRENT HP"] = newGolemInput["HP"]
-		newGolemInput["PARTY POSITION"] = partyGolems.size()
-		partyGolems.append(newGolemInput)
+		for i in partyGolems.size():
+			if partyGolems[i] == null:
+				partyGolems.remove(i)
+				var newGolemInput = StatBlocks.playerGolemBaseStatBlocks[golemID].duplicate()
+			#		print(newGolemInput[golemName]["ACTION METER"])
+				newGolemInput["CURRENT ACTION"] = newGolemInput["ACTION METER"]
+				newGolemInput["CURRENT MAGIC"] = newGolemInput["MAGIC METER"]
+				newGolemInput["CURRENT HP"] = newGolemInput["HP"]
+				newGolemInput["PARTY POSITION"] = i
+				partyGolems.insert(i,newGolemInput)
+				return true
+	return false
 		
 func remove_golem(golemStatBlock):
-	partyGolems.remove(golemStatBlock["PARTY POSITION"])
-	
+	partyGolems[golemStatBlock["PARTY POSITION"]] = null
+#	buildEmptyPartyList()
 func update_golem(golemStatBlock):
 	var partyGolemNumber = golemStatBlock["PARTY POSITION"] 
 	partyGolems[partyGolemNumber]["CURRENT HP"] = golemStatBlock["CURRENT HP"] 
 	partyGolems[partyGolemNumber]["CURRENT ACTION"] = golemStatBlock["CURRENT ACTION"] 
 	partyGolems[partyGolemNumber]["CURRENT MAGIC"] = golemStatBlock["CURRENT MAGIC"] 
 		
-func _process(delta):
-	print (currentPLAYSTATE)
+func buildEmptyPartyList():
+	while partyGolems.size() < maxGolemParty:
+		partyGolems.append(null)
+func swap_golem_position(golemA, golemB):
+	if partyGolems.size() >= golemA and partyGolems.size() >= golemB:
+		var arrayOfChoices = []
+		if golemA <= golemB: arrayOfChoices=[golemA,golemB]
+		else: arrayOfChoices = [golemB,golemA]
+		var detailsToInsert = partyGolems[arrayOfChoices[1]]
+		if detailsToInsert != null:
+			detailsToInsert["PARTY POSITION"] = arrayOfChoices[0]
+		partyGolems.insert(arrayOfChoices[0],detailsToInsert)
+		detailsToInsert=partyGolems[arrayOfChoices[0]+1]
+		partyGolems.remove(arrayOfChoices[0]+1)
+		partyGolems.remove(arrayOfChoices[1])
+		partyGolems.insert(arrayOfChoices[1],detailsToInsert)
+		
+		if detailsToInsert != null:
+			detailsToInsert["PARTY POSITION"] = arrayOfChoices[1]
+		

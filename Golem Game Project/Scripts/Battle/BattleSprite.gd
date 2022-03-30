@@ -58,7 +58,7 @@ func cursor_visible (state:bool):
 func _on_AnimationPlayer_animation_finished(anim_name):
 	$AnimationWaitTime.start()
 #	GlobalPlayer.isInAnimation = false
-	print (str(self.get_path()), " completed animation:",anim_name)
+#	print (str(self.get_path()), " completed animation:",anim_name)
 	pass
 
 

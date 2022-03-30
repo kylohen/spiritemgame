@@ -5,11 +5,12 @@ onready var popUpAlertContainer = $PopUpAlertUI/PopUpContainer
 onready var inventoryUI = $InventoryUI
 onready var loreBookUI = $LoreBookUI
 onready var craftingBookUI = $CraftingBookUI
+onready var statPage = $StatPageUI
 #onready var animationPlayer = $AnimationPlayer
 onready var battleScreenScene = preload("res://Scenes/Battle/BattleScreen.tscn")
 onready var dialogSystemNode = preload("res://Scenes/DialogBox/FullDialogWindow.tscn")
 var battleScreen
-enum {NONE,INVENTORY,INVENTORY_SUBMENU,LORE,CRAFTING}
+enum {NONE,INVENTORY,INVENTORY_SUBMENU,LORE,CRAFTING,STAT}
 # Declare member variables here. Examples:
 # var a = 2
 # var b = "text"
@@ -23,11 +24,13 @@ var MenuDict = {
 	0:INVENTORY,
 	1:LORE,
 	2:CRAFTING,
+	3:STAT
 }
 onready var MenuNodeDict = {
 	INVENTORY:inventoryUI,
 	LORE:loreBookUI,
 	CRAFTING:craftingBookUI,
+	STAT:statPage
 }
 var menuTracker = 0
 
@@ -46,9 +49,18 @@ func move_menu(value):
 	MenuNodeDict[currentMenu].show()
 	if currentMenu == INVENTORY:
 		inventoryUI.update_inventory()
+	elif currentMenu == STAT:
+		statPage.load_golem(GlobalPlayer.partyGolems[0])
+	
+func load_stat_page(golem):
+	MenuNodeDict[currentMenu].not_primary()
+	MenuNodeDict[currentMenu].hide()
+	currentMenu = STAT
+	menuTracker = 3 #value for STAT
+	MenuNodeDict[currentMenu].show()
+	statPage.load_golem(golem)
 	
 	
-	pass
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	pass # Replace with function body.
@@ -119,6 +131,18 @@ func process_player_input():
 				loreBookUI.move_left()
 			if Input.is_action_just_pressed("ui_accept"):
 				loreBookUI.selected()
+		elif currentMenu == STAT:
+			if Input.is_action_just_released("ui_cancel"):
+				GlobalPlayer.update_PLAYSTATE(GlobalPlayer.PLAYSTATE.GAME)
+				statPage.hide()
+				currentMenu = NONE
+				statPage.not_primary()
+			if Input.is_action_just_pressed("ui_right"):
+				statPage.move_right()
+			elif Input.is_action_just_pressed("ui_left"):
+				statPage.move_left()
+			if Input.is_action_just_pressed("ui_accept"):
+				statPage.selected()
 			
 		elif currentMenu == CRAFTING:
 			if Input.is_action_just_released("ui_cancel"):

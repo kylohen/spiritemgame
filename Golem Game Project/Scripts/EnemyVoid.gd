@@ -33,7 +33,7 @@ func spawn_enemy(newEnemyID, newEnemyIDBack = -1):
 #	pass
 func move_enemy(playerPositionInGrid):
 	_get_path(currentGridPosition,playerPositionInGrid)
-	print (path)
+#	print (path)
 	if !path.empty():
 		currentGridPosition = path[0]
 		self.position = path[0]*WorldConductor.TILE_SIZE
