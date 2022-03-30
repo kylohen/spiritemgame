@@ -1,5 +1,5 @@
 extends Control
-enum {MOVE,USE,PLACE,DISCARD}
+enum {MOVE,USE,PLACE,DISCARD,VIEW}
 var currentState = null
 
 onready var inventorySlots = $BookMarginContainer/BookBackground/Items
@@ -258,6 +258,16 @@ func selected():
 		inventoryHighlightToMove = null
 		update_inventory()
 	elif playerCurrentSelection >= 0 and playerCurrentSelection<=15:
+		emit_signal("sub_menu",true)
+		subMenuNode = subMenuInventoryScene.instance()
+		add_child(subMenuNode)
+		subMenuNode.rect_position = inventoryPlayerSelection.get_child(playerCurrentSelection).rect_position+Vector2(130,80)
+		subMenuNode.connect("selected",self,"_on_SubInventoryMenu_selected")
+		subMenuNode.set_choices(nodeSelected.type)
+		inventoryHighlightToMove = playerCurrentSelection
+		pass
+	
+	elif playerCurrentSelection >= 18 and playerCurrentSelection<=23:
 		emit_signal("sub_menu",true)
 		subMenuNode = subMenuInventoryScene.instance()
 		add_child(subMenuNode)
