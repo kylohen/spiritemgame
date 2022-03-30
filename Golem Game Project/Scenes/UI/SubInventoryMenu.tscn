@@ -57,6 +57,25 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
+[node name="Option5" type="TextureRect" parent="Options"]
+visible = false
+margin_top = 14.0
+margin_right = 33.0
+margin_bottom = 22.0
+texture = ExtResource( 2 )
+
+[node name="Label" type="Label" parent="Options/Option5"]
+margin_right = 94.0
+margin_bottom = 23.0
+rect_scale = Vector2( 0.35, 0.35 )
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+text = "View"
+align = 1
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
 [node name="Option3" type="TextureRect" parent="Options"]
 margin_top = 14.0
 margin_right = 33.0

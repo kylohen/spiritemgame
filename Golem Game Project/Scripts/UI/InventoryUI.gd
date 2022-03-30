@@ -1,5 +1,5 @@
 extends Control
-enum {MOVE,USE,PLACE,DISCARD}
+enum {MOVE,USE,PLACE,DISCARD,VIEW}
 var currentState = null
 
 onready var inventorySlots = $BookMarginContainer/BookBackground/Items
@@ -385,6 +385,7 @@ func _on_SubInventoryMenu_selected(selected):
 	elif selected == PLACE:
 	##########################some use function
 		
+		inventoryHighlightToMove = null
 		get_parent()._use_item(nodeSelected.type, nodeSelected.selectedItemTexture,nodeSelected.itemIndex)
 		update_inventory()
 		emit_signal("sub_menu",false)
@@ -392,6 +393,8 @@ func _on_SubInventoryMenu_selected(selected):
 		
 		pass
 	elif selected == DISCARD:
+		
+		inventoryHighlightToMove = null
 		if nodeSelected.type == "golem":
 			GlobalPlayer.remove_golem(GlobalPlayer.partyGolems[playerCurrentSelection-18])
 		else:
@@ -400,6 +403,12 @@ func _on_SubInventoryMenu_selected(selected):
 		load_golems()
 		emit_signal("sub_menu",false)
 		reset_all_selections()
+		current_player_selection_highlight(playerCurrentSelection)
+		
+	elif selected == VIEW:
+		emit_signal("sub_menu",false)
+		get_parent().load_stat_page(GlobalPlayer.partyGolems[playerCurrentSelection-18])
+		pass
 
 
 
