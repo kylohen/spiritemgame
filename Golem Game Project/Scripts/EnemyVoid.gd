@@ -1,5 +1,6 @@
 extends AStar_Path
 
+onready var collision = $Area2D
 
 var currentGridPosition :Vector2
 var isElite = false
@@ -62,3 +63,8 @@ func _on_Area2D_body_entered(body):
 	if body.name == "Player":
 		emit_signal("touch_player",self)
 	pass # Replace with function body.
+	
+func disable():
+	collision.monitoring = false
+func enable():
+	collision.monitoring = true

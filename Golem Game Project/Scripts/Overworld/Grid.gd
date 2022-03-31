@@ -422,7 +422,9 @@ func run_Dialog(partToPlay=null):
 func _on_SceneTransitions_transitionDone(transitionAnimation):
 	if transitionAnimation == "radial_wipe_off":
 		if whatToDoAfterTransition == "Cave Load":
+			enemyManager.disable()
 			_on_new_level_cave_CaveSystem()
 		elif whatToDoAfterTransition == "Leave Cave":
+			enemyManager.enable()
 			_on_leave_cave_CaveSystem()
 	pass # Replace with function body.

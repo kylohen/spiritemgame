@@ -4,6 +4,7 @@ onready var overworld = $Overworld
 onready var interactOverlay = $InteractOverlay
 onready var player = $Player
 onready var sceneTransitions = $Camera2D/SceneTransitions
+onready var itemDrop = $ItemDrops
 
 const TILE_SIZE = 24
 
@@ -14,6 +15,7 @@ signal leave_cave
 signal new_level_cave
 var gridMap = []
 var objectPlacement = []
+var itemDropPlacement = []
 export (int) var gridWidth  = 35
 export (int) var gridHeight = 35
 var arrayOfBoulders = []
@@ -51,14 +53,11 @@ signal loot_received
 var whatToDoAfterTransition = null
 ## Game world runs in this script, responsible for checking against player location/object location
 
-var golemRecipes= {
-	"StrawBoy" : {
-		"Straw" : 4
-	}
-}
+
 func _ready():
 	initialize_gridMap()
 	initialize_objectPlacement()
+	initialize_itemDropPlacement()
 	overworld.set_cell(0,1,12)
 	
 	build_border()
@@ -76,6 +75,8 @@ func initialize_gridMap(width = gridWidth,height = gridHeight) -> void:
 func initialize_objectPlacement(width = gridWidth,height = gridHeight) -> void:
 	objectPlacement = new_grid_array(width,height)
 	
+func initialize_itemDropPlacement(width = gridWidth,height = gridHeight) -> void:
+	itemDropPlacement = new_grid_array(width,height)
 ## return an empty grid with width and height
 func new_grid_array(width,height) -> Array:
 	var newGridArray = []
@@ -155,26 +156,27 @@ func chanceOfSpawningResource(x,y,selectedTile):
 				objectPlacement[x][y] = spawn_object(objectPossibleSpawns[i],Vector2(x,y))
 				break
 
+
 ## checks to see if there is something in the grid, if there is, return false
-func is_Open_Tile(currentPosition, directionToGo) -> bool:
+func is_Open_Tile(currentPosition, directionToGo,isPlayer=true) -> bool:
 	var newPosition = currentPosition + directionToGo
 	var block = objectPlacement[newPosition.x][newPosition.y]
-	if newPosition == leaveCave:
-		
-		whatToDoAfterTransition = "Leave Cave"
-		sceneTransitions.run_Transition("radial_wipe_off")
-	elif arrayOfStairs.has(newPosition):
-#		var newLevel = self.duplicate()
-#		get_parent().add_child(newLevel)
-#		get_tree().reload_current_scene()
-		whatToDoAfterTransition  = "Cave Load"
-		sceneTransitions.run_Transition("radial_wipe_off")
-	elif block != null:
+	var itemCheck = itemDropPlacement[newPosition.x][newPosition.y]
+	if isPlayer:
+		pickUpItem(itemCheck,newPosition)
+		if arrayOfStairs.has(newPosition):
+			whatToDoAfterTransition  = "Cave Load"
+			sceneTransitions.run_Transition("radial_wipe_off")
+		elif newPosition == leaveCave:
+			
+			whatToDoAfterTransition = "Leave Cave"
+			sceneTransitions.run_Transition("radial_wipe_off")
+	if block != null:
 		if !(block is int):##Walls and other impassable and immutable terrain is stored as ints
 			
-			if block.type == "object":
+			if block.type == "Resource":
 				return objectPlacement[newPosition.x][newPosition.y].is_passable()
-			if block.type == "loot":
+			elif block.type == "loot":
 				emit_signal("loot_received",block.itemID, block.quantity)
 				block.queue_free()
 				objectPlacement[newPosition.x].remove(newPosition.y)
@@ -184,6 +186,15 @@ func is_Open_Tile(currentPosition, directionToGo) -> bool:
 			return true
 		return false
 	return true
+
+
+func pickUpItem(item,newPosition):
+	if item != null:
+		if item.type == "loot":
+			emit_signal("loot_received",item.itemID, item.quantity)
+			item.queue_free()
+			itemDropPlacement[newPosition.x].remove(newPosition.y)
+			itemDropPlacement[newPosition.x].insert(newPosition.y,null)
 
 func new_cave():
 	emit_signal("new_level_cave")
@@ -198,19 +209,8 @@ func build_stairs(stairCount = 2):
 		var selectedPos = arrayOfBoulders[randomChoice]
 		overworld.set_cell(selectedPos.x,selectedPos.y,stairsTile)
 		arrayOfStairs.append(selectedPos)
-#func randomize_Objects():
-#	var ratesOfSpawning = [0.02,0.02,0.02]
-#	for x in objectPlacement.size():
-#		for y in objectPlacement[x].size():
-#			if Vector2(x,y) != player.gridCoords and !(objectPlacement[x][y] is int):
-#				var rollForItem = SeedGenerator.rng.randf_range(0,1)
-#				var currentChance = 0.0
-#				for i in ratesOfSpawning.size():
-#					if rollForItem <currentChance+ratesOfSpawning[i] and rollForItem > currentChance:
-#						objectPlacement[x][y] = spawn_object(i,Vector2(x,y))
-#						break
-#					currentChance += ratesOfSpawning[i]
-						
+
+
 func spawn_object (objectToSpawn, pos):
 	var newObject = overworldObjectScene.instance()
 	newObject.position = pos*TILE_SIZE
@@ -220,85 +220,43 @@ func spawn_object (objectToSpawn, pos):
 	arrayOfBoulders.append(pos)
 	return newObject
 
-
 func _on_Player_useToolOnBlock(blockToCheck):
 	var block = objectPlacement[blockToCheck.x][blockToCheck.y]
+	var item = itemDropPlacement[blockToCheck.x][blockToCheck.y]
+	pickUpItem(item,blockToCheck)
 	if block is Node2D:
 		if block.toolUsed():
-			var objectDestroyed = block.objectSelected
-#			objectPlacement[blockToCheck.x].remove(blockToCheck.y)
-#			objectPlacement[blockToCheck.x].insert(blockToCheck.y,null)
-			
-			####################
-#			Insert Function to run a full Loot Table
-			#####################
-			
-			#####################
-#			Remove the below:
-			var listOfPossibleItems = WorldConductor.lootTable[objectDestroyed].keys()
-			
-			var lootType = listOfPossibleItems[0]
-			var quantityOfLoot = SeedGenerator.rng.randi_range(WorldConductor.lootTable[objectDestroyed][lootType]["min"],WorldConductor.lootTable[objectDestroyed][lootType]["max"])
-			#####################
-			
-			emit_signal("loot_received",lootType,quantityOfLoot)
-			
-			
-#			block.clear()
-#			block.append(null)
-#			block.free()
-#			remove_child(block)
-#			block.queue_free()
-#			print(block)
-	elif blockToCheck == Vector2(13,9):
-#		print ("Checking Golem")
-		golem_checking ()
-	pass # Replace with function body.
+			if !(block.objectSelected == WorldConductor.objectTypes.Pedestal or block.objectSelected == WorldConductor.objectTypes.GolemGenerator):
+				var objectDestroyed = block.objectSelected
+				var listOfPossibleItems = WorldConductor.lootTable[objectDestroyed].keys()
+				
+				var lootType = listOfPossibleItems[0]
+				var quantityOfLoot = SeedGenerator.rng.randi_range(WorldConductor.lootTable[objectDestroyed][lootType]["min"],WorldConductor.lootTable[objectDestroyed][lootType]["max"])
+				#####################
+				
+				emit_signal("loot_received",lootType,quantityOfLoot)
 
 
-func _on_Player_useItemOnBlock(itemID,itemTexture,blockToCheck):
+
+func _on_Player_useItemOnBlock(itemID,itemTexture,blockToCheck,itemIndex):
 	var block = objectPlacement[blockToCheck.x][blockToCheck.y]
-	if !(block is Node2D):
+	var itemDropSpot = itemDropPlacement[blockToCheck.x][blockToCheck.y]
+	var canPlayerDrop = false
+	if !(itemDropSpot is Node2D):
+		if !(block is Node2D):
+			canPlayerDrop = true
+		elif (block is Node2D):
+			if block.objectSelected == WorldConductor.objectTypes.Pedestal:
+				canPlayerDrop = true
+	if canPlayerDrop:
 		var newLoot = lootItemScene.instance()
-		objectPlacement[blockToCheck.x].insert(blockToCheck.y,newLoot)
+		itemDropPlacement[blockToCheck.x].insert(blockToCheck.y,newLoot)
 		newLoot.position = Vector2(blockToCheck.x,blockToCheck.y)*TILE_SIZE
-		interactOverlay.add_child(newLoot)
+		itemDrop.add_child(newLoot)
 		newLoot.set_loot(itemID,itemTexture)
+		GlobalPlayer.use_item(itemID,itemIndex)
 
-func golem_checking ():
-	var locations = [Vector2(14,7),Vector2(15,8),Vector2(15,10),Vector2(14,11),Vector2(12,11),Vector2(11,10),Vector2(11,8),Vector2(12,7)]
-	var itemsFound = {}
-	for i in locations.size():
-		var object = objectPlacement[locations[i].x][locations[i].y]
-		if object is Node2D:
-			if object.type == "loot":
-				if itemsFound.has(object.itemID):
-					itemsFound[object.itemID] += 1
-				else:itemsFound[object.itemID] = 1
-	var keys = golemRecipes.keys()
-	for i in keys.size():
-		var hasEverything = true
-		var recipeItems = golemRecipes[keys[i]].keys()
-		for j in recipeItems.size():
-			if !itemsFound.has(recipeItems[j]):
-				hasEverything = false
-			elif golemRecipes[keys[i]][recipeItems[j]]>itemsFound[recipeItems[j]]:
-				hasEverything = false
-		if hasEverything:
-#			print ("ITS ALIVE! ",keys[i]," IS ALIVE")
-			take_golem_items()
-			$AnimationPlayer.play("GolemSpawning")
-#	print (itemsFound)
 	
-func take_golem_items():
-	var locations = [Vector2(14,7),Vector2(15,8),Vector2(15,10),Vector2(14,11),Vector2(12,11),Vector2(11,10),Vector2(11,8),Vector2(12,7)]
-	for i in locations.size():
-		var object = objectPlacement[locations[i].x][locations[i].y]
-		if object is Node2D:
-			object.queue_free()
-			objectPlacement[locations[i].x].remove(locations[i].y)
-			objectPlacement[locations[i].x].insert(locations[i].y,null)
-	pass
 
 func _on_SceneTransitions_transitionDone(transitionAnimation):
 	if transitionAnimation == "radial_wipe_off":

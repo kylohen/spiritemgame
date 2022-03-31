@@ -44,3 +44,12 @@ func _on_Player_player_action_occured(playerPositionInGrid):
 func _on_EnemyVoid_touchPlayer(enemyNode):
 	emit_signal("enemy_contact",enemyNode)
 	pass # Replace with function body.
+
+func disable():
+	for i in self.get_child_count():
+		self.get_child(i).disable()
+	self.hide()
+func enable():
+	for i in self.get_child_count():
+		self.get_child(i).enable()
+	self.show()

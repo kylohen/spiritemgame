@@ -2,15 +2,12 @@ extends Node
 
 var golemRecipes= {
 	"StrawBoy" : {
-		"Straw" : 4,
-		"ID":0
+		"Straw" : 4
 	},
 	"Lead Zepplin":{
-		"Stone" : 3,
-		"ID":1
+		"Stone" : 3
 	},
-	"Twisted Whisk":{
-		"Wood" : 1,
-		"ID":2
+	"Twisted Whisker":{
+		"Wood" : 1
 	},
 }

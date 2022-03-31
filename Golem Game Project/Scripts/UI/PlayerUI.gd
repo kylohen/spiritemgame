@@ -162,7 +162,7 @@ func process_player_input():
 		if Input.is_action_just_pressed("ui_right"):
 			battleScreen.move_right()
 		elif Input.is_action_just_pressed("ui_left"):
-			battleScreen.move_left()
+			battleScreen.move_lesft()
 		elif Input.is_action_just_pressed("ui_up"):
 			battleScreen.move_up()
 		elif Input.is_action_just_pressed("ui_down"):
