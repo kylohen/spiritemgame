@@ -227,8 +227,6 @@ grow_vertical = 0
 [node name="LoreBookUI" parent="." instance=ExtResource( 11 )]
 visible = false
 
-[node name="StatPageUI" parent="." instance=ExtResource( 13 )]
-
 [node name="CraftingBookUI" parent="." instance=ExtResource( 12 )]
 visible = false
 

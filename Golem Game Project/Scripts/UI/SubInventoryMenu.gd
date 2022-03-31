@@ -1,9 +1,5 @@
 extends Control
-<<<<<<< HEAD
-enum {MOVE,USE,PLACE,DISCARD,VIEW}
-=======
 enum {MOVE,USE,PLACE,DISCARD, VIEW}
->>>>>>> Battle
 enum {ITEM,PARTY}
 var currentPlayerSelection = 0
 var ongoingSelection = false
@@ -11,7 +7,6 @@ var ongoingSelection = false
 onready var options = $Options
 onready var playerChoice = $PlayerChoice
 
-var typeOfSubMenu
 var onlyOneOption = false  ##Disables any movement
 
 var selectableChoices = []
@@ -26,18 +21,10 @@ func set_choices(itemType):
 		typeOfSubMenu = ITEM
 	for i in playerChoice.get_child_count():
 		if i == MOVE:
-<<<<<<< HEAD
-			selectableChoices.append(MOVE)
-		if itemType == "golem":
-			typeOfSubMenu = PARTY
-			set_part_sub ()
-#			if i == USE:
-=======
 			selectableChoices.append(true)
 		elif i== USE and typeOfSubMenu == PARTY:
 			selectableChoices.append(true)
 		elif i == USE:
->>>>>>> Battle
 			if LootTable.UseItemList.has(itemType):
 				selectableChoices.append(true)
 			else:
@@ -65,21 +52,14 @@ func set_choices(itemType):
 func set_part_sub ():
 	$Options/Option5.show()
 	$Options/Option2.hide()
-<<<<<<< HEAD
-=======
 # Called when the node enters the scene tree for the first time.
->>>>>>> Battle
 func _ready():
 	update_selection()
 	pass # Replace with function body.
 
 func select():
-<<<<<<< HEAD
-#	if
-=======
 	if typeOfSubMenu == PARTY and currentPlayerSelection == USE:
 		currentPlayerSelection = VIEW
->>>>>>> Battle
 	emit_signal("selected",currentPlayerSelection)
 	if currentPlayerSelection == MOVE:
 		ongoingSelection = true
@@ -117,4 +97,3 @@ func update_selection():
 		else:playerChoice.get_child(i).modulate.a = 0.0
 	
 	pass
-
