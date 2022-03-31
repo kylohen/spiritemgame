@@ -11,6 +11,7 @@ var enemyBackName = ""
 var enemyType = ""
 signal touch_player
 
+enum {NORTH,EAST,SOUTH,WEST}
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	self.position = currentGridPosition*WorldConductor.TILE_SIZE
@@ -36,12 +37,27 @@ func move_enemy(playerPositionInGrid):
 #	print (path)
 	if !path.empty():
 		currentGridPosition = path[0]
-		self.position = path[0]*WorldConductor.TILE_SIZE
+		self.position = currentGridPosition*WorldConductor.TILE_SIZE
+		
 	else:
 		set_grid(get_parent().get_parent().gridMap,get_parent().get_parent().objectPlacement,get_parent().get_parent().gridWidth,get_parent().get_parent().gridHeight)
-		currentGridPosition = path[0]
-		self.position = path[0]*WorldConductor.TILE_SIZE
+		if path.empty():
+			currentGridPosition += random_move()
+		else: currentGridPosition = path[0]
+		self.position = currentGridPosition*WorldConductor.TILE_SIZE
 
+func random_move():
+	var directions = [Vector2.UP,Vector2.RIGHT,Vector2.DOWN,Vector2.LEFT]
+	var chosenOptions
+	for i in range (directions.size()-1,-1,-1):
+		var rollChoice = SeedGenerator.rng.randi_range(0,i)
+		var randDirection = directions[rollChoice]
+		if get_parent().get_parent().is_Open_Tile(currentGridPosition,randDirection,false):
+			return randDirection
+		directions.erase(randDirection)
+	return Vector2.ZERO
+			
+		
 func _on_Area2D_body_entered(body):
 	if body.name == "Player":
 		emit_signal("touch_player",self)

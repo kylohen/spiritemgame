@@ -42,7 +42,7 @@ func set_choices(itemType):
 				selectableChoices.append(true)
 			else:
 				selectableChoices.append(false)
-		elif i == DISCARD:
+		elif i == DISCARD and itemType != null:
 			selectableChoices.append(true)
 		
 		elif itemType != null and typeOfSubMenu != PARTY:

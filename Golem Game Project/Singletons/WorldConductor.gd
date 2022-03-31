@@ -3,15 +3,17 @@ extends Node
 
 const TILE_SIZE = 24
 var golemCoreStolen = []
+var acceptAnyTool = 4
 
-
-enum objectTypes {TallGrass,Boulders,Trees,Logs,Clay}
+enum objectTypes {TallGrass,Boulders,Trees,Logs,Clay,Pedestal,GolemGenerator}
 var objectTextures = {
 	objectTypes.TallGrass : "res://Assets/OverworldObjects/sprite_overworld_grass_stage2.png",
 	objectTypes.Boulders : "res://Assets/OverworldObjects/sprite_overworld_boulder.png",
 	objectTypes.Logs : "res://Assets/OverworldObjects/sprite_overworld_log_stage0.png",
 	objectTypes.Trees : "res://Assets/OverworldObjects/sprite__overworld_harvestable_rubber.png",
-	objectTypes.Clay : "res://Assets/OverworldObjects/sprite_overworld_clay_stage1.png"
+	objectTypes.Clay : "res://Assets/OverworldObjects/sprite_overworld_clay_stage1.png",
+	objectTypes.Pedestal : "res://Assets/OverworldObjects/sprite_overworld_Pedestal.png",
+	objectTypes.GolemGenerator : "res://Assets/OverworldObjects/sprite_overworld_golem_generator.png",
 }
 onready var overworldObject = {
 	objectTypes.TallGrass:{
@@ -38,6 +40,16 @@ onready var overworldObject = {
 		"passable" : true,
 		"lootTable" : "",
 		"toolUse": GlobalPlayer.TOOLS.SHOVEL
+		},
+	objectTypes.Pedestal :{
+		"passable" : false,
+		"lootTable" : "",
+		"toolUse": acceptAnyTool ###Manually inputting int 4
+		},
+	objectTypes.GolemGenerator :{
+		"passable" : false,
+		"lootTable" : "",
+		"toolUse": acceptAnyTool  ###Manually inputting int 4
 		}
 	}
 

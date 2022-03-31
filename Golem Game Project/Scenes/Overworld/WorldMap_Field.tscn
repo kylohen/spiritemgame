@@ -231,6 +231,18 @@ tracks/5/keys = {
 "points": PoolRealArray( 0, -0.25, 0, 0.25, 0 ),
 "times": PoolRealArray( 0 )
 }
+tracks/6/type = "value"
+tracks/6/path = NodePath("Camera2D:zoom")
+tracks/6/interp = 1
+tracks/6/loop_wrap = true
+tracks/6/imported = false
+tracks/6/enabled = true
+tracks/6/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ Vector2( 1, 1 ) ]
+}
 
 [node name="WorldMap_Field" type="Node2D"]
 script = ExtResource( 3 )
@@ -246,14 +258,12 @@ tile_set = SubResource( 1 )
 cell_size = Vector2( 24, 24 )
 cell_quadrant_size = 24
 format = 1
-tile_data = PoolIntArray( 458764, 3, 0, 458766, 3, 0, 524299, 3, 0, 524303, 3, 0, 589837, 10, 0, 655371, 3, 0, 655375, 3, 0, 720908, 3, 0, 720910, 3, 0 )
 
 [node name="ItemDrops" type="TileMap" parent="."]
 tile_set = SubResource( 1 )
 cell_size = Vector2( 24, 24 )
 cell_quadrant_size = 24
 format = 1
-tile_data = PoolIntArray( 458764, 3, 0, 458766, 3, 0, 524299, 3, 0, 524303, 3, 0, 589837, 10, 0, 655371, 3, 0, 655375, 3, 0, 720908, 3, 0, 720910, 3, 0 )
 
 [node name="Player" parent="." instance=ExtResource( 2 )]
 
