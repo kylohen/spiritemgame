@@ -1,5 +1,5 @@
 extends Node2D
-var type = "object"
+var type = null
 onready var objectSprite = $Object
 var objectSelected
 
@@ -14,19 +14,26 @@ func _ready():
 func spawn_object(objectToSpawn):
 	objectSprite.texture = load(WorldConductor.objectTextures[objectToSpawn])
 	objectSelected = objectToSpawn
+	if objectSelected == WorldConductor.objectTypes.Pedestal:
+		type =  "Pedestal"
+	elif objectSelected == WorldConductor.objectTypes.GolemGenerator:
+		type =  "Golem Generator"
+	else:
+		type = "Resource"
 	isPassable = WorldConductor.overworldObject[objectSelected]["passable"]
 	
 func is_passable():
 	if objectSelected != null:
 		return isPassable
 		
-func toolUsed():
-	if GlobalPlayer.toolSelected == WorldConductor.overworldObject[objectSelected]["toolUse"] and active:
-		##Insert logic to include giving items/loot table
+func toolUsed(): ## Checking if tool use == 4 means any tool
+	if GlobalPlayer.toolSelected == WorldConductor.overworldObject[objectSelected]["toolUse"]:# or  and active:
 		self.modulate.a = 0.0
 		isPassable = true
 		respawnTimer.start()
 		active = false
+		return true
+	elif objectSelected == WorldConductor.objectTypes.GolemGenerator:
 		return true
 	return false
 

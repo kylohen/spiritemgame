@@ -128,9 +128,9 @@ func new_index():
 	return nextInventoryIndex
 
 func swap_item_locations (itemA,itemAIndex,itemB,itemBIndex):
-	
-	
-	if itemA == itemB and (itemA != null and itemB != null):
+	if itemAIndex == itemBIndex:
+		return
+	elif itemA == itemB and (itemA != null and itemB != null):
 		var quantityA = inventoryListDict[itemA][itemAIndex]
 		var quantityB = inventoryListDict[itemB][itemBIndex]
 		if quantityA + quantityB <=99:
@@ -264,3 +264,8 @@ func swap_golem_position(golemA, golemB):
 		if detailsToInsert != null:
 			detailsToInsert["PARTY POSITION"] = arrayOfChoices[1]
 		
+func is_party_empty():
+	for i in partyGolems.size():
+		if partyGolems[i] != null:
+			return false
+	return true

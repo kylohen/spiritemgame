@@ -87,51 +87,36 @@ func start_encounter(enemyNode):
 
 ##Sets the stage on initialization and pulls golems in from your party Roster, taking the first two
 func load_player_golems(enemiesInBattle = 1):
-	playerCount=0
-	for i in range (0, enemiesInBattle,1):
-		if i == 0 and GlobalPlayer.partyGolems.empty():
-			put_player_in_battle()
-			playerCount = 1
-			playerFront = GlobalPlayer.PLAYERSTATS
-			playerFrontName = GlobalPlayer.playerName
-			
-			initialize_ui_bars(GlobalPlayer.PLAYERSTATS,playerFrontUIBar)
-			playerFront["NODE"] = playerGraphics.get_node("PlayerSpriteFront")
-			playerFront["UI NODE"] = playerFrontUIBar
-			AllyGolems.append(playerFront)
-			AllyGolemsSkillUsed.append(false)
-		elif i == 0 and i <= GlobalPlayer.partyGolems.size()-1:
-#			playerFrontName =GlobalPlayer.partyGolems[i]["NAME"]
-#			playerFront = GlobalPlayer.partyGolems[i].duplicate()
-#
-#			playerGraphics.get_node("PlayerBackingFront/PlayerName").text = playerFrontName
-#			playerGraphics.get_node("PlayerSpriteFront").load_sprite(playerFront["backSprite"])
-
-			
-#			initialize_ui_bars(playerFront,playerFrontUIBar)
-#			playerFront["NODE"] = playerGraphics.get_node("PlayerSpriteFront")
-#			playerFront["UI NODE"] = playerFrontUIBar
-			load_front_player(GlobalPlayer.partyGolems[i].duplicate())
-			AllyGolems.append(playerFront)
-			AllyGolemsSkillUsed.append(false)
-			playerCount += 1
-			
-		elif i == 1 and i <= GlobalPlayer.partyGolems.size()-1:
-			load_back_player(GlobalPlayer.partyGolems[i].duplicate())
-#			playerBackName =GlobalPlayer.partyGolems[i]["NAME"]
-#			playerBack = GlobalPlayer.partyGolems[i].duplicate()
-#
-#			playerGraphics.get_node("PlayerBackingBack/PlayerName").text = playerBackName
-#			playerGraphics.get_node("PlayerSpriteBack").load_sprite(playerBack["backSprite"])
-#			playerCount += 1
-#			initialize_ui_bars(playerBack,playerBackUIBar)
-#			playerBack["NODE"] = playerGraphics.get_node("PlayerSpriteBack")
-#			playerBack["UI NODE"] = playerBackUIBar
-#			AllyGolems.append(playerBack)
-#			AllyGolemsSkillUsed.append(false)
-			playerCount += 1
-		else:
-			## 1 v 2
+	playerCount=1
+	if GlobalPlayer.is_party_empty():
+		put_player_in_battle()
+		playerCount = 1
+		playerFront = GlobalPlayer.PLAYERSTATS
+		playerFrontName = GlobalPlayer.playerName
+		
+		initialize_ui_bars(GlobalPlayer.PLAYERSTATS,playerFrontUIBar)
+		playerFront["NODE"] = playerGraphics.get_node("PlayerSpriteFront")
+		playerFront["UI NODE"] = playerFrontUIBar
+		AllyGolems.append(playerFront)
+		AllyGolemsSkillUsed.append(false)
+		lose_1_player()
+	
+	else:
+		var battleSlots = enemiesInBattle
+		for i in GlobalPlayer.partyGolems.size():
+			if 1 == playerCount and GlobalPlayer.partyGolems[i] != null:
+				load_front_player(GlobalPlayer.partyGolems[i].duplicate())
+				AllyGolems.append(playerFront)
+				AllyGolemsSkillUsed.append(false)
+				if playerCount >= enemiesInBattle:
+					break
+				playerCount += 1
+				
+			elif playerCount <= enemiesInBattle and playerCount == 2 and i <= GlobalPlayer.partyGolems.size()-1:
+				load_back_player(GlobalPlayer.partyGolems[i].duplicate())
+				playerCount += 1
+				break
+		if playerCount < enemiesInBattle:
 			lose_1_player()
 		selectedGolem = AllyGolems[0]
 func load_back_player(playerDict):
@@ -458,7 +443,11 @@ func update_golem_list(firstGolemOnList = 0):
 		if !foundMatch:
 			for j in AllyGolems.size():
 				
-				if  listOfPartyMembers[golemDisplay]["PARTY POSITION"] == AllyGolems[j]["PARTY POSITION"]:
+				if  listOfPartyMembers[golemDisplay] == null:
+					skillNameNodes.get_node("VBoxContainer/MenuItem"+str(i+1)).set_golem(listOfPartyMembers[golemDisplay],false)
+					selectableSkills.append(false)
+					foundMatch = true
+				elif listOfPartyMembers[golemDisplay]["PARTY POSITION"] == AllyGolems[j]["PARTY POSITION"]:
 					skillNameNodes.get_node("VBoxContainer/MenuItem"+str(i+1)).set_golem(listOfPartyMembers[golemDisplay],false)
 					selectableSkills.append(false)
 					foundMatch = true
@@ -543,7 +532,16 @@ func select_skill(skillChoice:int):
 		currentSelectionState = SELECTIONSTATE.ENEMY
 		update_cursor_location_on_current_SELECTIONSTATE()
 	elif skillDetails["TARGET"] == StatBlocks.TARGET.ALLY:
+		skillBeingUsed = skillDetails
 		currentSelectionState = SELECTIONSTATE.ALLY
+		var targetGolemToSupport = AllyGolems[0]
+		if AllyGolems.size()>=2:
+			if targetGolemToSupport == selectedGolem:
+				 targetGolemToSupport = AllyGolems[1]
+		else: targetGolemToSupport = null
+		use_skill(targetGolemToSupport)
+			
+		#### FORCE TARGET ALLY
 		update_cursor_location_on_current_SELECTIONSTATE()
 	return skillDetails
 
@@ -592,6 +590,11 @@ func sort_by_speed(a, b):
 	else:
 		return a > b
 func update_combat_text(actionSet):
+	var user = actionSet[0]["NAME"]
+	var target = "no one"
+	var skillName = actionSet[2]["NAME"]
+	if actionSet[1] != null:
+		target = actionSet[1]["NAME"]
 	prompt.get_node("PromptText").text = actionSet[0]["NAME"]+" uses "+actionSet[2]["NAME"]+" on "+actionSet[1]["NAME"]
 	prompt.get_node("PromptTween").interpolate_property(prompt.get_node("PromptText"),"percent_visible",0.0,1.0,1)
 	prompt.get_node("PromptTween").start()
@@ -599,6 +602,13 @@ func update_combat_text(actionSet):
 func spend_energy(golem,skill):
 	golem["CURRENT ACTION"] -= skill["ACTION METER COST"]
 	golem["CURRENT MAGIC"] -= skill["MAGIC METER COST"]
+func check_max_stats(golem):
+	if golem["CURRENT ACTION"] > golem["ACTION METER"]:
+		golem["CURRENT ACTION"]  = golem["ACTION METER"]
+	if golem["CURRENT MAGIC"]> golem["MAGIC METER"]:
+		golem["CURRENT MAGIC"]  = golem["MAGIC METER"]
+	if golem["CURRENT HP"] > golem["HP"]:
+		golem["CURRENT HP"]  = golem["HP"]
 
 func resolve_turn():
 	GlobalPlayer.isInAnimation = true
@@ -652,6 +662,7 @@ func resolve_turn():
 					pendingSkills[i-1][1]["CURRENT HP"] += newValue
 				else:
 					pendingSkills[i-1][1]["MODIFIERS"] += {statName:newValue}
+				check_max_stats(pendingSkills[i-1][1])
 				
 				update_ui_action_bars(pendingSkills[i-1][0]["UI NODE"],pendingSkills[i-1][2])
 				update_ui_health_bar(pendingSkills[i-1][1]["UI NODE"],pendingSkills[i-1][1]["CURRENT HP"])
@@ -661,20 +672,18 @@ func resolve_turn():
 		for i in range (pendingSkills.size(),0,-1):
 #			print (debug_pendingSkills(), "\n Loop ",i)
 			if pendingSkills[i-1][2]["TYPE"] == "SUPPORT":
-				pendingSkills[i-1][1]["MODIFIERS"] = {[pendingSkills[i-1][2]["STAT"]]: pendingSkills[i-1][2]["STAT MOD"]}
 				update_combat_text(pendingSkills[i-1])
 				animate_sprite(pendingSkills[i-1][0]["NODE"],SUPPORT)
 				yield(pendingSkills[i-1][0]["NODE"],"sprite_animation_done")
 				update_ui_action_bars(pendingSkills[i-1][0]["UI NODE"],pendingSkills[i-1][2])
-				
 				spend_energy(pendingSkills[i-1][0],pendingSkills[i-1][2])
 				if AllyGolems.has(pendingSkills[i-1][0]):
 					playerUsedSupport = true
 				
-				
+				if  pendingSkills[i-1][1] != null:
+					pendingSkills[i-1][1]["MODIFIERS"] = {[pendingSkills[i-1][2]["STAT"]]: pendingSkills[i-1][2]["STAT MOD"]}
 				pendingSkills.erase(pendingSkills[i-1])
 				
-#				print (debug_pendingSkills(), "\n Loop ",i) * BROKEN DUE TO Passing SWITCH as a STRING VS SKILL
 		pendingSkills.sort_custom(self,"sort_by_speed")
 		for i in range (pendingSkills.size(),0,-1):
 #			print (debug_pendingSkills(), "\n Loop ",i)* BROKEN DUE TO Passing SWITCH as a STRING VS SKILL
@@ -1194,7 +1203,7 @@ func update_cursor_location_on_current_SELECTIONSTATE():
 		playerSelection = 90
 	
 	elif currentSelectionState == SELECTIONSTATE.BOTH:
-		playerSelection = 80
+		playerSelection = 90
 	
 	update_player_choice(playerSelection)
 		
@@ -1339,6 +1348,15 @@ func move_up():
 		if playerSelection == 3:
 			update_itemChoice(-1)
 			update_item_list(itemChoice)
+		elif currentSelectionState == SELECTIONSTATE.BOTH:
+			if playerSelection == 80:
+				playerSelection=90
+			elif playerSelection == 81:
+				playerSelection=91
+			elif playerSelection == 90:
+				playerSelection=80
+			elif playerSelection == 91:
+				playerSelection=81
 		else: 
 			playerSelection -= 1
 			update_itemChoice(-1)
@@ -1386,6 +1404,16 @@ func move_down():
 		if playerSelection == 6:
 			update_itemChoice(1)
 			update_item_list(itemChoice-3)
+		elif currentSelectionState == SELECTIONSTATE.BOTH:
+			if playerSelection == 80:
+				playerSelection=90
+			elif playerSelection == 81:
+				playerSelection=91
+			elif playerSelection == 90:
+				playerSelection=80
+			elif playerSelection == 91:
+				playerSelection=81
+		
 		else: 
 			update_itemChoice(1)
 			playerSelection += 1

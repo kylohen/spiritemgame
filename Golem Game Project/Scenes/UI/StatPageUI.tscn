@@ -63,6 +63,10 @@ margin_top = 65.0
 margin_right = 319.0
 margin_bottom = 289.0
 rect_scale = Vector2( 0.5, 0.5 )
+expand = true
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="RightPage" type="RichTextLabel" parent="."]
 margin_left = 254.0

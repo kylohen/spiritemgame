@@ -22,4 +22,4 @@ func is_passable():return true
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 #func _process(delta):
 #	pass
-func toolUsed():return false
+func toolUsed():return true 
