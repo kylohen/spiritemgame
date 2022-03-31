@@ -158,7 +158,7 @@ var playerGolemBaseStatBlocks = {
 		"NAME":"StrawBoy",
 		"Type1": ELEMENT.Void,
 		"Type2": ELEMENT.Fire,
-		"frontSprite":"res://Assets/sprites/VoidSprites/Sprite-0010.png",
+		"frontSprite":"res://Assets/sprites/playerGolemFrontSprites/Strawlem/Mundane/strawlem_mundane_back1.png",
 		"backSprite":"res://Assets/sprites/VoidSprites/Sprite-0010.png",
 		"PARTY ICON":"",
 		"HP":10,
