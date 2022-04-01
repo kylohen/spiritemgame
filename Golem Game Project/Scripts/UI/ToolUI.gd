@@ -1,6 +1,6 @@
 extends Control
 
-
+signal buttonMoveAudio
 onready var selectionUI = {
 	"Slot1" : $SelectionUI/LeftColumn/Slot1,
 	"Slot2" : $SelectionUI/RightColum/Slot2,
@@ -64,6 +64,7 @@ func _on_PlayerUI_nextTool():
 		toolSelected = 0
 	set_selection_Highlight(toolSelected)
 	rotate_dial(90)
+	emit_signal("buttonMoveAudio")
 
 
 func _on_PlayerUI_previousTool():
@@ -72,3 +73,4 @@ func _on_PlayerUI_previousTool():
 		toolSelected = GlobalPlayer.TOOLS.size()-1
 	set_selection_Highlight(toolSelected)
 	rotate_dial(-90)
+	emit_signal("buttonMoveAudio")

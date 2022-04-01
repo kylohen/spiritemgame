@@ -1,25 +1,11 @@
 extends Control
 
 ##Notes: keeping it to demo vs building out the entire process
-var RecipeDict = {
-	0:{
-		"Straw Bundle":{
-			"Straw":9,
-			},
-		},
-	1:{
-		"Golem Core" : {
-			"Aspect Crystal": 1,
-			"Runic Matrix" : 1,
-			},
-		},
-	2:{
-		"Command Seal" :{
-			"Wax" : 2,
-			"Glimmerdust" : 1,
-			},
-		},
-	}
+
+
+signal buttonSelectAudio
+signal buttonMoveAudio
+
 
 onready var recipesRow1 = $MarginContainer/BookBackground/Recipes/Row1
 onready var recipesRow2 = $MarginContainer/BookBackground/Recipes/Row2
@@ -39,8 +25,8 @@ func _ready():
 
 func build_recipe_page():
 	for i in recipesRow1.get_child_count():
-		if RecipeDict.has(i):
-			recipesRow1.get_child(i).set_recipe(RecipeDict[i])
+		if Recipes.ItemRecipeDict.has(i):
+			recipesRow1.get_child(i).set_recipe(Recipes.ItemRecipeDict[i])
 			
 	
 func update_player_selection():
@@ -56,33 +42,39 @@ func move_up():
 	if playerSelection ==0:
 		playerSelection = 2
 	else: playerSelection -= 1
+	
+	emit_signal("buttonMoveAudio")
 	update_player_selection()
 func move_down():
 	remove_previous_selection_highlight(playerSelection)
 	if playerSelection == 2:
 		playerSelection=0
 	else: playerSelection +=1
+	
+	emit_signal("buttonMoveAudio")
 	update_player_selection()
 func selected():
 	if recipesRow1.get_child(playerSelection).hasNeededItems:
-		GlobalPlayer.add_loot(RecipeDict[playerSelection].keys()[0],1)
-		var itemToMake = RecipeDict[playerSelection].keys()[0]
-		var keys = RecipeDict[playerSelection][itemToMake].keys()
+		GlobalPlayer.add_loot(Recipes.ItemRecipeDict[playerSelection].keys()[0],1)
+		var itemToMake = Recipes.ItemRecipeDict[playerSelection].keys()[0]
+		var keys = Recipes.ItemRecipeDict[playerSelection][itemToMake].keys()
 		var hasAllItems = true
 		for j in keys.size():
-			if GlobalPlayer.has_item_and_quantity(keys[playerSelection],RecipeDict[playerSelection][itemToMake][keys[playerSelection]]):
-				GlobalPlayer.use_item(keys[playerSelection],GlobalPlayer.inventoryListDict[keys[playerSelection]].keys()[0], RecipeDict[playerSelection][itemToMake][keys[playerSelection]])
+			if GlobalPlayer.has_item_and_quantity(keys[playerSelection],Recipes.ItemRecipeDict[playerSelection][itemToMake][keys[playerSelection]]):
+				GlobalPlayer.use_item(keys[playerSelection],GlobalPlayer.inventoryListDict[keys[playerSelection]].keys()[0], Recipes.ItemRecipeDict[playerSelection][itemToMake][keys[playerSelection]])
+				
+				emit_signal("buttonSelectAudio")
 	
 	
 	
 func check_recipes_inventory():
 	for i in recipesRow1.get_child_count():
-		if RecipeDict.has(i):
-			var itemToMake = RecipeDict[i].keys()[0]
-			var keys = RecipeDict[i][itemToMake].keys()
+		if Recipes.ItemRecipeDict.has(i):
+			var itemToMake = Recipes.ItemRecipeDict[i].keys()[0]
+			var keys = Recipes.ItemRecipeDict[i][itemToMake].keys()
 			var hasAllItems = true
 			for j in keys.size():
-				if !GlobalPlayer.has_item_and_quantity(keys[j],RecipeDict[i][itemToMake][keys[j]]):
+				if !GlobalPlayer.has_item_and_quantity(keys[j],Recipes.ItemRecipeDict[i][itemToMake][keys[j]]):
 					hasAllItems = false
 			recipesRow1.get_child(i).hasNeededItems = hasAllItems
 func not_primary():

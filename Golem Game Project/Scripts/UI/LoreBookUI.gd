@@ -1,5 +1,7 @@
 extends Control
 
+signal buttonSelectAudio
+signal buttonMoveAudio
 var TextDict = {
 	0:{
 		"Left": "Golemancers\n\nA golemancer is one who studies and trains in the art of golemancy, that is, the crafting, design and utilizing of golems. Golemancers achieve this by manifesting spirit through a pure substance, such as a crystal or gem, as well as runic inscription to give it direction and form. It is a study of the coming together of science and the ethereal.",
@@ -46,6 +48,8 @@ func selected():
 	elif playerCurrentSelection == 1 and lorePage < TextDict.size()-1:
 		lorePage +=1
 		update_window()
+	
+	emit_signal("buttonSelectAudio")
 
 func update_player_selection():
 	if playerCurrentSelection ==0:
@@ -55,6 +59,9 @@ func update_player_selection():
 	if playerCurrentSelection ==1:
 		rightButton.modulate =  Color( 0, 0, 0, 1 )
 		leftButton.modulate =  Color( 1, 1, 1, 1 ) 
+	
+	emit_signal("buttonMoveAudio")
+		
 func update_window():
 	if TextDict.has(lorePage):
 		if TextDict[lorePage].has("Left"):

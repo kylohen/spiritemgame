@@ -200,7 +200,7 @@ func spawnCave(numberOfCaves = 5):
 			numberOfCaves -= 1
 		count +=1
 		if count >= 100*numberOfCaves:
-			print("couldn't find ",numberOfCaves," Caves")
+#			print("couldn't find ",numberOfCaves," Caves")
 			break
 ## checks to see if there is something in the grid, if there is, return false
 func is_Open_Tile(currentPosition, directionToGo,isPlayer=true) -> bool:

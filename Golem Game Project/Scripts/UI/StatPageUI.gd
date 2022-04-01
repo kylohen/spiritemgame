@@ -10,6 +10,8 @@ onready var rightPage = $RightPage
 onready var leftButton = $BookMarginContainer/BookBackground/LorePageTurning/BackButton
 onready var rightButton = $BookMarginContainer/BookBackground/LorePageTurning/NextButton
 
+signal buttonSelectAudio
+signal buttonMoveAudio
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	 update_player_selection()
@@ -19,11 +21,13 @@ func move_right():
 	if playerCurrentSelection > 1:
 		playerCurrentSelection = 0
 	update_player_selection()
+	emit_signal("buttonMoveAudio")
 func move_left():
 	playerCurrentSelection -= 1
 	if playerCurrentSelection < 0:
 		playerCurrentSelection = 1
 	update_player_selection()
+	emit_signal("buttonMoveAudio")
 func selected():
 	var moveThroughList = 1
 	if playerCurrentSelection ==0:
@@ -45,7 +49,8 @@ func selected():
 			load_golem(GlobalPlayer.partyGolems[partyMember])
 			foundPlayer = true
 		count += 1
-		
+	
+	emit_signal("buttonSelectAudio")
 		
 func update_player_selection():
 	if playerCurrentSelection ==0:

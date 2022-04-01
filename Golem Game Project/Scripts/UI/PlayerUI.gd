@@ -9,6 +9,9 @@ onready var statPage = $StatPageUI
 #onready var animationPlayer = $AnimationPlayer
 onready var battleScreenScene = preload("res://Scenes/Battle/BattleScreen.tscn")
 onready var dialogSystemNode = preload("res://Scenes/DialogBox/FullDialogWindow.tscn")
+
+onready var buttonMoveAudio = $buttonMove
+onready var buttonSelectAudio = $buttonSelect
 var battleScreen
 enum {NONE,INVENTORY,INVENTORY_SUBMENU,LORE,CRAFTING,STAT}
 # Declare member variables here. Examples:
@@ -19,6 +22,7 @@ var previousPLAYSTATE
 signal nextTool
 signal previousTool
 signal useItem
+signal buttonMove
 
 var MenuDict = {
 	0:INVENTORY,
@@ -41,6 +45,7 @@ func move_menu(value):
 		menuTracker = MenuDict.size()-1
 	elif menuTracker > MenuDict.size()-1:
 		menuTracker = 0
+	emit_signal("buttonMove")
 		
 	MenuNodeDict[oldMenu].hide()
 	MenuNodeDict[oldMenu].not_primary()
@@ -99,7 +104,7 @@ func process_player_input():
 			pass
 		if currentMenu == INVENTORY:
 			if Input.is_action_just_released("ui_cancel"):
-				close_inventory_UI()
+				inventoryUI.ui_cancel()
 			if Input.is_action_just_pressed("ui_right"):
 				inventoryUI.move_right()
 			elif Input.is_action_just_pressed("ui_left"):
@@ -162,7 +167,7 @@ func process_player_input():
 		if Input.is_action_just_pressed("ui_right"):
 			battleScreen.move_right()
 		elif Input.is_action_just_pressed("ui_left"):
-			battleScreen.move_lesft()
+			battleScreen.move_left()
 		elif Input.is_action_just_pressed("ui_up"):
 			battleScreen.move_up()
 		elif Input.is_action_just_pressed("ui_down"):
@@ -233,6 +238,8 @@ func _enemy_battle_start(enemyNode):
 	add_child(battleScreen)
 	battleScreen.start_encounter(enemyNode)
 	battleScreen.load_in()
+	battleScreen.connect("buttonMoveAudio",self,"_on_buttonMoveAudio")
+	battleScreen.connect("buttonSelectAudio",self,"_on_buttonSelectAudio")
 func _enemy_battle_end():
 	battleScreen.load_out()
 	GlobalPlayer.update_PLAYSTATE(GlobalPlayer.PLAYSTATE.GAME)
@@ -257,3 +264,15 @@ func _on_FullDialogWindow_dialogDone():
 	GlobalPlayer.isInAnimation = false
 	
 	pass # Replace with function body.
+
+
+
+func _on_buttonSelectAudio():
+	buttonSelectAudio.play()
+	pass # Replace with function body.
+
+
+func _on_buttonMoveAudio():
+	buttonMoveAudio.play()
+	pass # Replace with function body.
+

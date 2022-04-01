@@ -15,6 +15,55 @@ var aspectSprite = {
 	ELEMENT.Divine : "res://Assets/UI/Bars/UI_Aspect_Divine.png",
 	ELEMENT.Mundane : "res://Assets/UI/Bars/UI_Aspect_Mundane.png",
 }
+
+###########GOLEM DICTIONARY STRUCTURE###########
+#	{
+#	"NAME": ##STRING Name of GOLEM
+#	"Type1": ELEMENT.Void,    ##UNUSED AT THIS TIME
+#	"Type2": ELEMENT.Nature,  ##UNUSED AT THIS TIME
+#	"frontSprite": ##String location of Art Asset
+#	"backSprite":##String location of Art Asset - only for playerGolems
+#	"PARTY ICON":"",
+#	"HP":1,
+#	"ATTACK":1,
+#	"DEFENSE":1,
+#	"MAGIC ATTACK":1,
+#	"MAGIC DEFENSE":1,
+#	"SPEED":20,
+#	"ASPECT":ELEMENT.Nature,
+#	"MODIFIERS":{},
+#	"DAMAGE OVER TIME":{},
+#	"ACTION METER":1000,
+#	"MAGIC METER":1000,
+#	"CURRENT ACTION":1000,
+#	"CURRENT MAGIC":1000,
+#	"AFFINITY":1,
+#	"LEVEL":1,
+#	"NORMAL LOOT DROP":{
+#		"Dust":3,
+#	},
+#	"RARE LOOT DROP":{
+#		"Command Seal":1,
+#	},
+#	"ATTACK SKILLS":{
+#		"SKILL1":3,
+#		"SKILL2":2,
+#		"SKILL3":null,
+#		"SKILL4":null,
+#		},
+#	"SUPPORT SKILLS":{
+#		"SKILL1":6,
+#		"SKILL2":null,
+#		"SKILL3":null,
+#		"SKILL4":4,
+#		},
+#	"DEFEND SKILLS":{
+#		"SKILL1":null,
+#		"SKILL2":7,
+#		"SKILL3":null,
+#		"SKILL4":null,
+#	}
+#
 var enemyStatBlocks = {
 	0:{
 		"NAME":"Void StrawMan Argument",
@@ -155,12 +204,12 @@ var enemyStatBlocks = {
 
 var playerGolemBaseStatBlocks = {
 	0 : {
-		"NAME":"StrawBoy",
+		"NAME":"Strawlem",
 		"Type1": ELEMENT.Void,
 		"Type2": ELEMENT.Fire,
-		"frontSprite":"res://Assets/sprites/playerGolemFrontSprites/Strawlem/Mundane/strawlem_mundane_back1.png",
+		"frontSprite":"res://Assets/sprites/playerGolemFrontSprites/Strawlem/Mundane/strawlem_mundane.png",
 		"backSprite":"res://Assets/sprites/VoidSprites/Sprite-0010.png",
-		"PARTY ICON":"",
+		"PARTY ICON":"res://Assets/sprites/playerGolemFrontSprites/Strawlem/Mundane/strawlem_mundane.png",
 		"HP":10,
 		"ATTACK":1,
 		"DEFENSE":1,

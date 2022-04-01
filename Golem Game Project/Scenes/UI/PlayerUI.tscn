@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=2]
+[gd_scene load_steps=16 format=2]
 
 [ext_resource path="res://Assets/Tools/Pickaxe_UI.png" type="Texture" id=1]
 [ext_resource path="res://Assets/Tools/Shovel_UI.png" type="Texture" id=2]
@@ -13,6 +13,8 @@
 [ext_resource path="res://Scenes/UI/LoreBookUI.tscn" type="PackedScene" id=11]
 [ext_resource path="res://Scenes/UI/CraftingBookUI.tscn" type="PackedScene" id=12]
 [ext_resource path="res://Scenes/UI/StatPageUI.tscn" type="PackedScene" id=13]
+[ext_resource path="res://Assets/Audio/UI/UI_move_SFX.mp3" type="AudioStream" id=14]
+[ext_resource path="res://Assets/Audio/UI/UI_select_SFX.mp3" type="AudioStream" id=15]
 
 [node name="PlayerUI" type="Control"]
 anchor_right = 1.0
@@ -233,6 +235,23 @@ visible = false
 [node name="StatPageUI" parent="." instance=ExtResource( 13 )]
 visible = false
 
+[node name="buttonMove" type="AudioStreamPlayer" parent="."]
+stream = ExtResource( 14 )
+bus = "SoundEffects"
+
+[node name="buttonSelect" type="AudioStreamPlayer" parent="."]
+stream = ExtResource( 15 )
+bus = "SoundEffects"
+
 [connection signal="nextTool" from="." to="ToolUI" method="_on_PlayerUI_nextTool"]
 [connection signal="previousTool" from="." to="ToolUI" method="_on_PlayerUI_previousTool"]
+[connection signal="buttonMoveAudio" from="ToolUI" to="." method="_on_buttonMoveAudio"]
+[connection signal="buttonMoveAudio" from="InventoryUI" to="." method="_on_buttonMoveAudio"]
+[connection signal="buttonSelectAudio" from="InventoryUI" to="." method="_on_buttonSelectAudio"]
 [connection signal="sub_menu" from="InventoryUI" to="." method="_on_InventoryUI_sub_menu"]
+[connection signal="buttonMoveAudio" from="LoreBookUI" to="." method="_on_buttonMoveAudio"]
+[connection signal="buttonSelectAudio" from="LoreBookUI" to="." method="_on_buttonSelectAudio"]
+[connection signal="buttonMoveAudio" from="CraftingBookUI" to="." method="_on_buttonMoveAudio"]
+[connection signal="buttonSelectAudio" from="CraftingBookUI" to="." method="_on_buttonSelectAudio"]
+[connection signal="buttonMoveAudio" from="StatPageUI" to="." method="_on_buttonMoveAudio"]
+[connection signal="buttonSelectAudio" from="StatPageUI" to="." method="_on_buttonSelectAudio"]

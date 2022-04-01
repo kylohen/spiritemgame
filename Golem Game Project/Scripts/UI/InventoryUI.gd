@@ -12,6 +12,7 @@ var subMenuInventoryScene = load("res://Scenes/UI/SubInventoryMenu.tscn")
 var subMenuNode
 var inventoryPage = 0
 var playerCurrentSelection = 0
+var playerPreviousSelection = 0
 
 var nodeSelected = null
 var nodeToMove = null
@@ -21,6 +22,9 @@ var inventoryHighlightToMove = null
 var itemToUse = null
 
 signal sub_menu
+
+signal buttonMoveAudio
+signal buttonSelectAudio
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	load_golems()
@@ -135,7 +139,8 @@ func move_right():
 	if newNumber != null:
 		remove_previous_selection_highlight(playerCurrentSelection)
 		current_player_selection_highlight(newNumber)
-	
+		
+		emit_signal("buttonMoveAudio")
 	pass
 func move_left():
 	
@@ -183,6 +188,7 @@ func move_left():
 	if newNumber != null:
 		remove_previous_selection_highlight(playerCurrentSelection)
 		current_player_selection_highlight(newNumber)
+		emit_signal("buttonMoveAudio")
 	
 	pass
 func move_up():
@@ -231,6 +237,8 @@ func move_up():
 		else:newNumber = playerCurrentSelection - 1
 	remove_previous_selection_highlight(playerCurrentSelection)
 	current_player_selection_highlight(newNumber)
+	
+	emit_signal("buttonMoveAudio")
 func move_down():
 	var newNumber
 	if currentState == MOVE:
@@ -279,11 +287,13 @@ func move_down():
 		else:newNumber = playerCurrentSelection + 1
 	remove_previous_selection_highlight(playerCurrentSelection)
 	current_player_selection_highlight(newNumber)
-
+	emit_signal("buttonMoveAudio")
 func selected():
 	if nodeSelected is TextureButton:
 		nodeSelected.pressed = true
+		emit_signal("buttonSelectAudio")
 	elif currentState == MOVE:
+		playerPreviousSelection = playerCurrentSelection
 		if (playerCurrentSelection >= 0 and playerCurrentSelection<=15):
 			GlobalPlayer.swap_item_locations(nodeToMove.type,indexToMove,nodeSelected.type,playerCurrentSelection + inventoryPage*inventorySlots.get_child_count())
 			subMenuNode.queue_free()
@@ -298,7 +308,9 @@ func selected():
 			reset_all_selections()
 			inventoryHighlightToMove = null
 			load_golems()
+		emit_signal("buttonSelectAudio")
 	elif currentState == USE:
+		playerPreviousSelection = playerCurrentSelection
 		print (itemToUse)
 		var itemDetails = null
 		
@@ -319,6 +331,7 @@ func selected():
 		itemToUse = null
 		update_inventory()
 		load_golems()
+		emit_signal("buttonSelectAudio")
 		
 	elif playerCurrentSelection >= 0 and playerCurrentSelection<=15:
 		emit_signal("sub_menu",true)
@@ -328,6 +341,7 @@ func selected():
 		subMenuNode.connect("selected",self,"_on_SubInventoryMenu_selected")
 		subMenuNode.set_choices(nodeSelected.type)
 		inventoryHighlightToMove = playerCurrentSelection
+		emit_signal("buttonSelectAudio")
 	elif playerCurrentSelection >= 18 and playerCurrentSelection<=23:
 		emit_signal("sub_menu",true)
 		subMenuNode = subMenuInventoryScene.instance()
@@ -336,6 +350,7 @@ func selected():
 		subMenuNode.connect("selected",self,"_on_SubInventoryMenu_selected")
 		subMenuNode.set_choices(nodeSelected.type)
 		inventoryHighlightToMove = playerCurrentSelection
+		emit_signal("buttonSelectAudio")
 		pass
 	
 	elif playerCurrentSelection >= 18 and playerCurrentSelection<=23:
@@ -346,20 +361,37 @@ func selected():
 		subMenuNode.connect("selected",self,"_on_SubInventoryMenu_selected")
 		subMenuNode.set_choices(nodeSelected.type)
 		inventoryHighlightToMove = playerCurrentSelection
+		emit_signal("buttonSelectAudio")
 		pass
 	pass
-
+func ui_cancel():
+	if currentState == MOVE or currentState == USE or currentState == VIEW:
+		remove_previous_selection_highlight(playerCurrentSelection)
+		playerCurrentSelection = playerPreviousSelection
+		current_player_selection_highlight(playerCurrentSelection)
+		emit_signal("sub_menu",true)
+		subMenuNode.show()
+		pass
+	elif currentState == USE:
+		pass
+	
+	else:
+		get_parent().close_inventory_UI()
+	pass
 func sub_move_up():
 	subMenuNode.move_up()
+	emit_signal("buttonMoveAudio")
 	pass
 func sub_move_down():
 	subMenuNode.move_down()
+	emit_signal("buttonMoveAudio")
 	pass
 func sub_select():
 	subMenuNode.select();
+	emit_signal("buttonMoveAudio")
 func sub_cancel():
 	subMenuNode.cancel()
-	if currentState == MOVE:
+	if currentState == MOVE or currentState == USE or currentState == VIEW:
 		nodeToMove = null
 		indexToMove = null
 		emit_signal("sub_menu",true)
@@ -371,6 +403,7 @@ func sub_cancel():
 		emit_signal("sub_menu",false)
 		currentState = null
 		inventoryHighlightToMove = null
+	emit_signal("buttonMoveAudio")
 	
 
 func _on_SubInventoryMenu_selected(selected):
@@ -383,6 +416,8 @@ func _on_SubInventoryMenu_selected(selected):
 			indexToMove = playerCurrentSelection + inventoryPage*inventorySlots.get_child_count()
 		elif playerCurrentSelection >=18 and playerCurrentSelection <=23:
 			indexToMove = playerCurrentSelection-18
+		
+		emit_signal("buttonSelectAudio")
 	elif selected == USE:
 		nodeToMove = nodeSelected
 		itemToUse = playerCurrentSelection + inventoryPage*inventorySlots.get_child_count()
@@ -391,6 +426,7 @@ func _on_SubInventoryMenu_selected(selected):
 		playerCurrentSelection = 18
 		current_player_selection_highlight(playerCurrentSelection)
 		
+		emit_signal("buttonSelectAudio")
 		pass
 	elif selected == PLACE:
 	##########################some use function
@@ -401,6 +437,7 @@ func _on_SubInventoryMenu_selected(selected):
 		emit_signal("sub_menu",false)
 		get_parent().close_inventory_UI()
 		
+		emit_signal("buttonSelectAudio")
 		pass
 	elif selected == DISCARD:
 		
@@ -415,10 +452,11 @@ func _on_SubInventoryMenu_selected(selected):
 		reset_all_selections()
 		current_player_selection_highlight(playerCurrentSelection)
 		
+		emit_signal("buttonSelectAudio")
 	elif selected == VIEW:
 		emit_signal("sub_menu",false)
 		get_parent().load_stat_page(GlobalPlayer.partyGolems[playerCurrentSelection-18])
-		pass
+		emit_signal("buttonSelectAudio")
 
 
 

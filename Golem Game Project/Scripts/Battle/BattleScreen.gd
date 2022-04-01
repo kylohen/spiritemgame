@@ -69,6 +69,9 @@ onready var maxParty = GlobalPlayer.maxGolemParty
 var itemChoice = 0
 var listOfUseableItems =[]
 var itemUsed = null
+
+signal buttonMoveAudio
+signal buttonSelectAudio
 ###################### BUILDING ENCOUNTER ############################################
 func _ready():
 	sceneSetup.play("RESET")
@@ -928,14 +931,14 @@ func void_loot(golemToDie,golemThatKilled=null,skillUsedToKill=null):
 func check_for_kill_bonus(golemToDie,golemThatKilled=null,skillUsedToKill=null):
 	var listOfKillSpecial = []
 	var currentHP = golemToDie["CURRENT HP"]
-	var OverDamge = -1* currentHP
 	var maxHP = golemToDie["HP"]
-	var ExactKillPercent = .01 #Percentage to compare against the ExactKill Stat
-	var OverKillPercent = .20 #Percentage to compare against the OverKill Stat
-	if OverDamge <= floor(golemToDie["CURRENT HP"]*ExactKillPercent) and OverDamge >=0:
+	var OverDamge = -1* currentHP
+	var ExactKillPercent = .10 #Percentage to compare against the ExactKill Stat
+	var OverKillPercent = .90 #Percentage to compare against the OverKill Stat
+	if OverDamge <= floor(maxHP*ExactKillPercent) and OverDamge >=0:
 		listOfKillSpecial.append("Exact Kill Bonus")
 		lootModifier += 0.4
-	if OverDamge >= ceil(golemToDie["CURRENT HP"]*OverKillPercent) :
+	if OverDamge >= ceil(maxHP*OverKillPercent) :
 		listOfKillSpecial.append("OverKill Bonus")
 		lootModifier += 0.7
 		
@@ -1164,6 +1167,8 @@ func update_player_choice(newChoice):
 	elif newChoice ==91:
 		playerGraphics.get_node("PlayerSpriteBack").cursor_visible(true)
 		playerGraphics.get_node("PlayerBackingBack/PlayerSelection").modulate.a = 1
+	
+	emit_signal("buttonMoveAudio")
 	pass
 func clear_player_choice(oldChoice):
 	if oldChoice >=1 and oldChoice <= 2:
@@ -1448,26 +1453,35 @@ func move_down():
 	update_player_choice(playerSelection)
 	
 func ui_accept(arrowKeySelection = false):
+	
 	if waitingForPlayerInput:
 		if currentSelectionState == SELECTIONSTATE.ENEMY  :
 			if playerSelection == 80:
 				use_skill(enemyFront)
+				emit_signal("buttonSelectAudio")
 			elif playerSelection == 81:
 				use_skill(enemyBack)
+				emit_signal("buttonSelectAudio")
 		elif currentSelectionState == SELECTIONSTATE.ALLY:
 			if playerSelection == 90:
 				use_skill(playerFront)
+				emit_signal("buttonSelectAudio")
 			elif playerSelection == 91:
 				use_skill(playerBack)
+				emit_signal("buttonSelectAudio")
 		elif currentSelectionState == SELECTIONSTATE.BOTH:
 			if playerSelection == 80:
 				use_skill(enemyFront)
+				emit_signal("buttonSelectAudio")
 			elif playerSelection == 81:
 				use_skill(enemyBack)
+				emit_signal("buttonSelectAudio")
 			elif playerSelection == 90:
 				use_skill(playerFront)
+				emit_signal("buttonSelectAudio")
 			elif playerSelection == 91:
 				use_skill(playerBack)
+				emit_signal("buttonSelectAudio")
 			
 			
 		elif currentMenu == MENU.NONE:
@@ -1481,17 +1495,21 @@ func ui_accept(arrowKeySelection = false):
 					update_skills(selectedGolem,currentMenu)
 				elif currentSelectionState == SELECTIONSTATE.SECONDARY:
 					update_secondary(selectedGolem,currentMenu+4) #this is for the MENU.ENUMS provided, going through the list integers
+				emit_signal("buttonSelectAudio")
 		elif currentMenu == MENU.ATTACK:
 			if selectableSkillOptions[playerSelection-3]: ##-3 to get the 0-3 array
 				skillBeingUsed = select_skill(playerSelection-2) ##needs a number 1-4 to find and select the skill node in question
+				emit_signal("buttonSelectAudio")
 			pass
 		elif currentMenu == MENU.SUPPORT:
 			if selectableSkillOptions[playerSelection-3]:
 				skillBeingUsed = select_skill(playerSelection-2) ##needs a number 1-4 to find and select the skill node in question
+				emit_signal("buttonSelectAudio")
 			pass
 		elif currentMenu == MENU.DEFEND:
 			if selectableSkillOptions[playerSelection-3]:
 				skillBeingUsed = select_skill(playerSelection-2) ##needs a number 1-4 to find and select the skill node in question
+				emit_signal("buttonSelectAudio")
 			pass
 		elif currentMenu == MENU.PARTY:
 			if selectableSkillOptions[playerSelection-3]:
@@ -1499,12 +1517,14 @@ func ui_accept(arrowKeySelection = false):
 				golemSwitch = GlobalPlayer.partyGolems[partyChoice]
 #				print ("Picked ",golemSwitch["NAME"], " as partyChoice ",partyChoice)
 				use_skill(GlobalPlayer.partyGolems[partyChoice].duplicate())
+				emit_signal("buttonSelectAudio")
 		elif currentMenu == MENU.ITEM:
 			if selectableSkillOptions[playerSelection-3]:
 				skillBeingUsed = LootTable.UseItemList[listOfUseableItems[itemChoice][0]].duplicate()
 				skillBeingUsed["NAME"] = listOfUseableItems[itemChoice][0]
 				skillBeingUsed["TYPE"] = "ITEM"
 				skillBeingUsed["ITEM INDEX"] = listOfUseableItems[itemChoice][2]
+				emit_signal("buttonSelectAudio")
 				
 				var itemTarget = LootTable.UseItemList[listOfUseableItems[itemChoice][0]]["TARGET"]
 				if itemTarget == StatBlocks.TARGET.ALLY:

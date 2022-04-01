@@ -1,0 +1,15 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+path="res://.import/UI_move_SFX.mp3-e7552ad6fc7fccbe5e56c886bcb7dd27.mp3str"
+
+[deps]
+
+source_file="res://Assets/Audio/UI/UI_move_SFX.mp3"
+dest_files=[ "res://.import/UI_move_SFX.mp3-e7552ad6fc7fccbe5e56c886bcb7dd27.mp3str" ]
+
+[params]
+
+loop=false
+loop_offset=0
