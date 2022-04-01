@@ -107,7 +107,7 @@ func add_loot(lootType,quantity):
 	####if it doesn't have the key or the quantity is still more than the max existing and needs a new key
 	if quantity > 0:
 		var remaindingInventory = quantity
-		for i in range (0,quantity,99):
+		for _i in range (0,quantity,99):
 			if 99 > remaindingInventory:
 				var indexItem = new_index()
 				inventoryListDict[lootType] = {indexItem:0}

@@ -86,9 +86,9 @@ onready var lootTable = {
 		},
 		
 }
-func test():
-	var pull = lootTable[0].keys()
-	pass
+#func test():
+#	var pull = lootTable[0].keys()
+#	pass
 
 func core_stolen(golemCore,voidGolemResponsible):
 	golemCoreStolen.append([golemCore,voidGolemResponsible])

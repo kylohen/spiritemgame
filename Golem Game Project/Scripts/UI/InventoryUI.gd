@@ -9,7 +9,11 @@ onready var partyMemberSelection = $BookMarginContainer/BookBackground/PlayerSel
 onready var partySlots = $BookMarginContainer/BookBackground/PartyMenu
 
 var subMenuInventoryScene = load("res://Scenes/UI/SubInventoryMenu.tscn")
+
+var confirmationScene = load("res://Scenes/UI/UIConfirmationWindow.tscn")
+
 var subMenuNode
+var confirmationNode
 var inventoryPage = 0
 var playerCurrentSelection = 0
 var playerPreviousSelection = 0
@@ -112,6 +116,9 @@ func move_right():
 		else:newNumber = playerCurrentSelection + 1
 	elif currentState == USE:
 		newNumber = playerCurrentSelection
+	elif currentState == DISCARD:
+		confirmationNode.move_right();
+		newNumber = playerCurrentSelection
 	else:
 		if playerCurrentSelection == 3:
 			newNumber = 18
@@ -158,6 +165,9 @@ func move_left():
 			newNumber = 17
 		else:newNumber = playerCurrentSelection - 1
 	elif currentState == USE:
+		newNumber = playerCurrentSelection
+	elif currentState == DISCARD:
+		confirmationNode.move_left();
 		newNumber = playerCurrentSelection
 	else:
 		if playerCurrentSelection == 0:
@@ -217,6 +227,8 @@ func move_up():
 		if playerCurrentSelection == 18:
 			newNumber = 23
 		else:newNumber = playerCurrentSelection - 1
+	elif currentState == DISCARD:
+		newNumber = playerCurrentSelection
 	else:
 		if playerCurrentSelection == 0:
 			newNumber = 12
@@ -266,6 +278,8 @@ func move_down():
 		if playerCurrentSelection == 23:
 			newNumber = 18
 		else:newNumber = playerCurrentSelection + 1
+	elif currentState == DISCARD:
+		newNumber = playerCurrentSelection
 	else:
 		if playerCurrentSelection == 12:
 			newNumber = 0
@@ -333,6 +347,9 @@ func selected():
 		load_golems()
 		emit_signal("buttonSelectAudio")
 		
+	elif currentState == DISCARD:
+		confirmationNode.selected()
+		
 	elif playerCurrentSelection >= 0 and playerCurrentSelection<=15:
 		emit_signal("sub_menu",true)
 		subMenuNode = subMenuInventoryScene.instance()
@@ -370,9 +387,10 @@ func ui_cancel():
 		playerCurrentSelection = playerPreviousSelection
 		current_player_selection_highlight(playerCurrentSelection)
 		emit_signal("sub_menu",true)
-		subMenuNode.show()
+		subMenuNode.wake()
 		pass
-	elif currentState == USE:
+	elif currentState == DISCARD:
+		confirmationNode.cancel()
 		pass
 	
 	else:
@@ -441,16 +459,16 @@ func _on_SubInventoryMenu_selected(selected):
 		pass
 	elif selected == DISCARD:
 		
-		inventoryHighlightToMove = null
-		if nodeSelected.type == "golem":
-			GlobalPlayer.remove_golem(GlobalPlayer.partyGolems[playerCurrentSelection-18])
-		else:
-			GlobalPlayer.delete_item(nodeSelected.type,inventoryPage * inventorySlots.get_child_count()+playerCurrentSelection)
-		update_inventory()
-		load_golems()
+		currentState = DISCARD
 		emit_signal("sub_menu",false)
-		reset_all_selections()
-		current_player_selection_highlight(playerCurrentSelection)
+		inventoryHighlightToMove = null
+		confirmationNode = confirmationScene.instance()
+		self.add_child(confirmationNode)
+		confirmationNode.rect_position = subMenuNode.rect_position
+		confirmationNode.connect("buttonPressed",self,"confirmedAction")
+		
+		
+		
 		
 		emit_signal("buttonSelectAudio")
 	elif selected == VIEW:
@@ -458,7 +476,23 @@ func _on_SubInventoryMenu_selected(selected):
 		get_parent().load_stat_page(GlobalPlayer.partyGolems[playerCurrentSelection-18])
 		emit_signal("buttonSelectAudio")
 
-
+func confirmedAction(state:bool):
+	if state == true:
+		if nodeSelected.type == "golem":
+			GlobalPlayer.remove_golem(GlobalPlayer.partyGolems[playerCurrentSelection-18])
+		else:
+			GlobalPlayer.delete_item(nodeSelected.type,inventoryPage * inventorySlots.get_child_count()+playerCurrentSelection)
+		update_inventory()
+		load_golems()
+		reset_all_selections()
+		current_player_selection_highlight(playerCurrentSelection)
+		currentState = null
+	else:
+		currentState = null
+		emit_signal("sub_menu",true)
+		subMenuNode.wake()
+	
+	emit_signal("buttonSelectAudio")
 
 func _on_BackButton_pressed():
 	if inventoryPage > 0:

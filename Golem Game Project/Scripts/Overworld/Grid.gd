@@ -191,7 +191,7 @@ func spawnCave(numberOfCaves = 5):
 	var count = 0
 	while numberOfCaves>0:
 		var randomLocation = Vector2(SeedGenerator.rng.randi_range(0,gridWidth-1),SeedGenerator.rng.randi_range(0,gridHeight-1))
-		var block = gridMap[randomLocation.x][randomLocation.y]
+#		var block = gridMap[randomLocation.x][randomLocation.y]
 		var object = objectPlacement[randomLocation.x][randomLocation.y]
 		if object == null:
 			overworld.set_cell(randomLocation.x,randomLocation.y,11)

@@ -27,7 +27,7 @@ func is_passable():
 		return isPassable
 		
 func toolUsed(): ## Checking if tool use == 4 means any tool
-	if GlobalPlayer.toolSelected == WorldConductor.overworldObject[objectSelected]["toolUse"]:# or  and active:
+	if GlobalPlayer.toolSelected == WorldConductor.overworldObject[objectSelected]["toolUse"] and active:# or  and active:
 		self.modulate.a = 0.0
 		isPassable = true
 		respawnTimer.start()

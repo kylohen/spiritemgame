@@ -6,7 +6,6 @@ var ongoingSelection = false
 
 onready var options = $Options
 onready var playerChoice = $PlayerChoice
-
 var onlyOneOption = false  ##Disables any movement
 
 var selectableChoices = []
@@ -64,11 +63,17 @@ func select():
 	if currentPlayerSelection == MOVE:
 		ongoingSelection = true
 		self.hide()
+	elif currentPlayerSelection == DISCARD:
+		ongoingSelection = true
+		self.hide()
 	else: queue_free()
+func wake():
+	self.show()
+	ongoingSelection = false
+	
 func cancel():
 	if ongoingSelection:
-		self.show()
-		ongoingSelection = false
+		wake()
 	else: self.queue_free()
 func move_down():
 	var foundNextSelection = false

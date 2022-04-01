@@ -111,15 +111,15 @@ func load_player_golems(enemiesInBattle = 1):
 				load_front_player(GlobalPlayer.partyGolems[i].duplicate())
 				AllyGolems.append(playerFront)
 				AllyGolemsSkillUsed.append(false)
-				if playerCount >= enemiesInBattle:
+				if playerCount >= battleSlots:
 					break
 				playerCount += 1
 				
-			elif playerCount <= enemiesInBattle and playerCount == 2 and i <= GlobalPlayer.partyGolems.size()-1:
+			elif playerCount <= battleSlots and playerCount == 2 and i <= GlobalPlayer.partyGolems.size()-1:
 				load_back_player(GlobalPlayer.partyGolems[i].duplicate())
 				playerCount += 1
 				break
-		if playerCount < enemiesInBattle:
+		if playerCount < battleSlots:
 			lose_1_player()
 		selectedGolem = AllyGolems[0]
 func load_back_player(playerDict):
@@ -405,8 +405,7 @@ func update_skills(golem,menu):
 
 
 func update_secondary(golem,menu):
-	var skillType
-	var selectableSkills = []
+#	var selectableSkills = []
 	if menu == MENU.ITEM:
 		currentMenu = MENU.ITEM
 		update_item_list()
@@ -465,7 +464,7 @@ func update_golem_list(firstGolemOnList = 0):
 func find_usable_items():
 	var itemIndex = GlobalPlayer.itemIndexDict
 	var itemIndexKeys = itemIndex.keys()
-	var itemList = GlobalPlayer.inventoryListDict
+#	var itemList = GlobalPlayer.inventoryListDict
 	var usable_items = []
 	for i in itemIndexKeys.size():
 		if LootTable.UseItemList.has(itemIndex[itemIndexKeys[i]]):
@@ -526,7 +525,7 @@ func ui_secondary_menu_update():
 	pass
 func select_skill(skillChoice:int): 
 	if skillChoice > 4 or skillChoice <0:
-		ERR_INVALID_DATA
+		print (ERR_INVALID_DATA)
 	var skillDetails = skillNameNodes.get_node("VBoxContainer/MenuItem"+str(skillChoice)).skillDetails
 	if skillDetails["TARGET"] == StatBlocks.TARGET.SELF:
 		skillBeingUsed = skillDetails
@@ -592,13 +591,14 @@ func sort_by_speed(a, b):
 		return (a[0]["SPEED"]*speedModifierA)>(b[0]["SPEED"]*speedModifierB)
 	else:
 		return a > b
+
 func update_combat_text(actionSet):
 	var user = actionSet[0]["NAME"]
 	var target = "no one"
 	var skillName = actionSet[2]["NAME"]
 	if actionSet[1] != null:
 		target = actionSet[1]["NAME"]
-	prompt.get_node("PromptText").text = actionSet[0]["NAME"]+" uses "+actionSet[2]["NAME"]+" on "+actionSet[1]["NAME"]
+	prompt.get_node("PromptText").text = user +" uses "+skillName+" on "+target
 	prompt.get_node("PromptTween").interpolate_property(prompt.get_node("PromptText"),"percent_visible",0.0,1.0,1)
 	prompt.get_node("PromptTween").start()
 
