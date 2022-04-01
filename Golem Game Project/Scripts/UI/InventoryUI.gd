@@ -79,7 +79,7 @@ func load_golems():
 	for i in partySlots.get_child_count():
 #		if golemList[i] != null:
 		partySlots.get_child(i).load_golem(golemList[i])
-	pass
+	current_player_selection_highlight(playerCurrentSelection)
 func refresh_golems():
 	var golemList = GlobalPlayer.partyGolems
 	for i in golemList.size():
@@ -95,6 +95,10 @@ func reset_all_selections():
 	
 	for i in partyMemberSelection.get_child_count():
 		partyMemberSelection.get_child(i).modulate.a = 0.0
+	if subMenuNode != null:
+		subMenuNode.queue_free()
+	if confirmationNode != null:
+		confirmationNode.queue_free()
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 #func _process(delta):
@@ -358,6 +362,7 @@ func selected():
 		subMenuNode.connect("selected",self,"_on_SubInventoryMenu_selected")
 		subMenuNode.set_choices(nodeSelected.type)
 		inventoryHighlightToMove = playerCurrentSelection
+		playerPreviousSelection = playerCurrentSelection
 		emit_signal("buttonSelectAudio")
 	elif playerCurrentSelection >= 18 and playerCurrentSelection<=23:
 		emit_signal("sub_menu",true)
@@ -367,6 +372,7 @@ func selected():
 		subMenuNode.connect("selected",self,"_on_SubInventoryMenu_selected")
 		subMenuNode.set_choices(nodeSelected.type)
 		inventoryHighlightToMove = playerCurrentSelection
+		playerPreviousSelection = playerCurrentSelection
 		emit_signal("buttonSelectAudio")
 		pass
 	
@@ -378,6 +384,7 @@ func selected():
 		subMenuNode.connect("selected",self,"_on_SubInventoryMenu_selected")
 		subMenuNode.set_choices(nodeSelected.type)
 		inventoryHighlightToMove = playerCurrentSelection
+		playerPreviousSelection = playerCurrentSelection
 		emit_signal("buttonSelectAudio")
 		pass
 	pass
@@ -396,6 +403,7 @@ func ui_cancel():
 	else:
 		get_parent().close_inventory_UI()
 	pass
+	emit_signal("buttonMoveAudio")
 func sub_move_up():
 	subMenuNode.move_up()
 	emit_signal("buttonMoveAudio")
@@ -412,7 +420,7 @@ func sub_cancel():
 	if currentState == MOVE or currentState == USE or currentState == VIEW:
 		nodeToMove = null
 		indexToMove = null
-		emit_signal("sub_menu",true)
+		emit_signal("sub_menu",false)
 		currentState = null
 		inventoryHighlightToMove = null
 	else:
@@ -482,6 +490,7 @@ func confirmedAction(state:bool):
 			GlobalPlayer.remove_golem(GlobalPlayer.partyGolems[playerCurrentSelection-18])
 		else:
 			GlobalPlayer.delete_item(nodeSelected.type,inventoryPage * inventorySlots.get_child_count()+playerCurrentSelection)
+		inventoryHighlightToMove = null
 		update_inventory()
 		load_golems()
 		reset_all_selections()

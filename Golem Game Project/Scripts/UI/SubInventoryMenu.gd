@@ -63,6 +63,9 @@ func select():
 	if currentPlayerSelection == MOVE:
 		ongoingSelection = true
 		self.hide()
+	elif currentPlayerSelection == USE:
+		ongoingSelection = true
+		self.hide()
 	elif currentPlayerSelection == DISCARD:
 		ongoingSelection = true
 		self.hide()
