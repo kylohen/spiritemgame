@@ -122,7 +122,7 @@ func process_player_input():
 				inventoryUI.sub_move_down()
 			if Input.is_action_just_pressed("ui_accept"):
 				inventoryUI.sub_select()
-			if Input.is_action_just_pressed("ui_cancel"):
+			if Input.is_action_just_released("ui_cancel"):
 				inventoryUI.sub_cancel()
 		elif currentMenu == LORE:
 			if Input.is_action_just_released("ui_cancel"):

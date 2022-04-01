@@ -391,8 +391,8 @@ func ui_cancel():
 		pass
 	elif currentState == DISCARD:
 		confirmationNode.cancel()
+		
 		pass
-	
 	else:
 		get_parent().close_inventory_UI()
 	pass
@@ -461,7 +461,7 @@ func _on_SubInventoryMenu_selected(selected):
 		
 		currentState = DISCARD
 		emit_signal("sub_menu",false)
-		inventoryHighlightToMove = null
+#		inventoryHighlightToMove = null
 		confirmationNode = confirmationScene.instance()
 		self.add_child(confirmationNode)
 		confirmationNode.rect_position = subMenuNode.rect_position
