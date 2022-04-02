@@ -1,11 +1,12 @@
 extends Node
 
-onready var UseItemList = {
-	"Rusty Magic Hammer" :{
+var UseItemList = {
+	"Repair Dust" :{
 		"USE":"Golem",
 		"STAT":"CURRENT HP",
 		"MODIFIERS": 25,
 		"TARGET":StatBlocks.TARGET.BOTH,
+		"itemSprite":"res://Assets/UI/Inventory/ItemUI/sprite_item_repair_dust.png"
 	},
 }
 

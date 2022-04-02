@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/sprite_item_dust.png-e2e229d993855da7a796543be627c6a1.stex"
+path="res://.import/sprite_item_golem_core.png-dba2f3b99da620b2f896739b8451ec96.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/LootItems/sprite_item_dust.png"
-dest_files=[ "res://.import/sprite_item_dust.png-e2e229d993855da7a796543be627c6a1.stex" ]
+source_file="res://Assets/UI/Inventory/ItemUI/sprite_item_golem_core.png"
+dest_files=[ "res://.import/sprite_item_golem_core.png-dba2f3b99da620b2f896739b8451ec96.stex" ]
 
 [params]
 

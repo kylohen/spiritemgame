@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/sprite_item_repair_dust.png-20345b4b6184e74ac12bab988c33aa98.stex"
+path="res://.import/sprite_item_command_seal.png-988bd489f2bccdcc6dd7dc427f1081fc.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/LootItems/sprite_item_repair_dust.png"
-dest_files=[ "res://.import/sprite_item_repair_dust.png-20345b4b6184e74ac12bab988c33aa98.stex" ]
+source_file="res://Assets/UI/Inventory/ItemUI/sprite_item_command_seal.png"
+dest_files=[ "res://.import/sprite_item_command_seal.png-988bd489f2bccdcc6dd7dc427f1081fc.stex" ]
 
 [params]
 

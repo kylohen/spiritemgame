@@ -10,6 +10,7 @@ onready var spawnGolem = $SpawnGolem
 onready var enemyManager = $EnemyManager
 onready var animationPlayer = $AnimationPlayer
 onready var sceneTransitions = $Camera2D/SceneTransitions
+onready var areaTitleCard = $Camera2D/AreaTitleCard
 
 const TILE_SIZE = 24
 
@@ -80,6 +81,8 @@ func _ready():
 	GlobalPlayer.add_golem(SeedGenerator.rng.randi_range(0,StatBlocks.playerGolemBaseStatBlocks.keys().size()-1))
 #	randomize_Objects()
 	run_Dialog(DialogStorage.conversation["IntroPart1"])
+	
+	areaTitleCard.play("No Country for Old Men","Starting Zone")
 	pass
 	
 ## called on startup to generate an empty array to fill up for gridMap

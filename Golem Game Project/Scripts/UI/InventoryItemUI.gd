@@ -5,7 +5,9 @@ onready var countText = $Count
 var itemSprites = {
 	"Straw":"res://Assets/UI/Inventory/ItemUI/sprite_item_straw.png",
 	"Wood":"res://Assets/UI/Inventory/ItemUI/sprite_item_wood.png",
-	"Rock":"res://Assets/UI/Inventory/ItemUI/sprite_item_stone.png"
+	"Rock":"res://Assets/UI/Inventory/ItemUI/sprite_item_stone.png",
+	"Repair Dust":"res://Assets/UI/Inventory/ItemUI/sprite_item_repair_dust.png",
+	"Dust":"res://Assets/UI/Inventory/ItemUI/sprite_item_dust.png"
 }
 # Declare member variables here. Examples:
 # var a = 2

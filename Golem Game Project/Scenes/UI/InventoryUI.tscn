@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=2]
+[gd_scene load_steps=9 format=2]
 
 [ext_resource path="res://Assets/UI/Inventory/inventorygrid_items_party.png" type="Texture" id=1]
 [ext_resource path="res://Scenes/UI/InventorySlotUI.tscn" type="PackedScene" id=2]
@@ -7,6 +7,7 @@
 [ext_resource path="res://Assets/UI/Inventory/inventory_back_arrow.png" type="Texture" id=5]
 [ext_resource path="res://Assets/UI/Inventory/inventory_selectcursor1.png" type="Texture" id=6]
 [ext_resource path="res://Assets/UI/Inventory/inventory_next_arrow.png" type="Texture" id=7]
+[ext_resource path="res://Assets/Font/GOLEMNOMICON_UI/Default_UI.tres" type="DynamicFont" id=8]
 
 [node name="InventoryUI" type="Control"]
 visible = false
@@ -425,6 +426,18 @@ margin_top = 100.0
 margin_right = 110.0
 margin_bottom = 109.0
 texture = ExtResource( 6 )
+
+[node name="ItemDescriptor" type="Label" parent="BookMarginContainer/BookBackground"]
+margin_left = 71.0
+margin_top = 156.0
+margin_right = 227.0
+margin_bottom = 171.0
+rect_scale = Vector2( 0.75, 0.75 )
+custom_fonts/font = ExtResource( 8 )
+align = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [connection signal="pressed" from="BookMarginContainer/BookBackground/InventoryPageTurning/BackButton" to="." method="_on_BackButton_pressed"]
 [connection signal="pressed" from="BookMarginContainer/BookBackground/InventoryPageTurning/NextButton" to="." method="_on_NextButton_pressed"]

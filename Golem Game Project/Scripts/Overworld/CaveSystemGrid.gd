@@ -5,6 +5,7 @@ onready var interactOverlay = $InteractOverlay
 onready var player = $Player
 onready var sceneTransitions = $Camera2D/SceneTransitions
 onready var itemDrop = $ItemDrops
+onready var areaTitleCard = $Camera2D/AreaTitleCard
 
 const TILE_SIZE = 24
 
@@ -65,6 +66,7 @@ func _ready():
 	build_stairs()
 #	randomize_Objects()
 	sceneTransitions.run_Transition("radial_wipe_on")
+	areaTitleCard.play("Cave","Level "+str(GlobalPlayer.levelOfCave))
 	pass
 	
 ## called on startup to generate an empty array to fill up for gridMap

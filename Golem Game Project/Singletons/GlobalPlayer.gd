@@ -54,7 +54,8 @@ func _ready():
 	buildEmptyPartyList()
 	
 	####################debug####################
-	add_loot("Rusty Magic Hammer",5)
+	add_loot("Repair Dust",5)
+	add_loot("Dust",3090)
 	pass # Replace with function body.
 
 ## updates the selected tool to the new tool provided
@@ -110,14 +111,19 @@ func add_loot(lootType,quantity):
 		for _i in range (0,quantity,99):
 			if 99 > remaindingInventory:
 				var indexItem = new_index()
-				inventoryListDict[lootType] = {indexItem:0}
-				inventoryListDict[lootType][indexItem] += remaindingInventory
+				if !inventoryListDict.has(lootType):
+					inventoryListDict[lootType] = {indexItem:remaindingInventory}
+				elif !inventoryListDict[lootType].has(indexItem):
+					inventoryListDict[lootType][indexItem] = remaindingInventory
+				else:
+					inventoryListDict[lootType][indexItem] += remaindingInventory
+					
 				itemIndexDict[indexItem] = lootType
 			else:
 				var indexItem = new_index()
-				
-				inventoryListDict[lootType] = {indexItem:0}
-				inventoryListDict[lootType][indexItem] += 99
+				if !inventoryListDict.has(lootType):
+					inventoryListDict[lootType] = {indexItem:99}
+				inventoryListDict[lootType][indexItem] = 99
 				remaindingInventory -= 99
 				itemIndexDict[indexItem] = lootType
 func new_index():
@@ -127,7 +133,17 @@ func new_index():
 	nextInventoryIndex = unusedNumber
 	return nextInventoryIndex
 
-func swap_item_locations (itemA,itemAIndex,itemB,itemBIndex):
+func find_largest_index():
+	var largestIndex = 0
+	var indexes = itemIndexDict.keys()
+	for i in indexes.size():
+		if indexes[i] > largestIndex:
+			largestIndex = indexes[i]
+	return largestIndex
+	
+func swap_item_locations (itemAIndex,itemBIndex):
+	var itemA = get_item(itemAIndex)
+	var itemB = get_item(itemBIndex)
 	if itemAIndex == itemBIndex:
 		return
 	elif itemA == itemB and (itemA != null and itemB != null):
@@ -136,9 +152,14 @@ func swap_item_locations (itemA,itemAIndex,itemB,itemBIndex):
 		if quantityA + quantityB <=99:
 			inventoryListDict[itemA][itemAIndex] = quantityA + quantityB 
 			delete_item(itemB,itemBIndex)
-		else:
+		
+		elif quantityA == 99:
+			inventoryListDict[itemA][itemAIndex] = (quantityA + quantityB) -99
+			inventoryListDict[itemB][itemBIndex] = 99
+			
+		else: 
 			inventoryListDict[itemA][itemAIndex] = 99
-			inventoryListDict[itemB][itemBIndex] = 99 - (quantityA + quantityB)
+			inventoryListDict[itemB][itemBIndex] = (quantityA + quantityB) -99
 	else:
 		var dictA 
 		var dictB 
@@ -201,7 +222,13 @@ func get_item_and_quantity(key,withIndex=false):
 		if withIndex:
 			return [itemName,qty,key]
 		else: return [itemName,qty]
-	
+	return null
+
+func get_item(key):
+	if itemIndexDict.has(key):
+		return itemIndexDict[key]
+	return null
+		
 	
 
 func has_item_and_quantity(itemToCheck, quantity):
