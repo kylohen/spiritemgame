@@ -27,8 +27,8 @@ __meta__ = {
 [node name="Sprite" type="TextureRect" parent="."]
 anchor_right = 1.0
 anchor_bottom = 1.0
-margin_right = 9840.0
-margin_bottom = 9840.0
+margin_right = 10080.0
+margin_bottom = 10080.0
 grow_horizontal = 0
 grow_vertical = 0
 rect_pivot_offset = Vector2( 120, 120 )
@@ -65,7 +65,7 @@ anims/SENDOUT = ExtResource( 11 )
 anims/SUPPORT = ExtResource( 8 )
 
 [node name="AnimationWaitTime" type="Timer" parent="."]
-wait_time = 0.053
+wait_time = 1.114
 one_shot = true
 
 [connection signal="animation_finished" from="AnimationPlayer" to="." method="_on_AnimationPlayer_animation_finished"]

@@ -27,6 +27,7 @@ func build_recipe_page():
 	for i in recipesRow1.get_child_count():
 		if Recipes.ItemRecipeDict.has(i):
 			recipesRow1.get_child(i).set_recipe(Recipes.ItemRecipeDict[i])
+			recipesRow2.get_child(i).set_recipe(Recipes.ItemRecipeDict[i])
 			
 	
 func update_player_selection():
@@ -77,6 +78,7 @@ func check_recipes_inventory():
 				if !GlobalPlayer.has_item_and_quantity(keys[j],Recipes.ItemRecipeDict[i][itemToMake][keys[j]]):
 					hasAllItems = false
 			recipesRow1.get_child(i).hasNeededItems = hasAllItems
+			recipesRow2.get_child(i).hasNeededItems = hasAllItems
 func not_primary():
 	pass
 

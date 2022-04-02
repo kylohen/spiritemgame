@@ -61,7 +61,7 @@ onready var lootTable = {
 			}
 		},
 	objectTypes.Boulders:{
-		"Rock":{
+		"Stone":{
 			"min":1,
 			"max":3
 			}
@@ -86,14 +86,13 @@ onready var lootTable = {
 		},
 		
 }
-#func test():
-#	var pull = lootTable[0].keys()
-#	pass
 
 func core_stolen(golemCore,voidGolemResponsible):
 	golemCoreStolen.append([golemCore,voidGolemResponsible])
 	pass
 
-func core_retrieved():
-	
+func core_retrieved(golemCore):
+	for i in golemCoreStolen.size():
+		if golemCore == golemCoreStolen[i][0]:
+			golemCoreStolen.remove(i)
 	pass

@@ -73,7 +73,7 @@ func update_PLAYSTATE(state):
 ##Sorter key for index of where items are stored in inventory slots
 class _add_loot_sorter:
 	static func sort_ascending(valueA,valueB):
-		if valueA[0]<valueB[0]:
+		if valueA < valueB:
 			return true
 		return false
 

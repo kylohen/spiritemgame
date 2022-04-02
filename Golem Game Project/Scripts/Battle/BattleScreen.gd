@@ -467,7 +467,7 @@ func find_usable_items():
 #	var itemList = GlobalPlayer.inventoryListDict
 	var usable_items = []
 	for i in itemIndexKeys.size():
-		if LootTable.UseItemList.has(itemIndex[itemIndexKeys[i]]):
+		if ItemTable.UseItemList.has(itemIndex[itemIndexKeys[i]]):
 			usable_items.append(GlobalPlayer.get_item_and_quantity(itemIndexKeys[i],true))
 			
 	return usable_items
@@ -787,7 +787,10 @@ func resolve_turn():
 						if playerInBattle:
 							player_death()
 						else:
+							
+							animate_sprite(pendingSkills[i-1][1]["NODE"],DEATH)
 							player_golem_death(pendingSkills[i-1][1])
+							yield(pendingSkills[i-1][1]["NODE"],"sprite_animation_done")
 							
 							if does_void_run_away(pendingSkills[i-1][1]):
 								WorldConductor.core_stolen(pendingSkills[i-1][1],pendingSkills[i-1][0])
@@ -895,8 +898,8 @@ func end_turn():
 		update_global_golems()
 	
 func void_loot(golemToDie,golemThatKilled=null,skillUsedToKill=null):
-	var lootTable = golemToDie["NORMAL LOOT DROP"]
-	var itemName = lootTable.keys()
+	var ItemTable = golemToDie["NORMAL LOOT DROP"]
+	var itemName = ItemTable.keys()
 	var bonus = check_for_kill_bonus(golemToDie, golemThatKilled,skillUsedToKill)
 	######  Golem Name  ###########
 	if !lootToWin.empty():
@@ -910,22 +913,22 @@ func void_loot(golemToDie,golemThatKilled=null,skillUsedToKill=null):
 			lootToWin.append(bonus[i])
 	if !itemName.empty():
 		for i in itemName.size():
-			lootToWin.append([itemName[i],ceil(lootTable[itemName[i]]*lootModifier)])
+			lootToWin.append([itemName[i],ceil(ItemTable[itemName[i]]*lootModifier)])
 	if golemToDie.has("UNIQUE LOOT DROP"):
-		var uniqueLootTable = golemToDie["UNIQUE LOOT DROP"]
-		var uniqueItemName = lootTable.keys()
+		var uniqueItemTable = golemToDie["UNIQUE LOOT DROP"]
+		var uniqueItemName = ItemTable.keys()
 		for i in uniqueItemName.size():
-			lootToWin.append([uniqueItemName[i],uniqueLootTable[uniqueItemName[i]]])
+			lootToWin.append([uniqueItemName[i],uniqueItemTable[uniqueItemName[i]]])
 	##### ROLLING FOR Rare LOOT#################
-	var rareLootTable = golemToDie["RARE LOOT DROP"]
-	var rareItemName = rareLootTable.keys()
+	var rareItemTable = golemToDie["RARE LOOT DROP"]
+	var rareItemName = rareItemTable.keys()
 	if !rareItemName.empty():
 		for i in rareItemName.size():
 			var chance = 0.2
 			chance *= lootModifier
 			var rollForLoot = SeedGenerator.rng.randf_range(0,1)
 			if chance <= rollForLoot:
-				lootToWin.append([rareItemName[i],rareLootTable[rareItemName[i]]])
+				lootToWin.append([rareItemName[i],rareItemTable[rareItemName[i]]])
 	lootModifier = 1.0
 
 func check_for_kill_bonus(golemToDie,golemThatKilled=null,skillUsedToKill=null):
@@ -1042,15 +1045,8 @@ func enemy_death(golemToDie,golemThatKilled=null,skillUsedToKill=null):
 	void_loot(golemToDie,golemThatKilled,skillUsedToKill)
 	if EnemyGolems.size() > 1:
 		lose_1_enemy()
-#		if enemyFront == golemToDie:
-#		animate_sprite(golemToDie["NODE"],DEATH)
-#			yield(EnemyGolems[0]["NODE"],"sprite_animation_done")
 		EnemyGolems.erase(golemToDie)
 		load_front_enemy(EnemyGolems[0])
-#		elif enemyBack == golemToDie:
-#			animate_sprite(golemToDie["NODE"],DEATH)
-##			yield(EnemyGolems[1]["NODE"],"sprite_animation_done")
-#			EnemyGolems.remove(1)
 
 	else:
 		EnemyGolems.remove(0)
@@ -1058,19 +1054,14 @@ func enemy_death(golemToDie,golemThatKilled=null,skillUsedToKill=null):
 	pass
 
 func player_golem_death(golemToDie):
-	animate_sprite(golemToDie["NODE"],DEATH)
 	if AllyGolems.size() > 1:
 		GlobalPlayer.remove_golem(golemToDie)
 		lose_1_player()
 		if playerFront == AllyGolems[0]:
-#			yield(AllyGolems[0]["NODE"],"sprite_animation_done")
 			AllyGolems.remove(0)
 			load_front_player(AllyGolems[0])
 		elif enemyBack == AllyGolems[1]:
-			
 			GlobalPlayer.remove_golem(golemToDie)
-#			animate_sprite(AllyGolems[1]["NODE"],DEATH)
-#			yield(AllyGolems[1]["NODE"],"sprite_animation_done")
 			AllyGolems.remove(1)
 	elif !playerInBattle:
 		playerInBattle = true
@@ -1520,13 +1511,13 @@ func ui_accept(arrowKeySelection = false):
 				emit_signal("buttonSelectAudio")
 		elif currentMenu == MENU.ITEM:
 			if selectableSkillOptions[playerSelection-3]:
-				skillBeingUsed = LootTable.UseItemList[listOfUseableItems[itemChoice][0]].duplicate()
+				skillBeingUsed = ItemTable.UseItemList[listOfUseableItems[itemChoice][0]].duplicate()
 				skillBeingUsed["NAME"] = listOfUseableItems[itemChoice][0]
 				skillBeingUsed["TYPE"] = "ITEM"
 				skillBeingUsed["ITEM INDEX"] = listOfUseableItems[itemChoice][2]
 				emit_signal("buttonSelectAudio")
 				
-				var itemTarget = LootTable.UseItemList[listOfUseableItems[itemChoice][0]]["TARGET"]
+				var itemTarget = ItemTable.UseItemList[listOfUseableItems[itemChoice][0]]["TARGET"]
 				if itemTarget == StatBlocks.TARGET.ALLY:
 					currentSelectionState = SELECTIONSTATE.ALLY
 				elif itemTarget == StatBlocks.TARGET.ENEMY:

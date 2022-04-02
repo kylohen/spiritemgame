@@ -24,7 +24,7 @@ func set_choices(itemType):
 		elif i== USE and typeOfSubMenu == PARTY:
 			selectableChoices.append(true)
 		elif i == USE:
-			if LootTable.UseItemList.has(itemType):
+			if ItemTable.UseItemList.has(itemType):
 				selectableChoices.append(true)
 			else:
 				selectableChoices.append(false)

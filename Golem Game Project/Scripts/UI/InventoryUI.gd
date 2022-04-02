@@ -344,8 +344,8 @@ func selected():
 		print (itemToUse)
 		var itemDetails = null
 		
-		if LootTable.UseItemList.has(GlobalPlayer.itemIndexDict[itemToUse]):
-			itemDetails = LootTable.UseItemList[GlobalPlayer.itemIndexDict[itemToUse]]
+		if ItemTable.UseItemList.has(GlobalPlayer.itemIndexDict[itemToUse]):
+			itemDetails = ItemTable.UseItemList[GlobalPlayer.itemIndexDict[itemToUse]]
 		var golemPosition = playerCurrentSelection-18 ##18 is based off of the number that these options are sitting at
 		var golemChosen = GlobalPlayer.partyGolems[golemPosition]
 		if itemDetails != null:

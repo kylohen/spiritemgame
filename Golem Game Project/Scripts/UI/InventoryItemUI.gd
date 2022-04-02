@@ -2,13 +2,6 @@ extends Control
 
 onready var itemTexture = $Background/Item
 onready var countText = $Count
-var itemSprites = {
-	"Straw":"res://Assets/UI/Inventory/ItemUI/sprite_item_straw.png",
-	"Wood":"res://Assets/UI/Inventory/ItemUI/sprite_item_wood.png",
-	"Rock":"res://Assets/UI/Inventory/ItemUI/sprite_item_stone.png",
-	"Repair Dust":"res://Assets/UI/Inventory/ItemUI/sprite_item_repair_dust.png",
-	"Dust":"res://Assets/UI/Inventory/ItemUI/sprite_item_dust.png"
-}
 # Declare member variables here. Examples:
 # var a = 2
 # var b = "text"
@@ -23,12 +16,8 @@ func _ready():
 
 func set_item(itemID:String,itemCount:int,newIndex:int):
 	if itemID !=null:
-		if !itemSprites.has(itemID):
-			itemTexture.texture = load("res://Assets/UI/Inventory/ItemUI/sprite_item_unknown.png")
-			selectedItemTexture = "res://Assets/UI/Inventory/ItemUI/sprite_item_unknown.png"
-		else:
-			itemTexture.texture = load(itemSprites[itemID])
-			selectedItemTexture = itemSprites[itemID]
+		selectedItemTexture = ItemTable.get_sprite(itemID)
+		itemTexture.texture = load(selectedItemTexture)
 		type = itemID
 		quantity = itemCount
 		itemIndex = newIndex

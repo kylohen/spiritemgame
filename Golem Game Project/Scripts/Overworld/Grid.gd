@@ -67,6 +67,7 @@ func _ready():
 	makingNoise ()
 	
 	build_border()
+	build_water()
 	
 	build_golem_generator()
 	build_terrain()
@@ -79,12 +80,17 @@ func _ready():
 	GlobalPlayer.add_golem(SeedGenerator.rng.randi_range(0,StatBlocks.playerGolemBaseStatBlocks.keys().size()-1))
 	GlobalPlayer.add_golem(SeedGenerator.rng.randi_range(0,StatBlocks.playerGolemBaseStatBlocks.keys().size()-1))
 	GlobalPlayer.add_golem(SeedGenerator.rng.randi_range(0,StatBlocks.playerGolemBaseStatBlocks.keys().size()-1))
-#	randomize_Objects()
-	run_Dialog(DialogStorage.conversation["IntroPart1"])
+	
+#	run_Dialog(DialogStorage.conversation["IntroPart1"])
 	
 	areaTitleCard.play("No Country for Old Men","Starting Zone")
 	pass
 	
+
+##################################################################################################
+######################################BUILD MAP###################################################
+##################################################################################################
+
 ## called on startup to generate an empty array to fill up for gridMap
 func initialize_gridMap(width = gridWidth,height = gridHeight) -> void:
 	gridMap = new_grid_array(width,height)
@@ -120,14 +126,19 @@ func build_border(width = gridWidth,height = gridHeight):
 				objectPlacement[x][y] = tileTypes.wall
 				gridMap[x][y] =tileTypeDict[tileTypes.wall]
 
+func build_water(xAround = 30,yAround=30):
+	for x in range(-xAround,gridWidth+xAround,1):
+		for y in range (-yAround,gridHeight+yAround,1):
+			if x <0 or x >= gridWidth: 
+				overworld.set_cell(x,y,tileTypeDict[tileTypes.water])
+			elif y<0 or y>= gridHeight:
+				overworld.set_cell(x,y,tileTypeDict[tileTypes.water])
+	
 func build_terrain():
 	for x in gridMap.size():
 		for y in gridMap[x].size():
 			if !(gridMap[x][y] is int): 
-				##insert logic for tile filling open space
 				gridMap[x][y] = spawnTerrainTile(x,y)
-		
-#		print(gridMap[x])
 
 func makingNoise ():
 
@@ -205,33 +216,19 @@ func spawnCave(numberOfCaves = 5):
 		if count >= 100*numberOfCaves:
 #			print("couldn't find ",numberOfCaves," Caves")
 			break
-## checks to see if there is something in the grid, if there is, return false
-func is_Open_Tile(currentPosition, directionToGo,isPlayer=true) -> bool:
-	var newPosition = currentPosition + directionToGo
-	var block = objectPlacement[newPosition.x][newPosition.y]
-	var itemCheck = itemDropPlacement[newPosition.x][newPosition.y]
-	if isPlayer:
-		pickUpItem(itemCheck,newPosition)
-		if caveLocations.has(newPosition):
-			sceneTransitions.run_Transition("radial_wipe_off")
-			whatToDoAfterTransition = "Cave Load"
-	if block != null:
-		if !(block is int):##Walls and other impassable and immutable terrain is stored as ints
-			
-			
-			if block.type != null:
-				return objectPlacement[newPosition.x][newPosition.y].is_passable()
-			return true
-		return false
-	return true
 
-func pickUpItem(item,newPosition):
-	if item != null:
-		if item.type == "loot":
-			emit_signal("loot_received",item.itemID, item.quantity)
-			item.queue_free()
-			itemDropPlacement[newPosition.x].remove(newPosition.y)
-			itemDropPlacement[newPosition.x].insert(newPosition.y,null)
+func spawn_object (objectToSpawn, pos):
+	var newObject = overworldObjectScene.instance()
+	newObject.position = pos*TILE_SIZE
+	interactOverlay.add_child(newObject)
+	
+	newObject.spawn_object(objectToSpawn)
+	return newObject
+
+
+##################################################################################################
+######################################CAVE LOGIC##################################################
+##################################################################################################
 func _on_leave_cave_CaveSystem():
 	whatToDoAfterTransition = "Leave Cave"
 	isActive = true
@@ -251,12 +248,6 @@ func exit_cave():
 	spawnGolem.show()
 	player.show()
 	camera.show()
-#	player.position = previousPosition
-#	get_node("Player").connect("useItemOnBlock",self,"_on_Player_useItemOnBlock")
-#	get_node("Player").connect("useToolOnBlock",self,"_on_Player_useToolOnBlock")
-#	player.update_grid_pos_based_of_pixel_pos (previousPosition)
-#	player.emit_signal("newPosForCamera",player.position)
-#	player.check_cave_terrain(false)
 	
 func _on_new_level_cave_CaveSystem():
 	isActive = false
@@ -268,45 +259,43 @@ func _on_new_level_cave_CaveSystem():
 	camera.hide()
 	var newCave = load(caveSystemScene).instance()
 	update_signal_path(newCave)
-	
-#	player.reset_position()
 	add_child(newCave)
 	move_child(newCave,0)
-#	player.check_cave_terrain(true)
 	
 func update_signal_path(newNode:Node2D):
 	newNode.connect("leave_cave",self,"_on_leave_cave_CaveSystem")
 	newNode.connect("new_level_cave",self,"_on_new_level_cave_CaveSystem")
-#	newNode.connect("loot_received",playerUI,"_on_WorldMap_Field_loot_received")
-#	newNode.connect("loot_received",player,"_on_WorldMap_Field_loot_received")
-##	newNode.get_node("Player").connect("cameraState",camera,"_on_Player_cameraState")
-#	get_node("Player").disconnect("useItemOnBlock",self,"_on_Player_useItemOnBlock")
-#	get_node("Player").disconnect("useToolOnBlock",self,"_on_Player_useToolOnBlock")
-#	get_node("Player").connect("useItemOnBlock",newNode,"_on_Player_useItemOnBlock")
-#	get_node("Player").connect("useToolOnBlock",newNode,"_on_Player_useToolOnBlock")
-#	pass
-#func randomize_Objects():
-#	var ratesOfSpawning = [0.02,0.02,0.02]
-#	for x in objectPlacement.size():
-#		for y in objectPlacement[x].size():
-#			if Vector2(x,y) != player.gridCoords and !(objectPlacement[x][y] is int):
-#				var rollForItem = SeedGenerator.rng.randf_range(0,1)
-#				var currentChance = 0.0
-#				for i in ratesOfSpawning.size():
-#					if rollForItem <currentChance+ratesOfSpawning[i] and rollForItem > currentChance:
-#						objectPlacement[x][y] = spawn_object(i,Vector2(x,y))
-#						break
-#					currentChance += ratesOfSpawning[i]
-						
-func spawn_object (objectToSpawn, pos):
-	var newObject = overworldObjectScene.instance()
-	newObject.position = pos*TILE_SIZE
-	interactOverlay.add_child(newObject)
 	
-	newObject.spawn_object(objectToSpawn)
-	return newObject
 
+##################################################################################################
+######################################PLAYER INTERACTIONS#########################################
+##################################################################################################
 
+## checks to see if there is something in the grid, if there is, return false
+func is_Open_Tile(currentPosition, directionToGo,isPlayer=true) -> bool:
+	var newPosition = currentPosition + directionToGo
+	var block = objectPlacement[newPosition.x][newPosition.y]
+	var itemCheck = itemDropPlacement[newPosition.x][newPosition.y]
+	if isPlayer:
+		pickUpItem(itemCheck,newPosition)
+		if caveLocations.has(newPosition):
+			sceneTransitions.run_Transition("radial_wipe_off")
+			whatToDoAfterTransition = "Cave Load"
+	if block != null:
+		if !(block is int):##Walls and other impassable and immutable terrain is stored as ints
+			if block.type != null:
+				return objectPlacement[newPosition.x][newPosition.y].is_passable()
+			return true
+		return false
+	return true
+
+func pickUpItem(item,newPosition):
+	if item != null:
+		if item.type == "loot":
+			emit_signal("loot_received",item.itemID, item.quantity)
+			item.queue_free()
+			itemDropPlacement[newPosition.x].remove(newPosition.y)
+			itemDropPlacement[newPosition.x].insert(newPosition.y,null)
 func _on_Player_useToolOnBlock(blockToCheck):
 	var block = objectPlacement[blockToCheck.x][blockToCheck.y]
 	var item = itemDropPlacement[blockToCheck.x][blockToCheck.y]
@@ -316,17 +305,11 @@ func _on_Player_useToolOnBlock(blockToCheck):
 			if !(block.objectSelected == WorldConductor.objectTypes.Pedestal or block.objectSelected == WorldConductor.objectTypes.GolemGenerator):
 				var objectDestroyed = block.objectSelected
 				var listOfPossibleItems = WorldConductor.lootTable[objectDestroyed].keys()
-				
 				var lootType = listOfPossibleItems[0]
 				var quantityOfLoot = SeedGenerator.rng.randi_range(WorldConductor.lootTable[objectDestroyed][lootType]["min"],WorldConductor.lootTable[objectDestroyed][lootType]["max"])
-				#####################
-				
 				emit_signal("loot_received",lootType,quantityOfLoot)
-
 			elif block.objectSelected== WorldConductor.objectTypes.GolemGenerator:
-		#		print ("Checking Golem")
 				golem_checking ()
-			pass # Replace with function body.
 
 
 func _on_Player_useItemOnBlock(itemID,itemTexture,blockToCheck,itemIndex):
@@ -346,6 +329,12 @@ func _on_Player_useItemOnBlock(itemID,itemTexture,blockToCheck,itemIndex):
 		itemDrop.add_child(newLoot)
 		newLoot.set_loot(itemID,itemTexture)
 		GlobalPlayer.use_item(itemID,itemIndex)
+
+
+##################################################################################################
+#################################MAKING GOLEMS####################################################
+##################################################################################################
+
 
 func golem_checking ():
 	var arrayOfPodiums = podium_checking()
@@ -400,7 +389,9 @@ func take_golem_items(useItems):
 		itemDropPlacement[objectLocation.x].insert(objectLocation.y,null)
 	pass
 
-
+##################################################################################################
+######################################Enemy Management############################################
+##################################################################################################
 
 func _on_EnemyManager_enemy_contact(enemyNode):
 	GlobalPlayer.update_PLAYSTATE(GlobalPlayer.PLAYSTATE.BATTLE)

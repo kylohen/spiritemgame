@@ -119,31 +119,37 @@ custom_constants/separation = 19
 
 [node name="RecipeSlotUI7" parent="MarginContainer/BookBackground/Recipes/Row2" instance=ExtResource( 4 )]
 margin_right = 0.0
+isRecipeDescription = true
 
 [node name="RecipeSlotUI8" parent="MarginContainer/BookBackground/Recipes/Row2" instance=ExtResource( 4 )]
 margin_top = 19.0
 margin_right = 0.0
 margin_bottom = 19.0
+isRecipeDescription = true
 
 [node name="RecipeSlotUI9" parent="MarginContainer/BookBackground/Recipes/Row2" instance=ExtResource( 4 )]
 margin_top = 38.0
 margin_right = 0.0
 margin_bottom = 38.0
+isRecipeDescription = true
 
 [node name="RecipeSlotUI10" parent="MarginContainer/BookBackground/Recipes/Row2" instance=ExtResource( 4 )]
 margin_top = 57.0
 margin_right = 0.0
 margin_bottom = 57.0
+isRecipeDescription = true
 
 [node name="RecipeSlotUI11" parent="MarginContainer/BookBackground/Recipes/Row2" instance=ExtResource( 4 )]
 margin_top = 76.0
 margin_right = 0.0
 margin_bottom = 76.0
+isRecipeDescription = true
 
 [node name="RecipeSlotUI12" parent="MarginContainer/BookBackground/Recipes/Row2" instance=ExtResource( 4 )]
 margin_top = 95.0
 margin_right = 0.0
 margin_bottom = 95.0
+isRecipeDescription = true
 
 [node name="PlayerSelection" type="HBoxContainer" parent="MarginContainer/BookBackground"]
 margin_left = 69.0
