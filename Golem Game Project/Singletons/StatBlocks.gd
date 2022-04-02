@@ -460,3 +460,19 @@ var skillList = {
 	}
 	
 	}
+
+func scale_up(golem:Dictionary)->Dictionary:
+	golem["HP"] = golem["HP"]*2
+	golem["ATTACK"] = golem["ATTACK"]*2
+	golem["DEFENSE"] = golem["DEFENSE"]*2
+	golem["MAGIC ATTACK"] = golem["MAGIC ATTACK"]*2
+	golem["MAGIC DEFENSE"] = golem["MAGIC DEFENSE"]*2
+	golem["SPEED"] = golem["SPEED"]*2
+	golem["ACTION METER"] = golem["ACTION METER"]*2
+	golem["MAGIC METER"] = golem["MAGIC METER"]*2
+	if golem.has("CURRENT HP"):
+		golem["CURRENT HP"] = golem["HP"]
+		golem["CURRENT ACTION METER"] = golem["ACTION METER"]
+		golem["CURRENT MAGIC METER"] = golem["MAGIC METER"]
+	return golem
+	
