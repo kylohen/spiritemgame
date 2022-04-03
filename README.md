@@ -162,3 +162,9 @@ Using [] can help you include tools like emotions for speakers before their name
 
 The example above would give you a default sprite of the Old Man, then one of him defeated, presuming that there is a sprite stored using the name of the character and the emotion presented.
 In this example it would be located in "res://Assets/Portraits/Old Man/" with images stored: "res://Assets/Portraits/Old Man/Default_Old Man.png" and "res://Assets/Portraits/Old Man/Defeat_Old Man.png"
+
+Lore is within the Lore Scene, just add the text you would like to see on the page
+
+#### Using the Seeds
+
+To test the same generated world, copy the Seed Key State shown in your console on loading up the game, and copy it into the SeedGenerator _ready() function, and replace the randSeedNum() with your seed number
