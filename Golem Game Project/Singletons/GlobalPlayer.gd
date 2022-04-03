@@ -353,3 +353,4 @@ func level_up_golem(golemID:int)->void:
 			golem["CURRENT MAGIC"] += -changeMagic
 			
 		golem["UPGRADE COST"] *= 5
+		golem["LEVEL"] += 1

@@ -29,4 +29,34 @@ var ItemRecipeDict = {
 			"Glimmerdust" : 1,
 			},
 		},
+	3:{
+		"Command Seal" :{
+			"Wax" : 2,
+			"Glimmerdust" : 1,
+			},
+		},
+	4:{
+		"Command Seal" :{
+			"Wax" : 2,
+			"Glimmerdust" : 1,
+			},
+		},
+	5:{
+		"Command Seal" :{
+			"Wax" : 2,
+			"Glimmerdust" : 1,
+			},
+		},
+	6:{
+		"Command Seal" :{
+			"Wax" : 2,
+			"Glimmerdust" : 1,
+			},
+		},
+	7:{
+		"Command Seal" :{
+			"Wax" : 2,
+			"Glimmerdust" : 1,
+			},
+		},
 	}

@@ -56,6 +56,7 @@ func move_menu(value):
 	MenuNodeDict[currentMenu].show()
 	if currentMenu == INVENTORY:
 		inventoryUI.update_inventory()
+		inventoryUI.load_golems()
 	elif currentMenu == STAT:
 		statPage.load_golem(GlobalPlayer.partyGolems[0])
 	
@@ -162,6 +163,10 @@ func process_player_input():
 				craftingBookUI.move_up()
 			elif Input.is_action_just_pressed("ui_down"):
 				craftingBookUI.move_down()
+			if Input.is_action_just_pressed("ui_right"):
+				craftingBookUI.move_right()
+			elif Input.is_action_just_pressed("ui_left"):
+				craftingBookUI.move_left()
 			if Input.is_action_just_pressed("ui_accept"):
 				craftingBookUI.selected()
 	elif GlobalPlayer.is_PLAYSTATE(GlobalPlayer.PLAYSTATE.BATTLE) and !GlobalPlayer.isInAnimation:

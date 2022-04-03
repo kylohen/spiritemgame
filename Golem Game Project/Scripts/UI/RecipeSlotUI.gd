@@ -30,7 +30,12 @@ func set_recipe(recipeDictEntry):
 	
 	recipe = recipeDictEntry
 
-
+func reset ():
+	hasNeededItems = false
+	recipeText.text = ""
+	recipeName.text = ""
+	itemPicture.texture = null
+	
 func _process(_delta):
 	if hasNeededItems == true:
 		self.modulate = Color(1,1,1,1)

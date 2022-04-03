@@ -33,7 +33,7 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="LorePageTurning" type="HBoxContainer" parent="MarginContainer/BookBackground"]
+[node name="PageTurning" type="HBoxContainer" parent="MarginContainer/BookBackground"]
 margin_left = 60.0
 margin_top = 152.0
 margin_right = 324.0
@@ -43,8 +43,7 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="BackButton" type="TextureButton" parent="MarginContainer/BookBackground/LorePageTurning"]
-modulate = Color( 0, 0, 0, 1 )
+[node name="LeftButton" type="TextureButton" parent="MarginContainer/BookBackground/PageTurning"]
 margin_right = 85.0
 margin_bottom = 9.0
 size_flags_horizontal = 3
@@ -54,8 +53,7 @@ expand = true
 stretch_mode = 5
 flip_h = true
 
-[node name="NextButton" type="TextureButton" parent="MarginContainer/BookBackground/LorePageTurning"]
-modulate = Color( 0, 0, 0, 1 )
+[node name="RightButton" type="TextureButton" parent="MarginContainer/BookBackground/PageTurning"]
 margin_left = 179.0
 margin_right = 264.0
 margin_bottom = 9.0
