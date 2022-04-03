@@ -33,7 +33,7 @@ Adding Golems can be done in the Singleton Folder under StatBlocks. You can copy
 	"DEFEND SKILLS":### Dictionary of Skill Slot and SkillID {"SKILL1":3,"SKILL2":2,"SKILL3":null,"SKILL4":null,},
 	}
 	
-Please note that advandements between golems has not been configured, but another entry in this dictionary could easily set up some logic to advance/change the golems in your care
+Please note that advancements  between golems has not been configured, but another entry in this dictionary could easily set up some logic to advance/change the golems in your care
 	
 	
 #### How to add items and crafting recipes
@@ -47,7 +47,7 @@ Adding Recipes can be done in the Singleton Folder under StatBlocks. You can cop
 		"Straw" : 4
 	}
 
-Please note that all recipies require 1x golem core and are checked at creation time. If you need more than 1 golem core, a core can be added to this list, but will need to be placed on the pedestal vs. automatically being used in the building of a golem
+Please note that all recipes  require 1x golem core and are checked at creation time. If you need more than 1 golem core, a core can be added to this list, but will need to be placed on the pedestal vs. automatically being used in the building of a golem
 
 
 
@@ -68,7 +68,7 @@ ItemRecipeDict = {
 			},
 		},
 
-Please note that as of writing, Recipes only have enough space for 2x requirments before text becomes messy
+Please note that as of writing, Recipes only have enough space for 2x requirements before text becomes messy
 
 #### How to add new Items
 
@@ -77,7 +77,7 @@ Located in the ItemTable Singleton, it's broken into two lists, UseItemList and 
 	var UseItemList = {
 		"Repair Dust" #NAME of item :{
 			"USE":"Golem", #Target
-			"STAT":"CURRENT HP", #Stat that will be effected
+			"STAT":"CURRENT HP", #Stat that will be affected
 			"MODIFIERS": 25, #Stat that will go up
 			"TARGET":StatBlocks.TARGET.BOTH, #BATTLE Target
 			"itemSprite":"res://Assets/UI/Inventory/ItemUI/sprite_item_repair_dust.png" #Sprite image location
@@ -104,8 +104,8 @@ var skillList = {
 		"CRIT PROBABILITY":1.2,
 		"ACTION METER COST":1, #cost of skill to use on ACTION
 		"MAGIC METER COST":0, #cost of skill to use on MAGIC
-		"PLAYER AFFINITY":0, #Affintiy not implimented, but would affect the effectiveness of skill
-		"TARGET":TARGET.ENEMY, #enum of waht the skill can target {SELF,ENEMY,ALLY,AOE_ALLY,AOE_ENEMY,BOTH}
+		"PLAYER AFFINITY":0, #Affinity not implemented, but would affect the effectiveness of skill
+		"TARGET":TARGET.ENEMY, #enum of what the skill can target {SELF,ENEMY,ALLY,AOE_ALLY,AOE_ENEMY,BOTH}
 		},
 #### How to modify Generated Rooms (overworld and cave)
 To affect the generation of the random World structure, in the Grid script you can adjust the way noise is generated in the makingNoise structure, or adjust the expected values to generate the tiles based off of the tiles:
@@ -135,7 +135,8 @@ To affect the generation of the random World structure, in the Grid script you c
 			selectedTile = tileTypes.grass
 #### How to add music and sound effects for triggers (enter room, enter battle scene, use tool, Golem uses move)
 
-In each scene there is a audio player that has a SFX and BGMusic player where appropriate. Audio controls/manager is not fully flushed out, as it's not clear how indepth and rich the audio content will be. The BattleSprites scene has it's own animation/audio section to build out as needed/seen fit
+In each scene there is an audio player that has a SFX and BGMusic player where appropriate. Audio controls/manager is not fully flushed out, as it's not clear how in depth and rich the audio content will be. The BattleSprites scene has it's own animation/audio section to build out as needed/seen fit
+
 #### How to change timing of animations (text, battle scene animations, resource respawn rate, transitions)
 
 Scenes, transitions, and battles are all animated through the AnimationPlayers located on the Scenes themselves. For BattleSprite scene, there is a timer included to give a brief pause between each action before telling the main battle scene to continue to the next step
@@ -145,7 +146,7 @@ Resource respawn rate is exactly the same, in the OverworldObject Scene, there i
 Located in the Overworld and Cave Scenes, the Enemy Manager controls the spawning and locations. The function spawnEnemy() decides the enemy location in the overworld, and what kind of battle it is.
 
 #### Update UI assets
-Assets are located mostly in the Dictionarys provided above, by copying the location of the file into the appropriate field, everything else is done for you.
+Assets are located mostly in the Dictionaries  provided above, by copying the location of the file into the appropriate field, everything else is done for you.
 
 #### How to add text to dialogue and to the lore tab
 
