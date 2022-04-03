@@ -237,10 +237,12 @@ visible = false
 
 [node name="buttonMove" type="AudioStreamPlayer" parent="."]
 stream = ExtResource( 14 )
+bus = "SoundEffects"
 
 [node name="buttonSelect" type="AudioStreamPlayer" parent="."]
 stream = ExtResource( 15 )
 volume_db = -12.381
+bus = "SoundEffects"
 
 [connection signal="nextTool" from="." to="ToolUI" method="_on_PlayerUI_nextTool"]
 [connection signal="previousTool" from="." to="ToolUI" method="_on_PlayerUI_previousTool"]

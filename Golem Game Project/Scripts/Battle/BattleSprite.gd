@@ -2,6 +2,7 @@ extends Control
 onready var sprite = $Sprite
 onready var playerCursor = $Sprite/PlayerSelection
 onready var animationPlayer =$AnimationPlayer
+onready var sfxPlayer = $SFX
 enum {REST,ATTACK,HIT,SUPPORT,DEFEND,FLEE,DEATH, SENDOUT,SENDIN}
 # Declare member variables here. Examples:
 # var a = 2
@@ -22,21 +23,28 @@ func _ready():
 func animation(type):
 	if type == ATTACK:
 		animationPlayer.play("ATTACK")
+		sfxPlayer.play()
 	elif type == HIT:
 		animationPlayer.play("HIT")
+		sfxPlayer.play()
 	elif type == SUPPORT:
 		animationPlayer.play("SUPPORT")
+		sfxPlayer.play()
 	elif type == DEFEND:
 		animationPlayer.play("DEFEND")
+		sfxPlayer.play()
 	elif type == DEATH:
 		animationPlayer.play("DEATH")
+		sfxPlayer.play()
 	elif type == SENDOUT:
 		animationPlayer.play("SENDOUT")
+		sfxPlayer.play()
 	elif type == SENDIN:
 		animationPlayer.play("SENDIN")
+		sfxPlayer.play()
 	elif type == FLEE:
 		animationPlayer.play("FLEE")
-		
+		sfxPlayer.play()
 #	if animationPlayer.is_playing():
 #		GlobalPlayer.isInAnimation = true
 

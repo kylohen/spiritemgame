@@ -14,4 +14,22 @@ texture = ExtResource( 1 )
 wait_time = 7.0
 one_shot = true
 
+[node name="Alert" type="Label" parent="."]
+margin_left = -12.0
+margin_top = 27.0
+margin_right = 28.0
+margin_bottom = 41.0
+grow_horizontal = 2
+grow_vertical = 2
+align = 1
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="AlertTimer" type="Timer" parent="."]
+wait_time = 2.0
+one_shot = true
+
 [connection signal="timeout" from="RespawnTimer" to="." method="_on_RespawnTimer_timeout"]
+[connection signal="timeout" from="AlertTimer" to="." method="_on_AlertTimer_timeout"]

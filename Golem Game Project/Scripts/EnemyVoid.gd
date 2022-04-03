@@ -31,6 +31,14 @@ func spawn_enemy(newEnemyID, newEnemyIDBack = -1):
 		enemyBackName = statBlockBack["NAME"]
 		statBlockBack["CURRENT HP"] = statBlockBack["HP"]
 	
+	var coreToSteal = WorldConductor.get_matching_stolen_core(statBlock) 
+	if coreToSteal != null:
+		statBlock["NORMAL LOOT"][coreToSteal["NAME"]] = "CORE"
+	elif statBlock != statBlockBack:
+		coreToSteal = WorldConductor.get_matching_stolen_core(statBlockBack) 
+		if coreToSteal != null:
+			statBlockBack["NORMAL LOOT"][coreToSteal["NAME"]] = "CORE"
+		
 	if GlobalPlayer.levelOfCave >=2:
 		statBlock = StatBlocks.scale_up(statBlock,GlobalPlayer.levelOfCave)
 		statBlockBack = StatBlocks.scale_up(statBlockBack,GlobalPlayer.levelOfCave)

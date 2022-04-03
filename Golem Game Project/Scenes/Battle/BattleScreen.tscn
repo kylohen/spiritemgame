@@ -34,9 +34,12 @@ tracks/0/keys = {
 [node name="BattleScreen" type="Control"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-margin_right = 21600.0
-margin_bottom = 12150.0
+margin_right = 24000.0
+margin_bottom = 13500.0
 script = ExtResource( 2 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="EnemyGraphics" type="Control" parent="."]
 margin_right = 40.0
@@ -107,7 +110,6 @@ margin_bottom = 18.99
 rect_scale = Vector2( 0.75, 0.75 )
 
 [node name="EnemyBackingFront" type="TextureRect" parent="EnemyGraphics"]
-visible = false
 margin_left = 328.0
 margin_top = 44.0
 margin_right = 495.0
@@ -162,10 +164,10 @@ __meta__ = {
 }
 
 [node name="PlayerSpriteFront" parent="PlayerGraphics" instance=ExtResource( 5 )]
-margin_left = -240.0
-margin_top = 20.0
-margin_right = 0.0
-margin_bottom = 260.0
+margin_left = -300.0
+margin_top = -10.0
+margin_right = -60.0
+margin_bottom = 230.0
 rect_scale = Vector2( 0.6, 0.6 )
 isPlayerSprite = true
 
@@ -179,6 +181,7 @@ rect_scale = Vector2( 0.6, 0.6 )
 isPlayerSprite = true
 
 [node name="PlayerBackingBack" type="TextureRect" parent="PlayerGraphics"]
+visible = false
 margin_left = -335.0
 margin_top = 112.0
 margin_right = -191.0

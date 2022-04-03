@@ -372,6 +372,7 @@ margin_bottom = 51.0
 blackScreen = true
 
 [node name="BGMusic" type="AudioStreamPlayer" parent="."]
+bus = "BackgroundMusic"
 
 [connection signal="loot_received" from="." to="Player" method="_on_Cave_loot_received"]
 [connection signal="loot_received" from="." to="Camera2D/PlayerUI" method="_on_Cave_loot_received"]

@@ -75,18 +75,18 @@ func _ready():
 	build_terrain()
 	spawnCave(40)
 	enemyManager.spawn_enemy()
+	areaTitleCard.play("No Country for Old Men","Starting Zone")
+	bgMusic.play()
 	
 	##Debug##
-	GlobalPlayer.add_golem(SeedGenerator.rng.randi_range(0,StatBlocks.playerGolemBaseStatBlocks.keys().size()-1))
-	GlobalPlayer.add_golem(SeedGenerator.rng.randi_range(0,StatBlocks.playerGolemBaseStatBlocks.keys().size()-1))
-	GlobalPlayer.add_golem(SeedGenerator.rng.randi_range(0,StatBlocks.playerGolemBaseStatBlocks.keys().size()-1))
-	GlobalPlayer.add_golem(SeedGenerator.rng.randi_range(0,StatBlocks.playerGolemBaseStatBlocks.keys().size()-1))
-	GlobalPlayer.add_golem(SeedGenerator.rng.randi_range(0,StatBlocks.playerGolemBaseStatBlocks.keys().size()-1))
+#	GlobalPlayer.add_golem(SeedGenerator.rng.randi_range(0,StatBlocks.playerGolemBaseStatBlocks.keys().size()-1))
+#	GlobalPlayer.add_golem(SeedGenerator.rng.randi_range(0,StatBlocks.playerGolemBaseStatBlocks.keys().size()-1))
+#	GlobalPlayer.add_golem(SeedGenerator.rng.randi_range(0,StatBlocks.playerGolemBaseStatBlocks.keys().size()-1))
+#	GlobalPlayer.add_golem(SeedGenerator.rng.randi_range(0,StatBlocks.playerGolemBaseStatBlocks.keys().size()-1))
+#	GlobalPlayer.add_golem(SeedGenerator.rng.randi_range(0,StatBlocks.playerGolemBaseStatBlocks.keys().size()-1))
 	
 #	run_Dialog(DialogStorage.conversation["IntroPart1"])
 	
-	areaTitleCard.play("No Country for Old Men","Starting Zone")
-	bgMusic.play()
 	pass
 	
 
@@ -315,7 +315,11 @@ func _on_Player_useToolOnBlock(blockToCheck):
 				var quantityOfLoot = SeedGenerator.rng.randi_range(WorldConductor.lootTable[objectDestroyed][lootType]["min"],WorldConductor.lootTable[objectDestroyed][lootType]["max"])
 				emit_signal("loot_received",lootType,quantityOfLoot)
 			elif block.objectSelected== WorldConductor.objectTypes.GolemGenerator:
-				golem_checking ()
+				
+				if !GlobalPlayer.has_item("Golem Core"):
+					block.need_core()
+				else:
+					golem_checking()
 
 
 func _on_Player_useItemOnBlock(itemID,itemTexture,blockToCheck,itemIndex):
@@ -345,6 +349,7 @@ func _on_Player_useItemOnBlock(itemID,itemTexture,blockToCheck,itemIndex):
 func golem_checking ():
 	var arrayOfPodiums = podium_checking()
 	var itemsFound = {}
+		
 	if !arrayOfPodiums.empty():
 		for i in arrayOfPodiums.size():
 			var object = arrayOfPodiums[i][0]
@@ -393,6 +398,7 @@ func take_golem_items(useItems):
 		itemDropPlacement[objectLocation.x][objectLocation.y].queue_free()
 		itemDropPlacement[objectLocation.x].remove(objectLocation.y)
 		itemDropPlacement[objectLocation.x].insert(objectLocation.y,null)
+		GlobalPlayer.use_item("Golem Core",GlobalPlayer.get_latest_key("Golem Core"), 1)
 	pass
 
 ##################################################################################################

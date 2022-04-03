@@ -2,6 +2,8 @@ extends Node2D
 var type = null
 onready var objectSprite = $Object
 var objectSelected
+onready var alertText = $Alert
+onready var alertTimer = $AlertTimer
 
 onready var respawnTimer = $RespawnTimer
 
@@ -37,10 +39,21 @@ func toolUsed(): ## Checking if tool use == 4 means any tool
 		return true
 	return false
 
-
+func need_core():
+	alertText.text = "Need a Golem Core in Inventory"
+	self.z_index = 99
+	alertTimer.start()
 
 func _on_RespawnTimer_timeout():
 	self.modulate.a = 1.0
 	isPassable = WorldConductor.overworldObject[objectSelected]["passable"]
 	active = true
+	
+	pass # Replace with function body.
+
+
+func _on_AlertTimer_timeout():
+	alertText.text = ""
+	
+	self.z_index = 0
 	pass # Replace with function body.

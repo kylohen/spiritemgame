@@ -38,24 +38,52 @@ var coresInInventory ={}
 var PLAYERSTATS = {
 	"ATTACK":1,
 	"HP":20,
-	"FLEE STAT":1,
+	"CURRENT HP" : 20,
+	"CURRENT ACTION" : 20,
+	"CURRENT MAGIC" : 20,
+	"ACTION METER" : 20,
+	"MAGIC METER" : 20,
 	"SPEED":4,
-	"SKILLS":{
-		"SKILL1":0,
-		"SKILL2":1,
-		"SKILL3":1,
-		"SKILL4":1,
-	}
+	"frontSprite":"res://Assets/sprites/VoidSprites/Sprite-0010.png",
+	"backSprite":"res://Assets/sprites/VoidSprites/Sprite-0006.png",
+	"PARTY ICON":"",
+	"DEFENSE":1,
+	"MAGIC ATTACK":1,
+	"MAGIC DEFENSE":1,
+	"ASPECT":null,
+	"MODIFIERS":{},
+	"DAMAGE OVER TIME":{},
+	"LEVEL":1,
+	"AFFINITY":1,
+	"ATTACK SKILLS":{
+		"SKILL1":null,
+		"SKILL2":2,
+		"SKILL3":3,
+		"SKILL4":0,
+		},
+	"SUPPORT SKILLS":{
+		"SKILL1":6,
+		"SKILL2":null,
+		"SKILL3":null,
+		"SKILL4":4,
+		},
+	"DEFEND SKILLS":{
+		"SKILL1":null,
+		"SKILL2":7,
+		"SKILL3":null,
+		"SKILL4":null,
+		},
+	"PARTY POSITION" : -1
 }
 var isInAnimation = false
 func _ready():
 	currentPLAYSTATE = PLAYSTATE.GAME
 	toolSelected = TOOLS.PICKAXE
 	buildEmptyPartyList()
-	
+	PLAYERSTATS["NAME"] = playerName
 	####################debug####################
-	add_loot("Repair Dust",5)
-	add_loot("Dust",3090)
+#	add_loot("Repair Dust",5)
+#	add_loot("Dust",3090)
 	pass # Replace with function body.
 
 ## updates the selected tool to the new tool provided
@@ -290,16 +318,26 @@ func add_golem(golemID):
 				partyGolems.insert(i,newGolemInput)
 				return true
 	return false
-		
+
+func find_next_golem(partyPosToStart):
+	for i in range (partyPosToStart,partyGolems.size(),1):
+		if partyGolems[i] !=null:
+			return partyGolems[i]
+	return null
 func remove_golem(golemStatBlock):
 	partyGolems[golemStatBlock["PARTY POSITION"]] = null
 #	buildEmptyPartyList()
 func update_golem(golemStatBlock):
-	var partyGolemNumber = golemStatBlock["PARTY POSITION"] 
-	partyGolems[partyGolemNumber]["CURRENT HP"] = golemStatBlock["CURRENT HP"] 
-	partyGolems[partyGolemNumber]["CURRENT ACTION"] = golemStatBlock["CURRENT ACTION"] 
-	partyGolems[partyGolemNumber]["CURRENT MAGIC"] = golemStatBlock["CURRENT MAGIC"] 
-		
+	if golemStatBlock["PARTY POSITION"] == -1:
+		PLAYERSTATS["CURRENT HP"] = golemStatBlock["CURRENT HP"] 
+		PLAYERSTATS["CURRENT ACTION"] = golemStatBlock["CURRENT ACTION"] 
+		PLAYERSTATS["CURRENT MAGIC"] = golemStatBlock["CURRENT MAGIC"] 
+	else:
+		var partyGolemNumber = golemStatBlock["PARTY POSITION"] 
+		partyGolems[partyGolemNumber]["CURRENT HP"] = golemStatBlock["CURRENT HP"] 
+		partyGolems[partyGolemNumber]["CURRENT ACTION"] = golemStatBlock["CURRENT ACTION"] 
+		partyGolems[partyGolemNumber]["CURRENT MAGIC"] = golemStatBlock["CURRENT MAGIC"] 
+			
 func buildEmptyPartyList():
 	while partyGolems.size() < maxGolemParty:
 		partyGolems.append(null)

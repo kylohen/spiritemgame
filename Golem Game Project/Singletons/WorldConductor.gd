@@ -90,7 +90,11 @@ onready var lootTable = {
 func core_stolen(golemCore,voidGolemResponsible):
 	golemCoreStolen.append([golemCore,voidGolemResponsible])
 	pass
-
+func get_matching_stolen_core(voidGolemType):
+	for i in golemCoreStolen.size():
+		if voidGolemType == golemCoreStolen[i][1]:
+			return golemCoreStolen[i][0]
+	return null
 func core_retrieved(golemCore):
 	for i in golemCoreStolen.size():
 		if golemCore == golemCoreStolen[i][0]:

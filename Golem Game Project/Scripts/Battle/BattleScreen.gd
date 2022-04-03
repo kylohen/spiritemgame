@@ -92,35 +92,34 @@ func start_encounter(enemyNode):
 
 ##Sets the stage on initialization and pulls golems in from your party Roster, taking the first two
 func load_player_golems(enemiesInBattle = 1):
-	playerCount=1
+	playerCount=0
 	if GlobalPlayer.is_party_empty():
 		put_player_in_battle()
 		playerCount = 1
 		playerFront = GlobalPlayer.PLAYERSTATS
 		playerFrontName = GlobalPlayer.playerName
 		
-		initialize_ui_bars(GlobalPlayer.PLAYERSTATS,playerFrontUIBar)
-		playerFront["NODE"] = playerGraphics.get_node("PlayerSpriteFront")
-		playerFront["UI NODE"] = playerFrontUIBar
+		load_front_player(GlobalPlayer.PLAYERSTATS)
 		AllyGolems.append(playerFront)
 		AllyGolemsSkillUsed.append(false)
 		lose_1_player()
 	
 	else:
 		var battleSlots = enemiesInBattle
-		for i in GlobalPlayer.partyGolems.size():
-			if 1 == playerCount and GlobalPlayer.partyGolems[i] != null:
-				load_front_player(GlobalPlayer.partyGolems[i].duplicate())
+		for i in battleSlots:
+			var newGolem = GlobalPlayer.find_next_golem(i)
+			if 0 == playerCount and newGolem != null:
+				load_front_player(newGolem.duplicate())
 				AllyGolems.append(playerFront)
 				AllyGolemsSkillUsed.append(false)
 				if playerCount >= battleSlots:
 					break
 				playerCount += 1
-				
-			elif playerCount <= battleSlots and playerCount == 2 and i <= GlobalPlayer.partyGolems.size()-1:
-				load_back_player(GlobalPlayer.partyGolems[i].duplicate())
+			elif  playerCount == 1 and newGolem != null:
+				load_back_player(newGolem.duplicate())
 				playerCount += 1
 				break
+		
 		if playerCount < battleSlots:
 			lose_1_player()
 		selectedGolem = AllyGolems[0]
@@ -254,10 +253,14 @@ func find_turn_order():
 
 ############################### BATTLE MECHANICS ##########################################
 func lose_1_player():
-	sceneSetup.play("Lose1Player")
+	sceneSetup.queue("Lose1Player")
+	if !sceneSetup.playback_active:
+		sceneSetup.play()
 
 func lose_1_enemy():
-	sceneSetup.play("Lose1Enemy")
+	sceneSetup.queue("Lose1Enemy")
+	if !sceneSetup.playback_active:
+		sceneSetup.play()
 	
 func put_player_in_battle():
 	playerGraphics.get_node("PlayerBackingFront/PlayerName").text = GlobalPlayer.playerName
@@ -627,13 +630,17 @@ func resolve_turn():
 				animate_sprite(pendingSkills[i-1][0]["NODE"],FLEE)
 				yield(pendingSkills[i-1][0]["NODE"],"sprite_animation_done")
 				var rollForFlee = SeedGenerator.rng.randf_range(0,1)
-				var chanceForSuccess = pendingSkills[i-1][0]["SPEED"]/100
-				
+#				var chanceForSuccess = pendingSkills[i-1][0]["SPEED"]/100
+				var chanceForSuccess = 1
 				if chanceForSuccess>=rollForFlee :
 					if EnemyGolems.has(pendingSkills[i-1][0]):
 						void_ran_away(pendingSkills[i-1][0])
 					else:
 						lose_battle()
+						GlobalPlayer.isInAnimation = false
+						return
+						
+						
 				
 #				animate_sprite(pendingSkills[i-1][0]["NODE"],SENDIN)
 #				yield(pendingSkills[i-1][0]["NODE"],"sprite_animation_done")

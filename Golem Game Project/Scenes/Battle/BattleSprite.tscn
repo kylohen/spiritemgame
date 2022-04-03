@@ -27,8 +27,8 @@ __meta__ = {
 [node name="Sprite" type="TextureRect" parent="."]
 anchor_right = 1.0
 anchor_bottom = 1.0
-margin_right = 10320.0
-margin_bottom = 10320.0
+margin_right = 11040.0
+margin_bottom = 11040.0
 grow_horizontal = 0
 grow_vertical = 0
 rect_pivot_offset = Vector2( 120, 120 )

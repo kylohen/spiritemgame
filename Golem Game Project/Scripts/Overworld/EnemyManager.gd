@@ -20,9 +20,10 @@ func enable_enemies():
 #	pass
 func spawn_enemy():
 	var newEnemy = enemyScene.instance()
-	var spawnPosition = Vector2(SeedGenerator.rng.randi_range(1,get_parent().gridWidth-1),SeedGenerator.rng.randi_range(1,get_parent().gridHeight-1))
-#	var spawnPosition = Vector2(5,5)
+#	var spawnPosition = Vector2(SeedGenerator.rng.randi_range(1,get_parent().gridWidth-1),SeedGenerator.rng.randi_range(1,get_parent().gridHeight-1))
+	var spawnPosition = Vector2(5,5)
 	newEnemy.currentGridPosition = spawnPosition
+
 	add_child(newEnemy)
 	newEnemy.connect("touch_player",self,"_on_EnemyVoid_touchPlayer")
 	newEnemy.set_grid(get_parent().gridMap,get_parent().objectPlacement,get_parent().gridWidth,get_parent().gridHeight)
