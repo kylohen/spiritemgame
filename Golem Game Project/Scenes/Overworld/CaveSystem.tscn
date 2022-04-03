@@ -345,6 +345,7 @@ tile_set = SubResource( 8 )
 cell_size = Vector2( 24, 24 )
 cell_quadrant_size = 24
 format = 1
+tile_data = PoolIntArray( 1, 8, 0 )
 
 [node name="Player" parent="." instance=ExtResource( 8 )]
 
@@ -363,6 +364,7 @@ margin_right = -240.0
 margin_bottom = -135.0
 
 [node name="SceneTransitions" parent="Camera2D" instance=ExtResource( 12 )]
+visible = false
 margin_left = 11.0
 margin_top = 11.0
 margin_right = 51.0

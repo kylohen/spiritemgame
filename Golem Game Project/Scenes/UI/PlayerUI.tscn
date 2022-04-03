@@ -244,6 +244,7 @@ volume_db = -12.381
 
 [connection signal="nextTool" from="." to="ToolUI" method="_on_PlayerUI_nextTool"]
 [connection signal="previousTool" from="." to="ToolUI" method="_on_PlayerUI_previousTool"]
+[connection signal="refreshTool" from="." to="ToolUI" method="_on_PlayerUI_refreshTool"]
 [connection signal="buttonMoveAudio" from="ToolUI" to="." method="_on_buttonMoveAudio"]
 [connection signal="buttonMoveAudio" from="InventoryUI" to="." method="_on_buttonMoveAudio"]
 [connection signal="buttonSelectAudio" from="InventoryUI" to="." method="_on_buttonSelectAudio"]

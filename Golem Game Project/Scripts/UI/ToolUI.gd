@@ -74,3 +74,19 @@ func _on_PlayerUI_previousTool():
 	set_selection_Highlight(toolSelected)
 	rotate_dial(-90)
 	emit_signal("buttonMoveAudio")
+
+
+func _on_PlayerUI_refreshTool():
+	var globalToolSelected = GlobalPlayer.toolSelected
+	if toolSelected != globalToolSelected:
+		set_selection_Highlight(globalToolSelected)
+		var difference = globalToolSelected - toolSelected
+		if difference < 0 :
+			difference = -difference
+		var rotateDegree = 0
+		if difference > 0:
+			for i in difference:
+				rotateDegree += 90
+		rotate_dial(rotateDegree)
+		toolSelected = globalToolSelected
+	pass # Replace with function body.

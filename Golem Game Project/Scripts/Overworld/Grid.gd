@@ -235,6 +235,8 @@ func spawn_object (objectToSpawn, pos):
 func _on_leave_cave_CaveSystem():
 	whatToDoAfterTransition = "Leave Cave"
 	isActive = true
+	playerUI.isActive = true
+	playerUI.refresh_Tool()
 	player.changeActiveState(isActive)
 	overworld.show()
 	interactOverlay.show()
@@ -420,18 +422,18 @@ func run_Dialog(partToPlay=null):
 
 
 func _on_SceneTransitions_transitionDone(transitionAnimation):
-	if transitionAnimation == "radial_wipe_off":
+	if transitionAnimation == "radial_wipe_off" or transitionAnimation == "radial_wipe_on":
 		if whatToDoAfterTransition == "Cave Load":
 			enemyManager.disable()
 			_on_new_level_cave_CaveSystem()
 			playerUI.isActive = false
 			
 			bgMusic.stop()
-		elif whatToDoAfterTransition == "Leave Cave":
-			enemyManager.enable()
-			_on_leave_cave_CaveSystem()
-			playerUI.isActive = true
-			
-			bgMusic.play()
+#		elif whatToDoAfterTransition == "Leave Cave":
+#			enemyManager.enable()
+#			_on_leave_cave_CaveSystem()
+#			playerUI.isActive = true
+#
+#			bgMusic.play()
 			
 	pass # Replace with function body.

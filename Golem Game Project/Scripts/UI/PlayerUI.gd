@@ -21,6 +21,7 @@ var currentMenu = NONE
 var previousPLAYSTATE
 signal nextTool
 signal previousTool
+signal refreshTool
 signal useItem
 signal buttonMove
 
@@ -83,6 +84,9 @@ func _next_Tool():
 func _previous_Tool():
 	emit_signal("previousTool")
 
+func refresh_Tool():
+	emit_signal("refreshTool")
+
 func _use_item(itemID,itemTexture,itemIndex):
 	emit_signal("useItem",itemID,itemTexture,itemIndex)
 
@@ -98,7 +102,7 @@ func process_player_input():
 			inventoryUI.update_inventory()
 			inventoryUI.show()
 			inventoryUI.load_golems()
-	elif GlobalPlayer.is_PLAYSTATE(GlobalPlayer.PLAYSTATE.PAUSE):
+	elif GlobalPlayer.is_PLAYSTATE(GlobalPlayer.PLAYSTATE.PAUSE) and !GlobalPlayer.isInAnimation:
 		
 		if Input.is_action_just_pressed("Next_Page"):
 			move_menu(1)

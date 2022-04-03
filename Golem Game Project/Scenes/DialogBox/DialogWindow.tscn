@@ -89,6 +89,7 @@ margin_right = 165.0
 margin_bottom = 49.0
 
 [node name="ButtonBar" type="MarginContainer" parent="."]
+visible = false
 margin_left = 284.0
 margin_top = -11.0
 margin_right = 716.0
