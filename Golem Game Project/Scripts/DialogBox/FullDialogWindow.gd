@@ -141,7 +141,7 @@ func parse_square_brackets(dialogText,lineNumber):
 				choiceString = ""
 		elif character == "]":
 			if !newScript:
-				if countSlashes == 3: ### bracket has found that this would be a gender statement
+				if countSlashes == 2: ### bracket has found that this would be a gender statement
 					finalString += player_gendered_Dictionary(contentSquareBracketString);
 				elif countSlashes == 0: ### choice
 					if int(contentSquareBracketString) != 0:

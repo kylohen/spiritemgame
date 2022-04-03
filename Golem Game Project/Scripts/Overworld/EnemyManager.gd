@@ -20,8 +20,8 @@ func enable_enemies():
 #	pass
 func spawn_enemy():
 	var newEnemy = enemyScene.instance()
-#	var spawnPosition = Vector2(SeedGenerator.rng.randi_range(1,get_parent().gridWidth-1),SeedGenerator.rng.randi_range(1,get_parent().gridHeight-1))
-	var spawnPosition = Vector2(5,5)
+	var spawnPosition = Vector2(SeedGenerator.rng.randi_range(1,get_parent().gridWidth-1),SeedGenerator.rng.randi_range(1,get_parent().gridHeight-1))
+
 	newEnemy.currentGridPosition = spawnPosition
 
 	add_child(newEnemy)

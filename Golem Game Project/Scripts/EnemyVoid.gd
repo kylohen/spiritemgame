@@ -65,11 +65,14 @@ func move_enemy(playerPositionInGrid):
 func random_move():
 	var directions = [Vector2.UP,Vector2.RIGHT,Vector2.DOWN,Vector2.LEFT]
 	var chosenOptions
+	var grid = get_parent().get_parent()
 	for i in range (directions.size()-1,-1,-1):
 		var rollChoice = SeedGenerator.rng.randi_range(0,i)
 		var randDirection = directions[rollChoice]
-		if get_parent().get_parent().is_Open_Tile(currentGridPosition,randDirection,false):
-			return randDirection
+		var newPos = currentGridPosition + randDirection
+		if grid.gridWidth > newPos.x and grid.gridHeight > newPos.y:
+			if grid.is_Open_Tile(currentGridPosition,randDirection,false):
+				return randDirection
 		directions.erase(randDirection)
 	return Vector2.ZERO
 			

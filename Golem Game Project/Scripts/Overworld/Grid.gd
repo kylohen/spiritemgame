@@ -243,6 +243,7 @@ func _on_leave_cave_CaveSystem():
 	spawnGolem.show()
 	player.show()
 	camera.show()
+	GlobalPlayer.levelOfCave = 0
 	sceneTransitions.run_Transition("radial_wipe_on")
 
 func exit_cave():

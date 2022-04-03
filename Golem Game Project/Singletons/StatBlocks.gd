@@ -2,7 +2,7 @@ extends Node
 
 enum ELEMENT{Nature, Lightning, Water, Fire, Ice, Wind, Void, Divine, Mundane, NONE}
 #enum STATE
-enum TARGET{SELF,ENEMY,ALLY,AOE,BOTH}
+enum TARGET{SELF,ENEMY,ALLY,AOE_ALLY,AOE_ENEMY,BOTH}
 
 var aspectSprite = {
 	ELEMENT.Nature : "res://Assets/UI/Bars/UI_Aspect_Nature.png",
@@ -16,54 +16,35 @@ var aspectSprite = {
 	ELEMENT.Mundane : "res://Assets/UI/Bars/UI_Aspect_Mundane.png",
 }
 
-###########GOLEM DICTIONARY STRUCTURE###########
-#	{
-#	"NAME": ##STRING Name of GOLEM
-#	"Type1": ELEMENT.Void,    ##UNUSED AT THIS TIME
-#	"Type2": ELEMENT.Nature,  ##UNUSED AT THIS TIME
-#	"frontSprite": ##String location of Art Asset
-#	"backSprite":##String location of Art Asset - only for playerGolems
-#	"PARTY ICON":"",
-#	"HP":1,
-#	"ATTACK":1,
-#	"DEFENSE":1,
-#	"MAGIC ATTACK":1,
-#	"MAGIC DEFENSE":1,
-#	"SPEED":20,
-#	"ASPECT":ELEMENT.Nature,
-#	"MODIFIERS":{},
-#	"DAMAGE OVER TIME":{},
-#	"ACTION METER":1000,
-#	"MAGIC METER":1000,
-#	"CURRENT ACTION":1000,
-#	"CURRENT MAGIC":1000,
-#	"AFFINITY":1,
-#	"LEVEL":1,
-#	"NORMAL LOOT DROP":{
-#		"Dust":3,
-#	},
-#	"RARE LOOT DROP":{
-#		"Command Seal":1,
-#	},
-#	"ATTACK SKILLS":{
-#		"SKILL1":3,
-#		"SKILL2":2,
-#		"SKILL3":null,
-#		"SKILL4":null,
-#		},
-#	"SUPPORT SKILLS":{
-#		"SKILL1":6,
-#		"SKILL2":null,
-#		"SKILL3":null,
-#		"SKILL4":4,
-#		},
-#	"DEFEND SKILLS":{
-#		"SKILL1":null,
-#		"SKILL2":7,
-#		"SKILL3":null,
-#		"SKILL4":null,
-#	}
-#
+##########GOLEM DICTIONARY STRUCTURE###########
+#{
+	#"NAME": ##STRING Name of GOLEM
+	#"Type1": ELEMENT.Void,    ##UNUSED AT THIS TIME
+	#"Type2": ELEMENT.Nature,  ##UNUSED AT THIS TIME
+	#"frontSprite": ##String location of Art Asset
+	#"backSprite":##String location of Art Asset - only for playerGolems
+	#"PARTY ICON":##String location of Art Asset - only for playerGolems
+	#"HP": ##Int for max HP
+	#"ATTACK":##Int for Attack
+	#"DEFENSE":##Int for DEFENSE
+	#"MAGIC ATTACK": ##Int for MAGIC ATTACK
+	#"MAGIC DEFENSE":##Int for MAGIC DEFENSE
+	#"SPEED":##Int for SPEED
+	#"ASPECT":# enum of type, e.g ELEMENT.Lightning
+	#"MODIFIERS":{}, #empty dict to be used by battle logic
+	#"DAMAGE OVER TIME":{},#empty dict to be used by battle logic
+	#"ACTION METER": ##Int for max ACTION
+	#"MAGIC METER": ##Int for max MAGIC
+	#"CURRENT ACTION": ##Int for CURRENT ACTION
+	#"CURRENT MAGIC": ##Int forCURRENT MAGIC
+	#"AFFINITY":##Int for AFFINITY
+	#"LEVEL":##Int for LEVEL
+	#"NORMAL LOOT DROP": ### Dictionary of ItemID: Quantity e.g {"Dust":3}
+	#"RARE LOOT DROP":### Dictionary of ItemID: Quantity e.g {"Dust":3}
+	#"ATTACK SKILLS": ### Dictionary of Skill Slot and SkillID {"SKILL1":3,"SKILL2":2,"SKILL3":null,"SKILL4":null,},
+	#"SUPPORT SKILLS":### Dictionary of Skill Slot and SkillID {"SKILL1":3,"SKILL2":2,"SKILL3":null,"SKILL4":null,},
+	#"DEFEND SKILLS":### Dictionary of Skill Slot and SkillID {"SKILL1":3,"SKILL2":2,"SKILL3":null,"SKILL4":null,},
+#}
 var enemyStatBlocks = {
 	0:{
 		"NAME":"Void StrawMan Argument",
@@ -325,6 +306,23 @@ var playerGolemBaseStatBlocks = {
 		},
 	}
 
+#var skillList = {
+#	0 #Unique Number:{
+#		"NAME":"Struggle", #String
+#		"BASE DAMAGE":1, #Int
+#		"ASPECT": ELEMENT.Mundane, #Element of Skill
+#		"TYPE":"ATTACK", #Category of Type of Skill
+#
+#		"MIN BONUS":.9, #rnd rang min
+#		"MAX BONUS": 1.2, #rnd rang min
+#		"IMPACT TYPE": "PHYSICAL", # String of PHYSICAL/MAGICAL to utilize the Attack/Defense and Magic Attack/Magic Defense
+#		"LOOTING MODIFIER":0, #adjust looting modifier 
+#		"CRIT PROBABILITY":1.2,
+#		"ACTION METER COST":1, #cost of skill to use on ACTION
+#		"MAGIC METER COST":0, #cost of skill to use on MAGIC
+#		"PLAYER AFFINITY":0, #Affintiy not implimented, but would affect the effectiveness of skill
+#		"TARGET":TARGET.ENEMY, #enum of waht the skill can target {SELF,ENEMY,ALLY,AOE_ALLY,AOE_ENEMY,BOTH}
+#		},
 var skillList = {
 	0:{
 		"NAME":"Struggle",
@@ -390,7 +388,7 @@ var skillList = {
 		"ACTION METER COST":0,
 		"MAGIC METER COST":1,
 		"PLAYER AFFINITY":0,
-		"TARGET":TARGET.ENEMY,
+		"TARGET":TARGET.AOE_ENEMY,
 		},
 			
 	4:{

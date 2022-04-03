@@ -1,6 +1,6 @@
 Old Man: Ugggghhhhhhh
 PC: ?!
-Old Man: You there, I don't recognize you, but will you seek revenge for my untimely death?
+Old Man: You there,{Name}, I don't recognize [boy/girl/they] but will you seek revenge for my untimely death?
 PC: ...
 Old Man: I can't hear you! My sight grows dim, I can feel the call of the void pulling on my soul. Please take my golem, he's all I have left... ughhh
 PC: !

@@ -1,5 +1,10 @@
 extends Node
 
+#golemRecipes = {
+	##String of Golem's Name : {
+		##String of ItemID : ##Int of Qty needed
+#		}
+#	}
 var golemRecipes= {
 	"StrawBoy" : {
 		"Straw" : 4
@@ -11,6 +16,14 @@ var golemRecipes= {
 		"Wood" : 1
 	},
 }
+
+#ItemRecipeDict = {
+#	##Int that is a unique ID : {
+#		String of ItemID: {
+#			##String of ItemID : ##Int of Qty needed
+#			}
+#		}
+#	}
 var ItemRecipeDict = {
 	0:{
 		"Straw Bundle":{

@@ -52,8 +52,9 @@ var selectableSkillOptions = []
 enum BATTLESTATE {ENEMYTURN,PLAYERTURN}
 var currentBattleState
 var waitingForPlayerInput = false
-enum SELECTIONSTATE{SKILLS,ENEMY,ALLY, BOTH, SECONDARY,MAIN}
+enum SELECTIONSTATE{SKILLS,ENEMY,ALLY, BOTH,AOE_ALLY,AOE_ENEMY, SECONDARY,MAIN}
 onready var currentSelectionState=SELECTIONSTATE.MAIN
+var previousCurrentSelectionState
 
 var lootToWin = []
 enum SPECIALKILL {OVERKILL,EXACTKILL,LINKKILL,DEBUFFKILL,FIREKILL,WATERKILL,LIGHTKILL,DARKKILL}
@@ -538,7 +539,10 @@ func select_skill(skillChoice:int):
 	elif skillDetails["TARGET"] == StatBlocks.TARGET.ENEMY:
 		currentSelectionState = SELECTIONSTATE.ENEMY
 		update_cursor_location_on_current_SELECTIONSTATE()
-	elif skillDetails["TARGET"] == StatBlocks.TARGET.ALLY:
+	elif skillDetails["TARGET"] == StatBlocks.TARGET.AOE_ENEMY:
+		currentSelectionState = SELECTIONSTATE.AOE_ENEMY
+		update_cursor_location_on_current_SELECTIONSTATE()
+	elif skillDetails["TARGET"] == StatBlocks.TARGET.ALLY or  skillDetails["TARGET"] == StatBlocks.TARGET.AOE_ALLY:
 		skillBeingUsed = skillDetails
 		currentSelectionState = SELECTIONSTATE.ALLY
 		var targetGolemToSupport = AllyGolems[0]
@@ -630,8 +634,8 @@ func resolve_turn():
 				animate_sprite(pendingSkills[i-1][0]["NODE"],FLEE)
 				yield(pendingSkills[i-1][0]["NODE"],"sprite_animation_done")
 				var rollForFlee = SeedGenerator.rng.randf_range(0,1)
-#				var chanceForSuccess = pendingSkills[i-1][0]["SPEED"]/100
-				var chanceForSuccess = 1
+				var chanceForSuccess = pendingSkills[i-1][0]["SPEED"]/100
+#				var chanceForSuccess = 1
 				if chanceForSuccess>=rollForFlee :
 					if EnemyGolems.has(pendingSkills[i-1][0]):
 						void_ran_away(pendingSkills[i-1][0])
@@ -664,46 +668,79 @@ func resolve_turn():
 			
 		for i in range (pendingSkills.size(),0,-1):
 			if pendingSkills[i-1][2]["TYPE"] == "ITEM":
-				update_combat_text(pendingSkills[i-1])
+				var golemsToHit = 1
+				if pendingSkills[i-1][2]["TARGET"] == StatBlocks.TARGET.AOE_ALLY or pendingSkills[i-1][2]["TARGET"] == StatBlocks.TARGET.AOE_ENEMY:
+					golemsToHit = 2
+				for j in golemsToHit:
+					if golemsToHit == 2:
+						
+						if AllyGolems.has(pendingSkills[i-1][1]):
+							 pendingSkills[i-1][1] = AllyGolems[j]
+						if EnemyGolems.has(pendingSkills[i-1][1]):
+							 pendingSkills[i-1][1] = EnemyGolems[j]
 				
-				animate_sprite(pendingSkills[i-1][0]["NODE"],SUPPORT)
-				yield(pendingSkills[i-1][0]["NODE"],"sprite_animation_done")
-				var statName = pendingSkills[i-1][2]["STAT"]
-				var newValue = pendingSkills[i-1][2]["MODIFIERS"]
-				if statName == "CURRENT HP":
-					pendingSkills[i-1][1]["CURRENT HP"] += newValue
-				else:
-					pendingSkills[i-1][1]["MODIFIERS"] += {statName:newValue}
-				check_max_stats(pendingSkills[i-1][1])
-				
-				update_ui_action_bars(pendingSkills[i-1][0]["UI NODE"],pendingSkills[i-1][2])
-				update_ui_health_bar(pendingSkills[i-1][1]["UI NODE"],pendingSkills[i-1][1]["CURRENT HP"])
-				
+					update_combat_text(pendingSkills[i-1])
+					
+					animate_sprite(pendingSkills[i-1][0]["NODE"],SUPPORT)
+					yield(pendingSkills[i-1][0]["NODE"],"sprite_animation_done")
+					var statName = pendingSkills[i-1][2]["STAT"]
+					var newValue = pendingSkills[i-1][2]["MODIFIERS"]
+					if statName == "CURRENT HP":
+						pendingSkills[i-1][1]["CURRENT HP"] += newValue
+					else:
+						pendingSkills[i-1][1]["MODIFIERS"] += {statName:newValue}
+					check_max_stats(pendingSkills[i-1][1])
+					
+					update_ui_action_bars(pendingSkills[i-1][0]["UI NODE"],pendingSkills[i-1][2])
+					update_ui_health_bar(pendingSkills[i-1][1]["UI NODE"],pendingSkills[i-1][1]["CURRENT HP"])
+					
 				GlobalPlayer.use_item(pendingSkills[i-1][2]["NAME"],pendingSkills[i-1][2]["ITEM INDEX"],1)
 				pendingSkills.erase(pendingSkills[i-1])
 		for i in range (pendingSkills.size(),0,-1):
 #			print (debug_pendingSkills(), "\n Loop ",i)
 			if pendingSkills[i-1][2]["TYPE"] == "SUPPORT":
-				update_combat_text(pendingSkills[i-1])
-				animate_sprite(pendingSkills[i-1][0]["NODE"],SUPPORT)
-				yield(pendingSkills[i-1][0]["NODE"],"sprite_animation_done")
+				var golemsToHit = 1
+				if pendingSkills[i-1][2]["TARGET"] == StatBlocks.TARGET.AOE_ALLY or pendingSkills[i-1][2]["TARGET"] == StatBlocks.TARGET.AOE_ENEMY:
+					golemsToHit = 2
+				for j in golemsToHit:
+					if golemsToHit == 2:
+						
+						if AllyGolems.has(pendingSkills[i-1][1]):
+							 pendingSkills[i-1][1] = AllyGolems[j]
+						if EnemyGolems.has(pendingSkills[i-1][1]):
+							 pendingSkills[i-1][1] = EnemyGolems[j]
+				
+					update_combat_text(pendingSkills[i-1])
+					animate_sprite(pendingSkills[i-1][0]["NODE"],SUPPORT)
+					yield(pendingSkills[i-1][0]["NODE"],"sprite_animation_done")
+					if AllyGolems.has(pendingSkills[i-1][0]):
+						playerUsedSupport = true
+					
+					if  pendingSkills[i-1][1] != null:
+						pendingSkills[i-1][1]["MODIFIERS"] = {[pendingSkills[i-1][2]["STAT"]]: pendingSkills[i-1][2]["STAT MOD"]}
 				update_ui_action_bars(pendingSkills[i-1][0]["UI NODE"],pendingSkills[i-1][2])
 				spend_energy(pendingSkills[i-1][0],pendingSkills[i-1][2])
-				if AllyGolems.has(pendingSkills[i-1][0]):
-					playerUsedSupport = true
-				
-				if  pendingSkills[i-1][1] != null:
-					pendingSkills[i-1][1]["MODIFIERS"] = {[pendingSkills[i-1][2]["STAT"]]: pendingSkills[i-1][2]["STAT MOD"]}
 				pendingSkills.erase(pendingSkills[i-1])
 				
 		pendingSkills.sort_custom(self,"sort_by_speed")
 		for i in range (pendingSkills.size(),0,-1):
 #			print (debug_pendingSkills(), "\n Loop ",i)* BROKEN DUE TO Passing SWITCH as a STRING VS SKILL
 			if pendingSkills[i-1][2]["TYPE"] == "DEFEND":
-				pendingSkills[i-1][1]["MODIFIERS"] = {[pendingSkills[i-1][2]["STAT"]]:pendingSkills[i-1][2]["STAT MOD"]}
-				update_combat_text(pendingSkills[i-1])
-				animate_sprite(pendingSkills[i-1][0]["NODE"],DEFEND)
-				yield(pendingSkills[i-1][0]["NODE"],"sprite_animation_done")
+				var golemsToHit = 1
+				if pendingSkills[i-1][2]["TARGET"] == StatBlocks.TARGET.AOE_ALLY or pendingSkills[i-1][2]["TARGET"] == StatBlocks.TARGET.AOE_ENEMY:
+					golemsToHit = 2
+				for j in golemsToHit:
+					if pendingSkills[i-1][2]["TARGET"] == StatBlocks.TARGET.AOE_ALLY:
+						
+						if AllyGolems.has(pendingSkills[i-1][1]):
+							 pendingSkills[i-1][1] = AllyGolems[j]
+						if EnemyGolems.has(pendingSkills[i-1][1]):
+							 pendingSkills[i-1][1] = EnemyGolems[j]
+				
+					pendingSkills[i-1][1]["MODIFIERS"] = {[pendingSkills[i-1][2]["STAT"]]:pendingSkills[i-1][2]["STAT MOD"]}
+					update_combat_text(pendingSkills[i-1])
+					animate_sprite(pendingSkills[i-1][0]["NODE"],DEFEND)
+					yield(pendingSkills[i-1][0]["NODE"],"sprite_animation_done")
 				update_ui_action_bars(pendingSkills[i-1][0]["UI NODE"],pendingSkills[i-1][2])
 				
 				spend_energy(pendingSkills[i-1][0],pendingSkills[i-1][2])
@@ -716,96 +753,131 @@ func resolve_turn():
 #			print (debug_pendingSkills(), "\n Loop ",i) * BROKEN DUE TO Passing SWITCH as a STRING VS SKILL
 			
 			if pendingSkills[i-1][2]["TYPE"] == "ATTACK":
-				var damage 
-				var attackWithMod
-				var targetDefenseWithMod
+				var golemsToHit = 1
+				var targetType = ""
+				var ifUsedSkill = false
+				
 				if check_if_golem_dead(pendingSkills[i-1][0]): ## Golem is dead and can no longer attack
 					pendingSkills.erase(pendingSkills[i-1])
+					
 					continue
 				elif check_if_golem_dead(pendingSkills[i-1][1]): ## Target Golem is dead, check to see if another is present
-					if pendingSkills[i-1][2]["TARGET"] == StatBlocks.TARGET.ALLY: ##Select self instead
+					if pendingSkills[i-1][2]["TARGET"] == StatBlocks.TARGET.ALLY or pendingSkills[i-1][2]["TARGET"] == StatBlocks.TARGET.AOE_ALLY: ##Select self instead
 						pendingSkills[i-1][1] = pendingSkills[i-1][0]
 						
 					elif AllyGolems.has(pendingSkills[i-1][0]): ##AllyGolem attacks other enemy instead
-						if pendingSkills[i-1][2]["TARGET"] == StatBlocks.TARGET.ENEMY:
+						if pendingSkills[i-1][2]["TARGET"] == StatBlocks.TARGET.ENEMY  or pendingSkills[i-1][2]["TARGET"] == StatBlocks.TARGET.AOE_ENEMY:
 							if !EnemyGolems.empty():
 								pendingSkills[i-1][1] = EnemyGolems[0]
 							else: 
 								pendingSkills.erase(pendingSkills[i-1])
+								
 								continue
-					elif EnemyGolems.has(pendingSkills[i-1][0]): ##EnermyGolem attacks other playerGolem instead
-						if pendingSkills[i-1][2]["TARGET"] == StatBlocks.TARGET.ENEMY:
+					elif EnemyGolems.has(pendingSkills[i-1][0]): ##EnemyGolem attacks other playerGolem instead
+						if pendingSkills[i-1][2]["TARGET"] == StatBlocks.TARGET.ENEMY or pendingSkills[i-1][2]["TARGET"] == StatBlocks.TARGET.AOE_ENEMY:
 							if !AllyGolems.empty():
 								pendingSkills[i-1][1] = AllyGolems[0]
 							else: 
 								pendingSkills.erase(pendingSkills[i-1])
+								
 								continue
 					else: #All targetable attack targets dead
 						pendingSkills.erase(pendingSkills[i-1])
+						
 						continue
-						
-#				check_if_golem_dead(pendingSkills[i-1][1])
-#				check_if_golem_dead_and_redirect(pendingSkills[i-1][1])
-				if pendingSkills[i-1][2]["IMPACT TYPE"] == "PHYSICAL":
-					attackWithMod =  pendingSkills[i-1][0]["ATTACK"] #Base Attack
-					targetDefenseWithMod = pendingSkills[i-1][0]["DEFENSE"]
-					if !pendingSkills[i-1][0]["MODIFIERS"].empty():
-						if pendingSkills[i-1][0]["MODIFIERS"].has("ATTACK"):
-							attackWithMod *= pendingSkills[i-1][0]["MODIFIERS"]["ATTACK"]
-					if !pendingSkills[i-1][1]["MODIFIERS"].empty():
-						if pendingSkills[i-1][1]["MODIFIERS"].has("DEFENSE"):
-							targetDefenseWithMod *= pendingSkills[i-1][1]["MODIFIERS"]["DEFENSE"]
-						
-				elif pendingSkills[i-1][2]["IMPACT TYPE"] == "MAGICAL":
-					attackWithMod =  pendingSkills[i-1][0]["MAGIC ATTACK"] #Base Attack
-					targetDefenseWithMod = pendingSkills[i-1][0]["MAGIC DEFENSE"]
-					if !pendingSkills[i-1][0]["MODIFIERS"].empty():
-						if pendingSkills[i-1][0]["MODIFIERS"].has("MAGIC ATTACK"):
-							attackWithMod *= pendingSkills[i-1][0]["MODIFIERS"]["MAGIC ATTACK"]
+				if pendingSkills[i-1][2]["TARGET"] == StatBlocks.TARGET.AOE_ALLY  or pendingSkills[i-1][2]["TARGET"] == StatBlocks.TARGET.AOE_ENEMY:
+					if AllyGolems.has(pendingSkills[i-1][1]):
+						targetType = "ALLY"
+						golemsToHit = AllyGolems.size()
+					elif EnemyGolems.has(pendingSkills[i-1][1]):
+						targetType = "ENEMY"
+						golemsToHit = EnemyGolems.size()
 					
-					if !pendingSkills[i-1][1]["MODIFIERS"].empty():
-						if pendingSkills[i-1][1]["MODIFIERS"].has("MAGIC DEFENSE"):
-							targetDefenseWithMod *= pendingSkills[i-1][1]["MODIFIERS"]["MAGIC DEFENSE"]
-				var skillRand = SeedGenerator.rng.randf_range(pendingSkills[i-1][2]["MIN BONUS"],pendingSkills[i-1][2]["MAX BONUS"]) 
-				damage = attackWithMod/targetDefenseWithMod*pendingSkills[i-1][2]["BASE DAMAGE"] * (pendingSkills[i-1][0]["LEVEL"]*0.2)*pendingSkills[i-1][0]["AFFINITY"] * skillRand# * CoreMultiplier * CompostionMultiplier * EnvironmentalMultiplier #
-				##DEBUG rounding damage:
-				damage = ceil(damage)
-				pendingSkills[i-1][1]["CURRENT HP"] -= damage
-				
-				spend_energy(pendingSkills[i-1][0],pendingSkills[i-1][2])
-				
-				prompt.get_node("PromptText").text= pendingSkills[i-1][0]["NAME"]+ " is attacking " + pendingSkills[i-1][1]["NAME"]+ " and is doing " + str(damage) + " damage" +"\n"
-				prompt.get_node("PromptText").text+= pendingSkills[i-1][1]["NAME"]+ " is at "+ str(pendingSkills[i-1][1]["CURRENT HP"])+ " HP"
-				animate_sprite(pendingSkills[i-1][0]["NODE"],ATTACK)
-				yield(pendingSkills[i-1][0]["NODE"],"sprite_animation_done")
-				animate_sprite(pendingSkills[i-1][1]["NODE"],HIT)
-				yield(pendingSkills[i-1][1]["NODE"],"sprite_animation_done")
-				update_ui_action_bars(pendingSkills[i-1][0]["UI NODE"],pendingSkills[i-1][2])
-				update_ui_health_bar(pendingSkills[i-1][1]["UI NODE"],pendingSkills[i-1][1]["CURRENT HP"])
-				
-				
-				if pendingSkills[i-1][1]["CURRENT HP"]  <=  0:
-#					check_for_kill_bonus()
-#					pendingSkills[i-1][1]["HP"] = 0
-					if EnemyGolems.has(pendingSkills[i-1][1]):
+				for j in range (golemsToHit-1,-1,-1):
+					if golemsToHit == 2:
 						
-						animate_sprite(pendingSkills[i-1][1]["NODE"],DEATH)
-						enemy_death(pendingSkills[i-1][1],pendingSkills[i-1][0],pendingSkills[i-1][2])
-						yield(pendingSkills[i-1][1]["NODE"],"sprite_animation_done")
-					elif AllyGolems.has(pendingSkills[i-1][1]):
-						if playerInBattle:
-							player_death()
-						else:
+						if targetType == "ALLY":
+							if AllyGolems.size() > j:
+								 pendingSkills[i-1][1] = AllyGolems[j]
+						elif targetType == "ENEMY":
+							if EnemyGolems.size() > j:
+								pendingSkills[i-1][1] = EnemyGolems[j]
+						else: 
+							
+							continue
+				
+				
+				
+					var damage 
+					var attackWithMod
+					var targetDefenseWithMod 
+					
+						
+					
+							
+					if pendingSkills[i-1][2]["IMPACT TYPE"] == "PHYSICAL":
+						attackWithMod =  pendingSkills[i-1][0]["ATTACK"] #Base Attack
+						targetDefenseWithMod = pendingSkills[i-1][0]["DEFENSE"]
+						if !pendingSkills[i-1][0]["MODIFIERS"].empty():
+							if pendingSkills[i-1][0]["MODIFIERS"].has("ATTACK"):
+								attackWithMod *= pendingSkills[i-1][0]["MODIFIERS"]["ATTACK"]
+						if !pendingSkills[i-1][1]["MODIFIERS"].empty():
+							if pendingSkills[i-1][1]["MODIFIERS"].has("DEFENSE"):
+								targetDefenseWithMod *= pendingSkills[i-1][1]["MODIFIERS"]["DEFENSE"]
+							
+					elif pendingSkills[i-1][2]["IMPACT TYPE"] == "MAGICAL":
+						attackWithMod =  pendingSkills[i-1][0]["MAGIC ATTACK"] #Base Attack
+						targetDefenseWithMod = pendingSkills[i-1][0]["MAGIC DEFENSE"]
+						if !pendingSkills[i-1][0]["MODIFIERS"].empty():
+							if pendingSkills[i-1][0]["MODIFIERS"].has("MAGIC ATTACK"):
+								attackWithMod *= pendingSkills[i-1][0]["MODIFIERS"]["MAGIC ATTACK"]
+						
+						if !pendingSkills[i-1][1]["MODIFIERS"].empty():
+							if pendingSkills[i-1][1]["MODIFIERS"].has("MAGIC DEFENSE"):
+								targetDefenseWithMod *= pendingSkills[i-1][1]["MODIFIERS"]["MAGIC DEFENSE"]
+				
+					var skillRand = SeedGenerator.rng.randf_range(pendingSkills[i-1][2]["MIN BONUS"],pendingSkills[i-1][2]["MAX BONUS"]) 
+					damage = attackWithMod/targetDefenseWithMod*pendingSkills[i-1][2]["BASE DAMAGE"] * (pendingSkills[i-1][0]["LEVEL"]*0.2)*pendingSkills[i-1][0]["AFFINITY"] * skillRand# * CoreMultiplier * CompostionMultiplier * EnvironmentalMultiplier #
+					##DEBUG rounding damage:
+					damage = ceil(damage)
+					pendingSkills[i-1][1]["CURRENT HP"] -= damage
+					ifUsedSkill = true
+					
+					prompt.get_node("PromptText").text= pendingSkills[i-1][0]["NAME"]+ " is attacking " + pendingSkills[i-1][1]["NAME"]+ " and is doing " + str(damage) + " damage" +"\n"
+					prompt.get_node("PromptText").text+= pendingSkills[i-1][1]["NAME"]+ " is at "+ str(pendingSkills[i-1][1]["CURRENT HP"])+ " HP"
+					animate_sprite(pendingSkills[i-1][0]["NODE"],ATTACK)
+					yield(pendingSkills[i-1][0]["NODE"],"sprite_animation_done")
+					animate_sprite(pendingSkills[i-1][1]["NODE"],HIT)
+					yield(pendingSkills[i-1][1]["NODE"],"sprite_animation_done")
+					update_ui_health_bar(pendingSkills[i-1][1]["UI NODE"],pendingSkills[i-1][1]["CURRENT HP"])
+					
+					
+					if pendingSkills[i-1][1]["CURRENT HP"]  <=  0:
+	#					check_for_kill_bonus()
+	#					pendingSkills[i-1][1]["HP"] = 0
+						if EnemyGolems.has(pendingSkills[i-1][1]):
 							
 							animate_sprite(pendingSkills[i-1][1]["NODE"],DEATH)
-							player_golem_death(pendingSkills[i-1][1])
+							enemy_death(pendingSkills[i-1][1],pendingSkills[i-1][0],pendingSkills[i-1][2])
 							yield(pendingSkills[i-1][1]["NODE"],"sprite_animation_done")
-							
-							if does_void_run_away(pendingSkills[i-1][1]):
-								WorldConductor.core_stolen(pendingSkills[i-1][1],pendingSkills[i-1][0])
-								void_ran_away(pendingSkills[i-1][0],pendingSkills[i-1][1])
+						elif AllyGolems.has(pendingSkills[i-1][1]):
+							if playerInBattle:
+								player_death()
 							else:
-								GlobalPlayer.add_core(pendingSkills[i-1][1])
+								
+								animate_sprite(pendingSkills[i-1][1]["NODE"],DEATH)
+								player_golem_death(pendingSkills[i-1][1])
+								yield(pendingSkills[i-1][1]["NODE"],"sprite_animation_done")
+								
+								if does_void_run_away(pendingSkills[i-1][1]):
+									WorldConductor.core_stolen(pendingSkills[i-1][1],pendingSkills[i-1][0])
+									void_ran_away(pendingSkills[i-1][0],pendingSkills[i-1][1])
+								else:
+									GlobalPlayer.add_core(pendingSkills[i-1][1])
+				
+				if ifUsedSkill == true:
+					spend_energy(pendingSkills[i-1][0],pendingSkills[i-1][2])
+					update_ui_action_bars(pendingSkills[i-1][0]["UI NODE"],pendingSkills[i-1][2])
 				pendingSkills.erase(pendingSkills[i-1])
 	GlobalPlayer.isInAnimation = false
 	end_turn()
@@ -1198,6 +1270,12 @@ func update_cursor_location_on_current_SELECTIONSTATE():
 	
 	clear_player_choice(playerSelection)
 	
+	if currentSelectionState != previousCurrentSelectionState and(previousCurrentSelectionState == SELECTIONSTATE.AOE_ALLY or previousCurrentSelectionState == SELECTIONSTATE.AOE_ENEMY):
+		clear_player_choice(80)
+		clear_player_choice(81)
+		clear_player_choice(90)
+		clear_player_choice(91)
+	
 	if currentSelectionState == SELECTIONSTATE.MAIN or currentBattleState == SELECTIONSTATE.SECONDARY:
 		if previousPlayerSelection != null:
 			playerSelection = previousPlayerSelection
@@ -1211,7 +1289,14 @@ func update_cursor_location_on_current_SELECTIONSTATE():
 	
 	elif currentSelectionState == SELECTIONSTATE.BOTH:
 		playerSelection = 90
+	elif currentSelectionState == SELECTIONSTATE.AOE_ALLY:
+		update_player_choice(91)
+		playerSelection = 90
+	elif currentSelectionState == SELECTIONSTATE.AOE_ENEMY:
+		update_player_choice(81)
+		playerSelection = 80
 	
+	previousCurrentSelectionState = currentSelectionState
 	update_player_choice(playerSelection)
 		
 func secondary_combat_options():
@@ -1390,6 +1475,8 @@ func move_up():
 		elif playerSelection == 91:
 			playerSelection=81
 		
+	elif currentSelectionState == SELECTIONSTATE.AOE_ALLY or currentSelectionState == SELECTIONSTATE.AOE_ENEMY:
+		return 
 	else:
 		if playerSelection == 1:
 			playerSelection = 6
@@ -1447,6 +1534,8 @@ func move_down():
 		elif playerSelection == 91:
 			playerSelection=81
 		
+	elif currentSelectionState == SELECTIONSTATE.AOE_ALLY or currentSelectionState == SELECTIONSTATE.AOE_ENEMY:
+		return 
 	else:
 		if playerSelection == 6:
 			playerSelection = 1
@@ -1484,7 +1573,12 @@ func ui_accept(arrowKeySelection = false):
 			elif playerSelection == 91:
 				use_skill(playerBack)
 				emit_signal("buttonSelectAudio")
-			
+		elif currentSelectionState == SELECTIONSTATE.AOE_ALLY :
+			use_skill(AllyGolems[0])
+			emit_signal("buttonSelectAudio")
+		elif currentSelectionState == SELECTIONSTATE.AOE_ENEMY:
+			use_skill(EnemyGolems[0])
+			emit_signal("buttonSelectAudio")
 			
 		elif currentMenu == MENU.NONE:
 			if playerSelection >= 3 and playerSelection <=6:
@@ -1535,6 +1629,10 @@ func ui_accept(arrowKeySelection = false):
 					currentSelectionState = SELECTIONSTATE.ENEMY
 				elif itemTarget == StatBlocks.TARGET.BOTH:
 					currentSelectionState = SELECTIONSTATE.BOTH
+				elif itemTarget == StatBlocks.TARGET.AOE_ALLY:
+					currentSelectionState = SELECTIONSTATE.AOE_ALLY
+				elif itemTarget == StatBlocks.TARGET.AOE_ENEMY:
+					currentSelectionState = SELECTIONSTATE.AOE_ENEMY
 				itemUsed =listOfUseableItems[itemChoice]
 				itemUsed[1] = 1
 			update_cursor_location_on_current_SELECTIONSTATE()

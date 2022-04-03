@@ -29,7 +29,7 @@ var levelOfCave = 0
 var deepestLevelOfCave = 0
 
 var playerName = "Player Red"
-var playerGender = ""
+var playerGender = "Ambiguous" #playerGender == "Ambiguous", "Man", "Woman"
 var playerAvatar = ""
 
 var partyGolems = []

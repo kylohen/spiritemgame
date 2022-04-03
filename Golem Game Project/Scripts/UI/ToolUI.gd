@@ -77,16 +77,22 @@ func _on_PlayerUI_previousTool():
 
 
 func _on_PlayerUI_refreshTool():
-	var globalToolSelected = GlobalPlayer.toolSelected
-	if toolSelected != globalToolSelected:
-		set_selection_Highlight(globalToolSelected)
-		var difference = globalToolSelected - toolSelected
-		if difference < 0 :
-			difference = -difference
-		var rotateDegree = 0
-		if difference > 0:
-			for i in difference:
-				rotateDegree += 90
-		rotate_dial(rotateDegree)
-		toolSelected = globalToolSelected
-	pass # Replace with function body.
+	toolSelected = GlobalPlayer.toolSelected
+	set_selection_Highlight(toolSelected)
+#	if toolSelected != globalToolSelected:
+#		set_selection_Highlight(globalToolSelected)
+#		var difference = globalToolSelected - toolSelected
+#		if difference < 0 :
+#			difference = -difference
+	var rotateDegree = 0
+	arrowSelectImage.rect_rotation = -90
+	if toolSelected > 0:
+		for i in toolSelected:
+			rotateDegree += 90
+	rotate_dial(rotateDegree)
+#		if difference > 0:
+#			for i in difference:
+#				rotateDegree += 90
+#		rotate_dial(rotateDegree)
+#		toolSelected = globalToolSelected
+#	pass # Replace with function body.
