@@ -1,6 +1,8 @@
 extends AStar_Path
 
 onready var collision = $Area2D
+onready var voidMovement = $VoidMovement
+onready var voidSpawn = $VoidSpawn
 
 var currentGridPosition :Vector2
 var isElite = false
@@ -28,7 +30,11 @@ func spawn_enemy(newEnemyID, newEnemyIDBack = -1):
 		statBlockBack = StatBlocks.enemyStatBlocks[newEnemyIDBack]
 		enemyBackName = statBlockBack["NAME"]
 		statBlockBack["CURRENT HP"] = statBlockBack["HP"]
-	pass
+	
+	if GlobalPlayer.levelOfCave >=2:
+		statBlock = StatBlocks.scale_up(statBlock,GlobalPlayer.levelOfCave)
+		statBlockBack = StatBlocks.scale_up(statBlockBack,GlobalPlayer.levelOfCave)
+	voidSpawn.play()
 	
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 #func _process(delta):
@@ -46,6 +52,7 @@ func move_enemy(playerPositionInGrid):
 			currentGridPosition += random_move()
 		else: currentGridPosition = path[0]
 		self.position = currentGridPosition*WorldConductor.TILE_SIZE
+	voidMovement.play()
 
 func random_move():
 	var directions = [Vector2.UP,Vector2.RIGHT,Vector2.DOWN,Vector2.LEFT]

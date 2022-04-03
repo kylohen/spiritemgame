@@ -2,10 +2,15 @@ extends Node2D
 ##Grid is used to both generate the map and allows the player to interact with what is on the world
 onready var overworld = $Overworld
 onready var interactOverlay = $InteractOverlay
-onready var player = $Player
-onready var sceneTransitions = $Camera2D/SceneTransitions
 onready var itemDrop = $ItemDrops
+onready var player = $Player
+onready var camera = $Camera2D
+onready var playerUI = $Camera2D/PlayerUI
+onready var enemyManager = $EnemyManager
+onready var sceneTransitions = $Camera2D/SceneTransitions
 onready var areaTitleCard = $Camera2D/AreaTitleCard
+
+onready var bgMusic = $BGMusic
 
 const TILE_SIZE = 24
 
@@ -67,6 +72,7 @@ func _ready():
 #	randomize_Objects()
 	sceneTransitions.run_Transition("radial_wipe_on")
 	areaTitleCard.play("Cave","Level "+str(GlobalPlayer.levelOfCave))
+	bgMusic.play()
 	pass
 	
 ## called on startup to generate an empty array to fill up for gridMap
@@ -110,8 +116,8 @@ func build_terrain():
 #				gridMap[x][y] = spawnTerrainTile(x,y)
 				var selectedTile = tileTypes.rocks
 				gridMap[x][y] = selectedTile
-				
-				chanceOfSpawningResource(x,y,selectedTile)
+				if !(x <4 and y <4):
+					chanceOfSpawningResource(x,y,selectedTile)
 #		print(gridMap[x])
 
 func makingNoise ():
@@ -159,6 +165,35 @@ func chanceOfSpawningResource(x,y,selectedTile):
 				break
 
 
+
+func new_cave():
+	GlobalPlayer.Go_Down_A_Level()
+	emit_signal("new_level_cave")
+	queue_free()
+func exit_cave():
+	emit_signal("leave_cave")
+	queue_free()
+func build_stairs(stairCount = 2):
+	for i in stairCount:
+		var randomChoice = SeedGenerator.rng.randi_range(0,arrayOfBoulders.size()-1)
+		var selectedPos = arrayOfBoulders[randomChoice]
+		overworld.set_cell(selectedPos.x,selectedPos.y,stairsTile)
+		arrayOfStairs.append(selectedPos)
+
+
+func spawn_object (objectToSpawn, pos):
+	var newObject = overworldObjectScene.instance()
+	newObject.position = pos*TILE_SIZE
+	interactOverlay.add_child(newObject)
+	
+	newObject.spawn_object(objectToSpawn)
+	arrayOfBoulders.append(pos)
+	return newObject
+
+##################################################################################################
+######################################PLAYER INTERACTIONS#########################################
+##################################################################################################
+
 ## checks to see if there is something in the grid, if there is, return false
 func is_Open_Tile(currentPosition, directionToGo,isPlayer=true) -> bool:
 	var newPosition = currentPosition + directionToGo
@@ -166,7 +201,14 @@ func is_Open_Tile(currentPosition, directionToGo,isPlayer=true) -> bool:
 	var itemCheck = itemDropPlacement[newPosition.x][newPosition.y]
 	if isPlayer:
 		pickUpItem(itemCheck,newPosition)
-		if arrayOfStairs.has(newPosition):
+		var passableIfStairsPresent =false
+		if block == null:
+			passableIfStairsPresent = true
+		else:
+			if !(block is int):##Walls and other impassable and immutable terrain is stored as ints
+				if block.type == "Resource":
+					passableIfStairsPresent = objectPlacement[newPosition.x][newPosition.y].is_passable()
+		if arrayOfStairs.has(newPosition) and passableIfStairsPresent:
 			whatToDoAfterTransition  = "Cave Load"
 			sceneTransitions.run_Transition("radial_wipe_off")
 		elif newPosition == leaveCave:
@@ -189,7 +231,6 @@ func is_Open_Tile(currentPosition, directionToGo,isPlayer=true) -> bool:
 		return false
 	return true
 
-
 func pickUpItem(item,newPosition):
 	if item != null:
 		if item.type == "loot":
@@ -198,29 +239,6 @@ func pickUpItem(item,newPosition):
 			itemDropPlacement[newPosition.x].remove(newPosition.y)
 			itemDropPlacement[newPosition.x].insert(newPosition.y,null)
 
-func new_cave():
-	emit_signal("new_level_cave")
-	GlobalPlayer.Go_Down_A_Level()
-	queue_free()
-func exit_cave():
-	emit_signal("leave_cave")
-	queue_free()
-func build_stairs(stairCount = 2):
-	for i in stairCount:
-		var randomChoice = SeedGenerator.rng.randi_range(0,arrayOfBoulders.size()-1)
-		var selectedPos = arrayOfBoulders[randomChoice]
-		overworld.set_cell(selectedPos.x,selectedPos.y,stairsTile)
-		arrayOfStairs.append(selectedPos)
-
-
-func spawn_object (objectToSpawn, pos):
-	var newObject = overworldObjectScene.instance()
-	newObject.position = pos*TILE_SIZE
-	interactOverlay.add_child(newObject)
-	
-	newObject.spawn_object(objectToSpawn)
-	arrayOfBoulders.append(pos)
-	return newObject
 
 func _on_Player_useToolOnBlock(blockToCheck):
 	var block = objectPlacement[blockToCheck.x][blockToCheck.y]
@@ -260,10 +278,25 @@ func _on_Player_useItemOnBlock(itemID,itemTexture,blockToCheck,itemIndex):
 
 	
 
+##################################################################################################
+######################################Enemy Management############################################
+##################################################################################################
+
+func _on_EnemyManager_enemy_contact(enemyNode):
+	GlobalPlayer.update_PLAYSTATE(GlobalPlayer.PLAYSTATE.BATTLE)
+	playerUI._enemy_battle_start(enemyNode)
+	enemyNode.queue_free()
+
+
+##################################################################################################
+######################################Transitions#################################################
+##################################################################################################
+
+
+
 func _on_SceneTransitions_transitionDone(transitionAnimation):
 	if transitionAnimation == "radial_wipe_off":
 		if whatToDoAfterTransition == "Cave Load":
 			new_cave()
 		elif whatToDoAfterTransition == "Leave Cave":
 			exit_cave()
-	pass # Replace with function body.

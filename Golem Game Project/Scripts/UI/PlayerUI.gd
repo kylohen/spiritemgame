@@ -30,6 +30,8 @@ var MenuDict = {
 	2:CRAFTING,
 	3:STAT
 }
+
+var isActive = true
 onready var MenuNodeDict = {
 	INVENTORY:inventoryUI,
 	LORE:loreBookUI,
@@ -71,7 +73,8 @@ func _ready():
 	pass # Replace with function body.
 	
 func _process(_delta):
-	process_player_input();
+	if isActive:
+		process_player_input();
 
 func _next_Tool():
 	emit_signal("nextTool")
@@ -243,7 +246,7 @@ func _enemy_battle_start(enemyNode):
 func _enemy_battle_end():
 	battleScreen.load_out()
 	GlobalPlayer.update_PLAYSTATE(GlobalPlayer.PLAYSTATE.GAME)
-
+	get_parent().get_parent().bgMusic.play()
 		
 	
 	

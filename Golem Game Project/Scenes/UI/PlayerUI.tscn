@@ -20,9 +20,6 @@
 anchor_right = 1.0
 anchor_bottom = 1.0
 script = ExtResource( 7 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="ToolUI" type="Control" parent="."]
 margin_left = 14.0
@@ -237,12 +234,10 @@ visible = false
 
 [node name="buttonMove" type="AudioStreamPlayer" parent="."]
 stream = ExtResource( 14 )
-bus = "SoundEffects"
 
 [node name="buttonSelect" type="AudioStreamPlayer" parent="."]
 stream = ExtResource( 15 )
 volume_db = -12.381
-bus = "SoundEffects"
 
 [connection signal="nextTool" from="." to="ToolUI" method="_on_PlayerUI_nextTool"]
 [connection signal="previousTool" from="." to="ToolUI" method="_on_PlayerUI_previousTool"]

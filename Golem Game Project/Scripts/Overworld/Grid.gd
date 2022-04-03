@@ -12,6 +12,8 @@ onready var animationPlayer = $AnimationPlayer
 onready var sceneTransitions = $Camera2D/SceneTransitions
 onready var areaTitleCard = $Camera2D/AreaTitleCard
 
+onready var bgMusic = $BackgroundMusic
+
 const TILE_SIZE = 24
 
 onready var overworldObjectScene = preload("res://Scenes/Overworld/OverworldObjects.tscn")
@@ -84,6 +86,7 @@ func _ready():
 #	run_Dialog(DialogStorage.conversation["IntroPart1"])
 	
 	areaTitleCard.play("No Country for Old Men","Starting Zone")
+	bgMusic.play()
 	pass
 	
 
@@ -258,6 +261,7 @@ func _on_new_level_cave_CaveSystem():
 	player.hide()
 	camera.hide()
 	var newCave = load(caveSystemScene).instance()
+	GlobalPlayer.Go_Down_A_Level()
 	update_signal_path(newCave)
 	add_child(newCave)
 	move_child(newCave,0)
@@ -396,6 +400,8 @@ func take_golem_items(useItems):
 func _on_EnemyManager_enemy_contact(enemyNode):
 	GlobalPlayer.update_PLAYSTATE(GlobalPlayer.PLAYSTATE.BATTLE)
 	playerUI._enemy_battle_start(enemyNode)
+	
+	bgMusic.stop()
 	enemyNode.queue_free()
 	pass # Replace with function body.
 
@@ -418,7 +424,14 @@ func _on_SceneTransitions_transitionDone(transitionAnimation):
 		if whatToDoAfterTransition == "Cave Load":
 			enemyManager.disable()
 			_on_new_level_cave_CaveSystem()
+			playerUI.isActive = false
+			
+			bgMusic.stop()
 		elif whatToDoAfterTransition == "Leave Cave":
 			enemyManager.enable()
 			_on_leave_cave_CaveSystem()
+			playerUI.isActive = true
+			
+			bgMusic.play()
+			
 	pass # Replace with function body.

@@ -6,6 +6,7 @@ export var walk_speed = 4.0
 onready var grid = get_parent()
 onready var anim_tree = $AnimationTree
 onready var anim_state = anim_tree.get("parameters/playback")
+onready var playerSFX = $PlayerSFX
 
 enum PlayerState {IDLE, TURNING, WALKING}
 enum FacingDirection {LEFT, RIGHT, UP, DOWN}
@@ -119,9 +120,11 @@ func move(delta):
 		percent_moved_to_next_tile = 0.0
 		is_moving = false
 		gridCoords += input_direction
+		playerSFX.play()
 	else:
 		position = initial_position + (WorldConductor.TILE_SIZE * input_direction * percent_moved_to_next_tile)
 		emit_signal("newPosForCamera",self.position)
+		playerSFX.stop()
 
 
 
@@ -133,6 +136,7 @@ func move(delta):
 func need_animation():
 	$ToBeDeleted.show()
 	$ToBeDeleted/TimerToBeDeleted.start()
+	playerSFX.play()
 
 func _on_TimerToBeDeleted_timeout():
 	$ToBeDeleted.hide()
@@ -154,3 +158,5 @@ func _on_PlayerUI_useItem(itemID,itemTexture,itemIndex):
 func _on_Cave_loot_received(lootType,quantityOfLoot):
 	GlobalPlayer.add_loot(lootType,quantityOfLoot)
 	pass # Replace with function body.
+
+

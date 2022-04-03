@@ -13,6 +13,7 @@ onready var enemyFrontUIBar= $EnemyGraphics/EnemyBackingFront/UI_Bars
 onready var enemyBackUIBar= $EnemyGraphics/EnemyBackingBack/UI_Bars
 onready var battleWinScreen = $PopUpWindows/BattleWin
 onready var sceneLoadInAndOut = $SceneLoadInAndOut
+onready var battleMusic = $BattleMusic
 
 enum MENU{ATTACK,SUPPORT,DEFEND,FLEE, ITEM,PARTY, NONE, WIN}
 enum {REST,ATTACK,HIT,SUPPORT,DEFEND,FLEE,DEATH, SENDOUT,SENDIN}
@@ -75,6 +76,7 @@ signal buttonSelectAudio
 ###################### BUILDING ENCOUNTER ############################################
 func _ready():
 	sceneSetup.play("RESET")
+	battleMusic.play()
 	
 	pass # Replace with function body.
 
@@ -1082,6 +1084,7 @@ func player_death():
 	pass
 func win_battle():
 	battleWinScreen.show()
+	battleMusic.play()
 	currentMenu = MENU.WIN
 	battleWon = true
 	var lootLabel = battleWinScreen.get_node("Label")
@@ -1092,6 +1095,7 @@ func win_battle():
 func lose_battle():
 	battleWinScreen.show()
 	currentMenu = MENU.WIN
+	battleMusic.play()
 	battleWon = true
 	var lootLabel = battleWinScreen.get_node("Label")
 	lootLabel.text = "You Fled:"

@@ -431,4 +431,7 @@ parameters/Idle/blend_position = Vector2( -0.510428, -0.443299 )
 parameters/Turn/blend_position = Vector2( 0, 0 )
 parameters/Walk/blend_position = Vector2( 0, 0 )
 
+[node name="PlayerSFX" type="AudioStreamPlayer" parent="."]
+bus = "SoundEffects"
+
 [connection signal="timeout" from="ToBeDeleted/TimerToBeDeleted" to="." method="_on_TimerToBeDeleted_timeout"]

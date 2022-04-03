@@ -34,12 +34,9 @@ tracks/0/keys = {
 [node name="BattleScreen" type="Control"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-margin_right = 21120.0
-margin_bottom = 11880.0
+margin_right = 21600.0
+margin_bottom = 12150.0
 script = ExtResource( 2 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="EnemyGraphics" type="Control" parent="."]
 margin_right = 40.0
@@ -555,5 +552,8 @@ __meta__ = {
 anims/OverworldBattleIn = ExtResource( 12 )
 anims/OverworldBattleOut = ExtResource( 13 )
 anims/RESET = SubResource( 1 )
+
+[node name="BattleMusic" type="AudioStreamPlayer" parent="."]
+bus = "BackgroundMusic"
 
 [connection signal="animation_finished" from="SceneLoadInAndOut" to="." method="_on_SceneLoadInAndOut_animation_finished"]

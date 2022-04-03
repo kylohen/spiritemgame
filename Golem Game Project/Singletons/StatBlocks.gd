@@ -241,6 +241,7 @@ var playerGolemBaseStatBlocks = {
 			"SKILL3":null,
 			"SKILL4":null,
 			},
+		"UPGRADE COST": 5,
 		},
 	1 : {
 		"NAME":"Lead Zepplin",
@@ -280,6 +281,7 @@ var playerGolemBaseStatBlocks = {
 			"SKILL3":null,
 			"SKILL4":null,
 			},
+		"UPGRADE COST": 5,
 		},
 	2: {
 		"NAME":"Twisted Whisk",
@@ -319,6 +321,7 @@ var playerGolemBaseStatBlocks = {
 			"SKILL3":null,
 			"SKILL4":7,
 			},
+		"UPGRADE COST": 5,
 		},
 	}
 
@@ -461,18 +464,19 @@ var skillList = {
 	
 	}
 
-func scale_up(golem:Dictionary)->Dictionary:
-	golem["HP"] = golem["HP"]*2
-	golem["ATTACK"] = golem["ATTACK"]*2
-	golem["DEFENSE"] = golem["DEFENSE"]*2
-	golem["MAGIC ATTACK"] = golem["MAGIC ATTACK"]*2
-	golem["MAGIC DEFENSE"] = golem["MAGIC DEFENSE"]*2
-	golem["SPEED"] = golem["SPEED"]*2
-	golem["ACTION METER"] = golem["ACTION METER"]*2
-	golem["MAGIC METER"] = golem["MAGIC METER"]*2
-	if golem.has("CURRENT HP"):
-		golem["CURRENT HP"] = golem["HP"]
-		golem["CURRENT ACTION METER"] = golem["ACTION METER"]
-		golem["CURRENT MAGIC METER"] = golem["MAGIC METER"]
+func scale_up(golem:Dictionary,scale:int=2)->Dictionary:
+	if golem != null:
+		golem["HP"] = golem["HP"]*scale
+		golem["ATTACK"] = golem["ATTACK"]*scale
+		golem["DEFENSE"] = golem["DEFENSE"]*scale
+		golem["MAGIC ATTACK"] = golem["MAGIC ATTACK"]*scale
+		golem["MAGIC DEFENSE"] = golem["MAGIC DEFENSE"]*scale
+		golem["SPEED"] = golem["SPEED"]*scale
+		golem["ACTION METER"] = golem["ACTION METER"]*scale
+		golem["MAGIC METER"] = golem["MAGIC METER"]*scale
+		if golem.has("CURRENT HP"):
+			golem["CURRENT HP"] = golem["HP"]
+			golem["CURRENT ACTION METER"] = golem["ACTION METER"]
+			golem["CURRENT MAGIC METER"] = golem["MAGIC METER"]
 	return golem
 	

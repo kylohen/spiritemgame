@@ -207,11 +207,27 @@ func delete_item (itemToDelete,IndexToClear):
 	itemIndexDict.erase(IndexToClear)
 	pass
 
-func use_item(itemToUse,indexToUse, quantityToUse = 1):
-	inventoryListDict[itemToUse][indexToUse] -= quantityToUse
-	if inventoryListDict[itemToUse][indexToUse]<= 0:
-		delete_item(itemToUse,indexToUse)
-
+func use_item(itemToUse:String,indexToUse:int, quantityToUse:int = 1):
+	var totalInventory = count_qty(itemToUse)
+	if totalInventory >= quantityToUse:
+		while quantityToUse > 0 :
+			var compare =  inventoryListDict[itemToUse][indexToUse]
+			if compare <= quantityToUse:
+				quantityToUse -= compare
+				delete_item(itemToUse,indexToUse)
+				indexToUse = get_latest_key(itemToUse)
+			else:
+				inventoryListDict[itemToUse][indexToUse] -= quantityToUse
+				quantityToUse = 0
+	
+func count_qty(itemToUse):
+	var runningTotal = 0
+	if inventoryListDict.has(itemToUse):
+		var indexes = inventoryListDict[itemToUse].keys()
+		for i in indexes.size():
+			runningTotal += inventoryListDict[itemToUse][indexes[i]]
+	return runningTotal
+	
 func has_item(itemToCheck):
 	return inventoryListDict.has(itemToCheck)
 
@@ -229,6 +245,19 @@ func get_item(key):
 		return itemIndexDict[key]
 	return null
 		
+func get_key(itemID):
+	if inventoryListDict.has(itemID):
+		return inventoryListDict[itemID].keys()[0]
+
+func get_latest_key(itemID):
+	if inventoryListDict.has(itemID):
+		var latest_key = 0
+		var indexes = inventoryListDict[itemID].keys()
+		for i in indexes.size():
+			if latest_key < indexes[i]:
+				latest_key = indexes[i]
+				
+		return latest_key
 	
 
 func has_item_and_quantity(itemToCheck, quantity):
@@ -296,3 +325,31 @@ func is_party_empty():
 		if partyGolems[i] != null:
 			return false
 	return true
+
+func level_up_golem(golemID:int)->void:
+	var golem = partyGolems[golemID]
+	var scale = 2
+	if golem != null:
+		var changeHP = golem["HP"]
+		golem["HP"] = golem["HP"]*scale
+		changeHP -= golem["HP"]
+		if changeHP <= 0:
+			golem["CURRENT HP"] += -changeHP
+		golem["ATTACK"] = golem["ATTACK"]*scale
+		golem["DEFENSE"] = golem["DEFENSE"]*scale
+		golem["MAGIC ATTACK"] = golem["MAGIC ATTACK"]*scale
+		golem["MAGIC DEFENSE"] = golem["MAGIC DEFENSE"]*scale
+		golem["SPEED"] = golem["SPEED"]*scale
+		var changeAction = golem["ACTION METER"] 
+		golem["ACTION METER"] = golem["ACTION METER"]*scale
+		changeAction -= golem["ACTION METER"]
+		if changeAction <= 0:
+			golem["CURRENT ACTION"] += -changeAction
+		
+		var changeMagic= golem["MAGIC METER"] 
+		golem["MAGIC METER"] = golem["MAGIC METER"]*scale
+		changeMagic -= golem["MAGIC METER"]
+		if changeHP <= 0:
+			golem["CURRENT MAGIC"] += -changeMagic
+			
+		golem["UPGRADE COST"] *= 5
